@@ -1,6 +1,6 @@
 # Values to check
 
-**Checked 2026-11-22** against the text of the owner's PDFs. All lines match; notes on each paper below.
+**Checked 2026-11-22** against the text of the owner's PDFs: papers 1, 2 and 4 first, then 5–8. Every line matches the page cited; notes below.
 
 Every number GeoHand shows so far comes from one of the three papers below. Tick each line once you've found the value in the paper. When all lines for a paper are ticked, its reference gets a `checked` date and that paper's numbers count as verified.
 
@@ -41,27 +41,27 @@ The "about half of all heat loss" note for young ocean floor is worked out (23.1
 
 ## 5. Christensen & Mooney (1995), abstract, p. 9761
 
-- [ ] Weighted average continental crust 41.1 km; extended crust 30.5 km; orogens 46.3 km
-- [ ] Average crustal P-wave speed 6.45 km/s; Pn 8.09 km/s
-- [ ] Mean crustal density 2,830 kg/m³; average SiO~2~ 61.8%
+- [x] Weighted average continental crust 41.1 km; extended crust 30.5 km; orogens 46.3 km
+- [x] Average crustal P-wave speed 6.45 km/s; Pn 8.09 km/s
+- [x] Mean crustal density 2,830 kg/m³; average SiO~2~ 61.8%
 
 ## 6. White, McKenzie & O'Nions (1992)
 
-- [ ] Abstract, p. 19,683: igneous oceanic crust 7.1 ± 0.8 km, bounds 5.0–8.5 km; rare earth element inversions 8.3 ± 1.5 km; near plumes 10.3 ± 1.7 km; aseismic ridges 20 ± 1 km
-- [ ] Table 8, p. 19,698 ("Mean Oceanic Crustal Structure (This Paper)"): Layer 2 2.5–6.6 km/s, 2.11 ± 0.55 km; Layer 3 6.6–7.6 km/s, 4.97 ± 0.90 km; total 7.08 ± 0.78 km
+- [x] Abstract, p. 19,683: igneous oceanic crust 7.1 ± 0.8 km, bounds 5.0–8.5 km; rare earth element inversions 8.3 ± 1.5 km; near plumes 10.3 ± 1.7 km; aseismic ridges 20 ± 1 km
+- [x] Table 8, p. 19,698 ("Mean Oceanic Crustal Structure (This Paper)"): Layer 2 2.5–6.6 km/s, 2.11 ± 0.55 km; Layer 3 6.6–7.6 km/s, 4.97 ± 0.90 km; total 7.08 ± 0.78 km
 
 ## 7. CRUST 5.1: Mooney, Laske & Masters (1998)
 
-- [ ] Plate 1 caption, p. 733: continental crust averages 38 km, from 20.5 km (extended crust) to 70 km (Tibetan Plateau)
-- [ ] Figure 3a, p. 730: averages shield 40.77, platform 38.96, orogen 42.66, extended 30.54 km. **Look at the figure:** the text extraction loses the layout, so check that 40.77 sits under Shield and 38.96 under Platform
-- [ ] Section 6, p. 734: oceanic crust 6–7 km; model uses 6.5 km; layer P-wave speeds 5.0, 6.6, 7.1 km/s
-- [ ] Section 8, p. 735: mean Moho depths 21.8 km (global), 38.0 km (continents), 12.6 km (oceans, with 4.0 km of water)
-- [ ] p. 744: continental crust typically 30–45 km, global average 38 km
+- [x] Plate 1 caption, p. 733: continental crust averages 38 km, from 20.5 km (extended crust) to 70 km (Tibetan Plateau)
+- [x] Figure 3a, p. 730: averages shield 40.77, platform 38.96, orogen 42.66, extended 30.54 km (panel order confirmed from the page layout: 40.77 is in the Shield panel, 38.96 in the Platform panel)
+- [x] Section 6, p. 734: oceanic crust 6–7 km; model uses 6.5 km; layer P-wave speeds 5.0, 6.6, 7.1 km/s
+- [x] Section 8, p. 735: mean Moho depths 21.8 km (global), 38.0 km (continents), 12.6 km (oceans, with 4.0 km of water)
+- [x] p. 744: continental crust typically 30–45 km, global average 38 km
 
 ## 8. Rudnick & Gao (2003)
 
-- [ ] Section 3.01.3.1, pp. 20–21: for a ≈40 km crust, middle crust 12–23 km, lower crust from 23 km to the Moho
-- [ ] Table 11, p. 53: SiO~2~ 66.6 / 63.5 / 53.4 / 60.6 (upper / middle / lower / total); MgO 2.48 / 3.59 / 7.24; K~2~O 2.80 / 2.30 / 0.61
+- [x] Section 3.01.3.1, pp. 20–21: for a ≈40 km crust, middle crust 12–23 km, lower crust from 23 km to the Moho
+- [x] Table 11, p. 53: SiO~2~ 66.6 / 63.5 / 53.4 / 60.6 (upper / middle / lower / total); MgO 2.48 / 3.59 / 7.24; K~2~O 2.80 / 2.30 / 0.61
 
 ### Notes
 
