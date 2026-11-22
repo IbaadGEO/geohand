@@ -1,8 +1,38 @@
 # Values to check
 
-**Checked 2026-11-22** against the text of the owner's PDFs: papers 1, 2 and 4 first, then 5–8. Every line matches the page cited; notes below.
+**Checked 2026-11-22** against the text of the owner's PDFs, paper by paper, in the sections below. Each ticked line was found on the page cited. Some displayed values are calculations from a source (for example PREM values evaluated from its Table I polynomials), and some are modelling choices (for example drawing the Moho at 35 km); the notes say which.
 
-Every number GeoHand shows so far comes from one of the three papers below. Tick each line once you've found the value in the paper. When all lines for a paper are ticked, its reference gets a `checked` date and that paper's numbers count as verified.
+Every number GeoHand shows comes from one of the papers listed below. A reference gets a `checked` date only when all its lines are ticked.
+
+## External review, 2026-11-22
+
+An external reviewer checked the numbers, A-level text, lesson and drawing notes against 16 of the PDFs (Deuss 2014 was not in their set; it was checked separately, section 22). Every finding was re-checked against the papers before fixing. Fixed:
+
+- The 32.5% of Earth's mass is the whole core, not the outer core (McDonough & Sun p. 244).
+- Inner-core rotation: Yang & Song (2023) report the relative rotation nearly stopping around 2009 with a slight turning-back since (abstract p. 182, p. 184), as part of a proposed oscillation. Song & Richards' rate is shown as the 1996 estimate, and their 0.3 s is for travel-time residuals relative to PREM.
+- PREM has a liquid ocean layer, so the outer core is not "the only liquid layer in PREM".
+- Ocean crust is basaltic lavas and dykes (layer 2) over a layer that is probably mainly gabbro (layer 3) (White et al. p. 19,683), not "basalt".
+- 7 km is the thickness of normal oceanic igneous crust, measured from its top, not depth below the sea floor.
+- Lithosphere and asthenosphere: PREM's seismic lid (to 80 km) and low-velocity zone (80–220 km) are now named as stand-ins, not definitions.
+- ak135's 35 km Moho reflects its continental-style crust (Kennett et al. p. 110); PREM uses 24.4 km. Neither is "an average for the whole planet" in the same sense.
+- The mantle's top is the Moho, whose depth varies; 2,850 km of mantle is for this model's 35 km crust.
+- Composition values are bulk weight % as oxides, and the mantle figures are the pyrolite model; Mg# is shown on its own row with its definition.
+- Plumes: French & Romanowicz image slow-wave conduits and interpret them as plumes; v~S~ is reduced by more than 1.5–2%; 800–1,000 km is the Hawaii width; the 1,500–2,000 °C figure is from their resolution test.
+- Slabs: "most" refers to imaged slabs in Fukao & Obayashi's survey around the Pacific.
+- Pearson et al.: 1.4–1.5 wt% is a minimum with large uncertainty, in the inclusion; about 1 wt% is their estimate for the mantle sampled; "first find" is to the authors' knowledge.
+- Davies & Davies: continental mean heat flow is 70.9 mW m⁻² (Table 7, p. 20); 73 is a Section 3 component. The 6–8, 5–13 and 24–38 TW figures are budget estimates (Section 4.8, p. 22).
+- PREM v~S~ at the base of the mantle rounds to 7.26 km/s, not 7.27. Upper-mantle values at 220 km are from just below 220 km; lid and low-velocity-zone values are effective isotropic.
+- Lower-mantle and upper-mantle bands name which model sets each end (ak135 660 km; PREM 670 km and 400 km).
+- Lay et al.'s 1,000 ± 500 K is a contrast across the thermal boundary layer at the base of the mantle, not a jump at the boundary itself.
+- LLSVPs: "one interpretation" is thermochemical piles; the density excess is a geodynamic-model result. The drawn blobs are schematic cross-sections. At A-level the African province is now "beneath the Atlantic and western and southern Africa".
+- The innermost inner core is labelled "proposed"; its radius and anisotropy are from the Ishii & Dziewoński model.
+- 70 km under Tibet is the CRUST 5.1 value; Christensen & Mooney report 72 km from refraction (p. 9764).
+- Christensen & Mooney's 61.8 wt% SiO~2~ is labelled as their model mean, beside Rudnick & Gao's 60.6.
+- The depth scale: depths above 660 km are redrawn; below 660 km the scale is within about 1% of true, not exactly true.
+- Drawing: under oceanic crust there was a 28 km gap down to a Moho drawn at 35 km. The Moho and the lithospheric mantle now follow the crust drawn above them (7 km under oceans, 35 km under continents).
+- The panel now shows each number's page locator, and lesson steps show their sources.
+
+## 1. PREM: Dziewonski & Anderson (1981), Table I, p. 308
 
 ## 1. PREM: Dziewonski & Anderson (1981), Table I, p. 308
 
@@ -18,7 +48,7 @@ Table I gives each layer as a formula in x = radius ÷ 6,371 km. The densities a
   - centre ρ 13.088
   - inner core top ρ 12.764, v~P~ 11.028, v~S~ 3.504
   - outer core top ρ 9.903, v~P~ 8.065
-  - base of mantle ρ 5.566, v~P~ 13.717, v~S~ 7.265
+  - base of mantle ρ 5.566, v~P~ 13.717, v~S~ 7.265 (7.26 at two decimals)
   - lower mantle top (670 km) ρ 4.381, v~P~ 10.751, v~S~ 5.945
   - 400 km ρ 3.543 → 3.724
 
@@ -29,13 +59,14 @@ Checked: every Table I coefficient used for the computed values was read against
 - [x] Velocity jumps listed at 20, 35, 210, 410, 660, 2,891.5 and 5,153.5 km depth
 - [x] v~S~ = 0 through the outer core; 3.504 km/s just inside the inner core (5,153.5 km)
 
-Also noted: ak135 repeats 210 km with a tiny jump (v~S~ 4.518 → 4.523) and repeats 2,740 km with no jump, only a change of gradient; that is the top of its D″ layer, matching PREM's 2,741 km.
+Also noted: ak135 repeats 210 km with a tiny jump (v~S~ 4.518 → 4.523) and has a model break at 2,740 km with no tabulated P- or S-speed jump. PREM's comparable basal segment starts at 2,741 km; the drawing uses the PREM segment for D″.
 
 ## 4. Heat flux: Davies & Davies (2010)
 
 - [x] Abstract, p. 5: 47 ± 2 TW, from 38,347 measurements
 - [x] Notes to Table 3, p. 15: 46.7 TW before rounding
-- [x] Section 3, p. 16: continents 13.8 TW / 73 mW m⁻²; older oceans 7.8 TW / 66 mW m⁻²; young oceans 23.1 TW / 128 mW m⁻²
+- [x] Section 3, p. 16: components: continents 13.8 TW / 73 mW m⁻²; oceans older than 66.5 Ma 7.8 TW / 66 mW m⁻²; younger 23.1 TW / 128 mW m⁻²
+- [x] Table 7, p. 20: final continental mean 70.9 mW m⁻²; global 46.7 TW
 
 The "about half of all heat loss" note for young ocean floor is worked out (23.1 ÷ 46.7 = 49%), not quoted.
 
@@ -73,12 +104,12 @@ The "about half of all heat loss" note for young ocean floor is worked out (23.1
 
 - [x] Abstract, p. 223: core is Fe–Ni with 5–15% of a light element (about 10 ± 5%; O, S, Si); about 86% of Earth's Fe is in the core
 - [x] Table 4, p. 237, pyrolite column 1: SiO~2~ 45.0, Al~2~O~3~ 4.45, FeO 8.05, MgO 37.8, CaO 3.55, Na~2~O 0.36; 100Mg/(Mg+Fe) 89.3
-- [x] Section 6, p. 244: the core is about 32.5% of Earth's mass
+- [x] Section 6, p. 244: the whole core (outer and inner) is about 32.5% of Earth's mass
 
 ## 12. Pearson et al. (2014)
 
 - [x] Abstract, p. 221: transition zone 410–660 km; wadsleyite and ringwoodite hold up to about 2.5 wt% water; ringwoodite in a diamond from Juína, Brazil; the zone is hydrous to about 1 wt% locally; olivine (Mg~2~SiO~4~) dominant to about 400 km
-- [x] p. 222: the inclusion holds 1.4–1.5 wt% H~2~O (FTIR)
+- [x] p. 222: the inclusion holds at least 1.4–1.5 wt% H~2~O (FTIR minimum, large uncertainty)
 - [x] p. 223: about 1.0 wt% for the transition zone the diamond sampled
 
 ## 13. Fukao & Obayashi (2013), abstract, p. 5920
@@ -119,7 +150,7 @@ Section 4 was checked on 2026-11-22 against the text of the owner's PDFs. Lay et
 
 ## 25. Yang & Song (2023)
 
-- [x] Abstract, p. 182: rotation recently paused; about a seven-decade oscillation with another turning point in the early 1970s; matches length-of-day and magnetic-field changes; inner-core radius about 1,220 km
+- [x] Abstract, p. 182: differential rotation recently paused, with a gradual turning-back; about a seven-decade oscillation with another turning point in the early 1970s; matches length-of-day and magnetic-field changes; inner-core radius about 1,220 km
 - [x] p. 184: overturn in late 2009, 95% CI 2009.0–2011.0
 
 Section 5 was checked on 2026-11-22 against the text of the owner's PDFs. The Song & Richards PDF has a font that the usual text extractor cannot read, so its text was taken with a second extractor (pdfminer). Song & Richards's 1° per year (1996) and Yang & Song's pause since 2009 (2023) are shown together on purpose: the second revises the first.

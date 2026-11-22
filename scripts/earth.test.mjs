@@ -75,3 +75,15 @@ test('boundaries are picked only by their cross-section ring', () => {
       for (let i = 1; i < q.length; i += 3) assert.ok(Math.abs(q[i]) < 0.02, `${lv}/${p.id} y=${q[i]}`);
     }
 });
+
+test('no gap under oceanic crust: lithospheric mantle and Moho follow the crust above them', () => {
+  const KM = (d) => 1.6 * (1 - drawnDepth(d) / 6371), tol = 0.004;
+  const parts = buildEarth('undergrad');
+  const pts = (id) => parts.find((p) => p.id === id).instances.flatMap((i) => [...Array(i.cloud.n)].map((_, k) => i.cloud.p.slice(k * 3, k * 3 + 3)));
+  const r = ([x, y, z]) => Math.hypot(x, y, z), cont = ([x, , z]) => x > 0 && z < 0;
+  const lm = pts('lithospheric-mantle');
+  assert.ok(lm.some((p) => !cont(p) && Math.abs(r(p) - KM(7)) < tol), 'lithospheric mantle reaches the oceanic Moho');
+  assert.ok(!lm.some((p) => cont(p) && r(p) > KM(35) + tol), 'none of it inside continental crust');
+  const moho = pts('moho').filter((p) => Math.abs(p[1]) < 0.02 && Math.abs(p[0]) > 0.05 && Math.abs(p[2]) > 0.05);
+  assert.ok(moho.every((p) => Math.abs(r(p) - (cont(p) ? KM(35) : KM(7))) < tol), 'Moho ring at 7 km under oceans, 35 km under continents');
+});

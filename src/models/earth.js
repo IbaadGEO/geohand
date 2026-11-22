@@ -5,7 +5,7 @@ import { EARTH } from '../content/earth/index.js';
 // Crust: White et al. (1992) oceanic 7.1 km; continental drawn at ak135's 35 km (CRUST 5.1 averages 38 km). LLSVPs from Garnero et al. (2016); innermost inner core (radius ~300 km) from Ishii & Dziewoński (2002).
 export const GEOMETRY = {
   crust: [0, 35], 'continental-crust': [0, 35], 'oceanic-crust': [0, 7], // ak135 Moho 35 km; White et al. 7.1 km
-  lithosphere: [35, 80], 'lithospheric-mantle': [35, 80], // PREM lid base 80 km
+  lithosphere: [35, 80], 'lithospheric-mantle': [35, 80], // PREM lid base 80 km; under oceanic crust it starts at 7 km
   asthenosphere: [80, 220], // PREM low-velocity zone
   'upper-mantle': [220, 410], mantle: [220, 2891], // A-level mantle drawn from the asthenosphere down
   'transition-zone': [410, 660], 'lower-mantle': [660, 2891], 'd-double-prime': [2741, 2891], // ak135 410/660; PREM basal region
@@ -15,7 +15,7 @@ export const GEOMETRY = {
 
 const R = 1.6; // display radius
 const EARTH_KM = 6371;
-// The top 660 km is stretched so thin layers are visible; below that the scale is true. [real km, drawn km]
+// Depths above 660 km are redrawn so thin layers are visible; below 660 km the scale is within about 1% of true. [real km, drawn km]
 const STRETCH = [[0, 0], [7, 30], [35, 150], [100, 260], [410, 430], [660, 600], [EARTH_KM, EARTH_KM]];
 export function drawnDepth(km) {
   for (let i = 1; i < STRETCH.length; i++) {
@@ -75,7 +75,22 @@ function plates(rIn, n, which) {
   return out.map((c, j) => I(c, dir(which[j])));
 }
 
-const CONTINENTAL = [0, 3, 5]; // octants drawn as continental crust; the rest are oceanic
+// Continental crust is one wedge (x > 0, z < 0) through both hemispheres, so the cross-section matches top and bottom.
+const CONTINENTAL = [1, 3]; // octants drawn as continental crust; the rest are oceanic
+const continental = (x, z) => x > 0 && z < 0;
+
+/** Points in the continental wedge move from [rIn, rFrom] to [rIn, rTo], so a layer under oceanic crust starts lower there. */
+function underContinents(c, rIn, rFrom, rTo) {
+  const p = c.p;
+  for (let i = 0; i < p.length; i += 3) {
+    if (!continental(p[i], p[i + 2])) continue;
+    const r = Math.hypot(p[i], p[i + 1], p[i + 2]);
+    if (r <= rIn) continue;
+    const k = (rIn + ((r - rIn) * (rTo - rIn)) / (rFrom - rIn)) / r;
+    p[i] *= k; p[i + 1] *= k; p[i + 2] *= k;
+  }
+  return c;
+}
 const ALL = [0, 1, 2, 3, 4, 5, 6, 7];
 
 export function buildEarth(level = 'alevel') {
@@ -98,15 +113,19 @@ export function buildEarth(level = 'alevel') {
   shells.forEach((id, n) => {
     let [top, base] = GEOMETRY[id];
     if (id === 'lower-mantle' && ids.has('d-double-prime')) base = GEOMETRY['d-double-prime'][0];
+    // under oceanic crust the lithospheric mantle starts at the oceanic Moho (White et al. 7 km), not 35 km
+    const oceanTop = id === 'lithospheric-mantle' && ids.has('oceanic-crust');
+    if (oceanTop) top = GEOMETRY['oceanic-crust'][1];
     const rOut = KM(top), rIn = KM(base), vol = rOut ** 3 - rIn ** 3;
     const { top: t, bot: b } = halves(rIn, rOut, Math.round(1500 + vol * 900), Math.round(300 + (rOut ** 2 - rIn ** 2) * 220));
+    if (oceanTop) [t, b].forEach((c) => underContinents(c, rIn, rOut, KM(GEOMETRY['continental-crust'][1])));
     const lift = 1.35 - (n / Math.max(1, shells.length - 1)) * 1.0;
     lifts[id] = lift;
     parts.push(make(id, [I(t, [0, lift, 0], anchorAt((rIn + rOut) / 2, 20 + n * 47)), I(b, [0, -lift, 0])]));
   });
 
   if (ids.has('llsvp')) {
-    // Garnero et al. (2016) p. 481: two antipodal provinces covering ~30% of the CMB (a cap ~45° in radius each),
+    // Schematic cross-sections only: not the mapped shapes or locations. Garnero et al. (2016) p. 481: two antipodal provinces covering ~30% of the CMB (a cap ~45° in radius each),
     // reduced velocities up to 1,200 km above the CMB in places. Drawn on the cross-section, tallest at the centre.
     const rCmb = KM(GEOMETRY.cmb[0]), hMax = KM(GEOMETRY.cmb[0] - 1200) - rCmb, half = (45 * Math.PI) / 180;
     const blobs = [0, 180].map((deg) => {
@@ -135,9 +154,21 @@ export function buildEarth(level = 'alevel') {
   for (const id of ids) {
     if (meta[id].kind !== 'boundary') continue;
     const r = KM(GEOMETRY[id][0]);
+    const deg = 300 + parts.length * 9;
     // only the ring is pickable: the sparse surface would otherwise cover every part inside it on screen
+    if (id === 'moho' && ids.has('oceanic-crust')) {
+      // the Moho follows the crust drawn above it: 7 km under oceanic crust, 35 km under continental crust
+      const rO = KM(GEOMETRY['oceanic-crust'][1]), rC = KM(GEOMETRY['continental-crust'][1]);
+      const surf = ellipsoid(rO, rO, rO, Math.round(120 + rO * rO * 90));
+      const rim = ring(rO, 0, Math.round(90 + rO * 70));
+      [surf, rim].forEach((c) => underContinents(c, 0, rO, rC));
+      for (const a of [0, -Math.PI / 2]) for (let k = 0; k <= 12; k++) { const rr = rC + ((rO - rC) * k) / 12; rim.add(rr * Math.cos(a), 0, rr * Math.sin(a)); }
+      const ra = continental(Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)) ? rC : rO;
+      parts.push(make(id, [I(rim, [0, 0, 0], anchorAt(ra, deg)), { ...I(surf), pickable: false }], 'boundary', BOUNDARY));
+      continue;
+    }
     const surface = { ...I(ellipsoid(r, r, r, Math.round(120 + r * r * 90))), pickable: false };
-    parts.push(make(id, [I(ring(r, 0, Math.round(90 + r * 70)), [0, 0, 0], anchorAt(r, 300 + parts.length * 9)), surface], 'boundary', BOUNDARY));
+    parts.push(make(id, [I(ring(r, 0, Math.round(90 + r * 70)), [0, 0, 0], anchorAt(r, deg)), surface], 'boundary', BOUNDARY));
   }
   return parts;
 }

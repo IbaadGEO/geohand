@@ -53,3 +53,12 @@ test('formats a book', () =>
   assert.equal(formatRef({ authors: 'Lowrie, W., & Fichtner, A.', year: 2020, title: 'Fundamentals of Geophysics (3rd ed.)', container: 'Cambridge University Press', book: true, doi: '10.1017/9781108685917' }), 'Lowrie, W., & Fichtner, A. (2020). Fundamentals of Geophysics (3rd ed.). Cambridge University Press. https://doi.org/10.1017/9781108685917'));
 test('formats a reference with no issue', () =>
   assert.equal(formatRef(REFS.deuss2014), "Deuss, A. (2014). Heterogeneity and anisotropy of Earth's inner core. Annual Review of Earth and Planetary Sciences, 42, 103–126. https://doi.org/10.1146/annurev-earth-060313-054658"));
+
+import { shortRef } from '../src/ui/panel.js';
+test('short citations', () => {
+  assert.equal(shortRef(REFS.deuss2014), 'Deuss 2014');
+  assert.equal(shortRef(REFS.prem1981), 'Dziewonski & Anderson 1981');
+  assert.equal(shortRef(REFS.garnero2016), 'Garnero et al. 2016');
+  assert.equal(shortRef(REFS.ishii2002), 'Ishii & Dziewoński 2002');
+  for (const r of Object.values(REFS)) assert.doesNotMatch(shortRef(r), /^ |undefined|^\d/, r.authors);
+});

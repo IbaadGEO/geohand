@@ -8,7 +8,7 @@ import { LEVELS } from './content/levels.js';
 import { loadLevel, saveLevel, mapPart } from './levels.js';
 import { EARTH } from './content/earth/index.js';
 import { REFS } from './content/references.js';
-import { mountPanel, mountSearch } from './ui/panel.js';
+import { mountPanel, mountSearch, shortRef } from './ui/panel.js';
 import { searchBank } from './ui/search.js';
 import { openAsk } from './ui/ask.js';
 import { renderRich } from './ui/richText.js';
@@ -140,6 +140,7 @@ function enterStep() {
   showPart(i);
   $('lesson-count').textContent = `Step ${lesson.i + 1} of ${lesson.steps.length}`;
   renderRich($('lesson-text'), s.text);
+  $('lesson-src').textContent = s.refs?.length ? `Sources: ${s.refs.map((id) => shortRef(REFS[id])).join('; ')}` : '';
   $('lesson-back').disabled = lesson.i === 0;
   $('lesson-next').disabled = lesson.i === lesson.steps.length - 1;
 }

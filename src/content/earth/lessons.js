@@ -5,10 +5,10 @@ const say = (focus, explode, y, text, ...refs) => ({ focus, explode, view: { x: 
 
 export const LESSONS = {
   alevel: [
-    say('crust', 0, 0.6, 'Start at the surface. The crust is about 7 km thick under the oceans and about 40 km under the continents.', 'white1992', 'mooney1998'),
+    say('crust', 0, 0.6, 'Start at the surface. Normal ocean crust is about 7 km thick; continental crust averages about 40 km.', 'white1992', 'mooney1998'),
     say('moho', 0.5, 0.9, 'At the Moho, seismic waves speed up as they pass from crust into denser mantle rock.', 'prem1981'),
-    say('lithosphere', 0.6, 1.0, 'The crust and the top of the mantle together make the tectonic plates, about 80 km thick in PREM.', 'prem1981', 'garnero2016'),
-    say('mantle', 0.85, 1.2, 'The mantle is solid rock, but over geological time it convects, heated by the core below and by radioactive decay.', 'garnero2016'),
+    say('lithosphere', 0.6, 1.0, 'The crust and the top of the mantle together make the tectonic plates. This model takes their base from PREM’s seismic lid, at 80 km.', 'prem1981', 'garnero2016'),
+    say('mantle', 0.85, 1.2, 'Shear waves pass through the mantle, so it responds as a solid. Over geological time it convects, heated by the core below and by radioactive decay.', 'prem1981', 'garnero2016'),
     say('outer-core', 1, 1.5, 'At about 2,890 km, shear waves stop. The outer core is liquid iron, and its movement makes the magnetic field.', 'prem1981', 'song1996'),
     say('inner-core', 1, 1.8, 'At the centre is a solid iron ball about 1,220 km in radius, still growing as the liquid around it freezes.', 'song1996'),
   ],

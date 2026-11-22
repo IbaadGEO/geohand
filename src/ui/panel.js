@@ -10,6 +10,13 @@ export function formatRef(r) {
   return `${r.authors} (${r.year}). ${r.title}. ${where}${link}`;
 }
 
+/** Short in-text citation: "Deuss 2014", "Song & Richards 1996", "Garnero et al. 2016". */
+export function shortRef(r) {
+  const names = [...r.authors.matchAll(/([^,&]+), (?:[A-Z]\.[\s-]?)+/g)].map((m) => m[1].trim());
+  const who = names.length > 2 ? `${names[0]} et al.` : names.join(' & ');
+  return `${who} ${r.year}`;
+}
+
 const el = (tag, cls, text) => {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
@@ -53,7 +60,9 @@ export function mountPanel(root) {
       const table = el('table', 'nums');
       for (const n of part.numbers) {
         const tr = el('tr');
-        tr.append(el('td', '', n.label), el('td', '', `${n.value}${cite(n.refs)}`));
+        const val = el('td', '', `${n.value}${cite(n.refs)}`);
+        if (n.where) val.append(el('div', 'where', n.where));
+        tr.append(el('td', '', n.label), val);
         table.append(tr);
       }
       parts.push(table);
