@@ -107,7 +107,8 @@ export function mountSearch(slot, { find, levelLabel, currentLevel, onAsk }) {
   input.setAttribute('aria-label', 'Search the questions');
   input.maxLength = 500;
   const list = el('div', 'search-out');
-  slot.append(el('h4', '', "Don't get something?"), input, list);
+  const askHost = el('div', 'ask-host'); // separate from the results, so more typing in search keeps a half-written question
+  slot.append(el('h4', '', "Don't get something?"), input, list, askHost);
 
   input.addEventListener('input', () => {
     const query = input.value;
@@ -130,5 +131,5 @@ export function mountSearch(slot, { find, levelLabel, currentLevel, onAsk }) {
     }
     list.replaceChildren(...rows);
   });
-  return { input, list };
+  return { input, list, askHost };
 }

@@ -124,3 +124,10 @@ test('endpoint: errors reveal nothing internal', async () => {
   assert.equal(res.status, 500);
   assert.ok(!(await res.text()).includes('redis'));
 });
+
+// The page sends Referrer-Policy: no-referrer, under which a same-origin POST carries Origin: null.
+test('client asks the browser to send its real origin', async () => {
+  let init;
+  await sendQuestion(good, async (_u, i) => ((init = i), { status: 200 }));
+  assert.equal(init.referrerPolicy, 'same-origin');
+});

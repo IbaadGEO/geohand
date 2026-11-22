@@ -82,13 +82,17 @@ for (const cat of [...new Set(MODELS.map((m) => m.category))]) {
   chips.appendChild(grp);
 }
 
+// gesture state that holds part indices; cleared whenever the parts list is rebuilt (level switch)
+let grab = null;
+let lastHover = { i: -1, t: 0 };
+let dwell = { i: -1, t: 0 };
 const panel = mountPanel($('info'));
 mountSearch(panel.searchSlot, {
   find: (q) => searchBank(q, EARTH, level),
   levelLabel: (id) => LEVELS.find((l) => l.id === id).label,
   currentLevel: () => level,
   onAsk: (q) =>
-    openAsk(panel.searchSlot.querySelector('.search-out'), q, () => ({
+    openAsk(panel.searchSlot.querySelector('.ask-host'), q, () => ({
       level,
       model: 'earth',
       part: scene.sel >= 0 ? scene.parts[scene.sel].id : 'general',
@@ -100,6 +104,9 @@ scene.onModel = (i, def, g) => {
   $('m-cat').textContent = def.category;
   $('m-count').textContent = `${g.meta.length} parts`;
   chips.querySelectorAll('button').forEach((b) => b.classList.toggle('active', +b.dataset.i === i));
+  grab = null; // part indices from the old parts list no longer mean anything
+  lastHover = { i: -1, t: 0 };
+  dwell = { i: -1, t: 0 };
   const keep = pendingSel ? scene.parts.findIndex((p) => p.id === pendingSel) : -1;
   pendingSel = null;
   scene.setSel(keep);
@@ -280,9 +287,6 @@ function mapPoint(p) {
 
 // ------------------------------------------------------------------ gesture -> action
 let zoomRef = null;
-let grab = null;
-let lastHover = { i: -1, t: 0 };
-let dwell = { i: -1, t: 0 };
 let peaceCool = 0;
 let twoSince = -1;
 let twoActive = false;

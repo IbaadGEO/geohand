@@ -7,7 +7,8 @@ const MESSAGES = {
 
 export async function sendQuestion(payload, fetchImpl = fetch) {
   try {
-    const res = await fetchImpl('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    // the site sends Referrer-Policy: no-referrer, which would make a POST say Origin: null and be refused
+    const res = await fetchImpl('/api/ask', { method: 'POST', referrerPolicy: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if (res.status === 200) return { ok: true, message: MESSAGES.ok };
     return { ok: false, message: res.status === 429 ? MESSAGES.limited : MESSAGES.failed };
   } catch {
