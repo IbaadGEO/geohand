@@ -39,3 +39,12 @@ test('parent must exist at a lower level', () => assert.match(checkContent(orpha
 test('missing short or long text', () => assert.match(checkContent(noLong, refs, {}).errors[0], /long/));
 test('number without refs', () =>
   assert.match(checkContent(model([part('crust', { numbers: [{ label: 'D', value: '1', refs: [], where: '' }] })]), refs, {}).errors[0], /number "D"/));
+
+import { formatRef } from '../src/ui/panel.js';
+import { REFS } from '../src/content/references.js';
+test('formats a journal reference', () =>
+  assert.equal(formatRef(REFS.prem1981), 'Dziewonski, A. M., & Anderson, D. L. (1981). Preliminary reference Earth model. Physics of the Earth and Planetary Interiors, 25(4), 297–356. https://doi.org/10.1016/0031-9201(81)90046-7'));
+test('formats a book', () =>
+  assert.equal(formatRef(REFS.lowrie2020), 'Lowrie, W., & Fichtner, A. (2020). Fundamentals of Geophysics (3rd ed.). Cambridge University Press. https://doi.org/10.1017/9781108685917'));
+test('formats a reference with no issue', () =>
+  assert.equal(formatRef(REFS.fischer2010), 'Fischer, K. M., Ford, H. A., Abt, D. L., & Rychert, C. A. (2010). The lithosphere–asthenosphere boundary. Annual Review of Earth and Planetary Sciences, 38, 551–575. https://doi.org/10.1146/annurev-earth-040809-152438'));
