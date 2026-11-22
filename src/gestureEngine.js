@@ -15,6 +15,8 @@ const UP = 1.5, DOWN = 1.4;
 const PINCH_ON = 0.18, PINCH_OFF = 0.4, PINCH_FRAMES = 4;
 // point also counts when the index clearly outreaches the other fingers, even if it never passes UP (depth squash)
 const POINT_MIN = 1.25, POINT_MARGIN = 0.45;
+// a detection belongs to a tracked hand if its wrist is within this distance (fraction of the image) of where that hand was
+const MATCH_DIST = 0.25;
 
 class HandState {
   constructor() {
@@ -45,34 +47,47 @@ export class GestureEngine {
   constructor() {
     this.states = new Map();
     this.lastT = 0;
+    this.nextId = 0;
   }
   reset() {
     this.states.clear();
   }
 
   /**
-   * hands: [{ landmarks, score, label }]
+   * hands: [{ landmarks, world, score, label }] (label is ignored: it is unreliable frame to frame)
    * map:   raw camera landmark -> viewport-normalised {x,y} (mirroring + crop already applied)
    * aspect: video width / height
    */
   update(hands, t, map, aspect = 16 / 9) {
     const dt = clamp(t - this.lastT, 0.001, 0.1);
     this.lastT = t;
-    const items = hands.map((h) => ({ h, label: h.label }));
-    if (items.length === 2 && items[0].label === items[1].label) items[1].label = items[0].label === 'Left' ? 'Right' : 'Left';
-    const seen = new Set();
-    const out = [];
-    for (const { h, label } of items) {
-      seen.add(label);
-      let st = this.states.get(label);
-      if (!st) {
-        st = new HandState();
-        this.states.set(label, st);
+    // Hands are followed by position, not MediaPipe's Left/Right label: the label often flips for one hand,
+    // which used to restart its gesture and report a phantom second hand (two-hand zoom, dropped drags).
+    const pairs = [];
+    hands.forEach((h, i) => {
+      for (const [id, st] of this.states) {
+        const w = h.landmarks[0];
+        pairs.push([Math.hypot(w.x - st.wrist.x, w.y - st.wrist.y), i, id]);
       }
-      out.push(this._process(st, label, h, dt, map, aspect));
+    });
+    pairs.sort((a, b) => a[0] - b[0]);
+    const ids = new Array(hands.length), taken = new Set();
+    for (const [dist, i, id] of pairs) {
+      if (dist > MATCH_DIST || ids[i] || taken.has(id)) continue;
+      ids[i] = id;
+      taken.add(id);
     }
+    const out = [];
+    hands.forEach((h, i) => {
+      const id = ids[i] || `hand${++this.nextId}`;
+      taken.add(id);
+      if (!this.states.has(id)) this.states.set(id, new HandState());
+      const st = this.states.get(id);
+      st.wrist = { x: h.landmarks[0].x, y: h.landmarks[0].y };
+      out.push(this._process(st, id, h, dt, map, aspect));
+    });
     for (const [id, st] of [...this.states]) {
-      if (seen.has(id)) continue;
+      if (taken.has(id)) continue;
       st.missing++;
       if (st.missing > 6 || !st.last) this.states.delete(id);
       else out.push({ ...st.last, held: true, rollDelta: 0 });

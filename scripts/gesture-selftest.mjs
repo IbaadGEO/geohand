@@ -35,6 +35,8 @@ function pointAtCamera() {
 }
 
 const identity = (p) => ({ x: p.x, y: p.y });
+/** Same hand moved right by dx in the image (and in 3D). */
+const shifted = (h, dx) => ({ ...h, landmarks: h.landmarks.map((p) => ({ ...p, x: p.x + dx })), world: h.world.map((p) => ({ ...p, x: p.x + dx })) });
 const UP = 1.7, DOWN = 1.1;
 
 /** Feeds frames (each an array of hands) and returns the stable gesture of the first hand per frame. */
@@ -105,10 +107,33 @@ check('peace with loosely curled ring/pinky (1.38) -> PEACE', () => {
   assert.equal(gestures(run(repeat(12, hand([UP, UP, 1.38, 1.38])))).at(-1), 'PEACE');
 });
 check('second hand lost for one frame is still reported (held)', () => {
-  const a = hand([UP, UP, UP, UP]), b = { ...hand([UP, UP, UP, UP]), label: 'Left' };
+  const a = hand([UP, UP, UP, UP]), b = { ...shifted(hand([UP, UP, UP, UP]), 0.4), label: 'Left' };
   const out = run([[a, b], [a, b], [a, b], [a]]);
   assert.equal(out.at(-1).length, 2);
   assert.ok(out.at(-1).some((h) => h.held));
+});
+
+// MediaPipe often flips a hand's Left/Right label between frames; the hand must stay the same hand
+const flip = (h, k) => ({ ...h, label: k % 2 ? 'Left' : 'Right' });
+check('one hand whose label flips keeps its gesture (POINT)', () => {
+  const out = run(Array.from({ length: 20 }, (_, k) => [flip(hand([UP, DOWN, DOWN, DOWN]), k)]));
+  const seq = gestures(out).slice(4);
+  assert.ok(seq.every((g) => g === 'POINT'), seq.join(','));
+});
+check('one hand whose label flips is never reported as two', () => {
+  const out = run(Array.from({ length: 20 }, (_, k) => [flip(hand([UP, UP, UP, UP]), k)]));
+  assert.ok(out.every((hs) => hs.length === 1), out.map((hs) => hs.length).join(','));
+});
+check('pinch survives label flips (drag is not dropped)', () => {
+  const seq = gestures(run(Array.from({ length: 20 }, (_, k) => [flip(hand([UP, DOWN, DOWN, DOWN], 0.05), k)]))).slice(5);
+  assert.ok(seq.every((g) => g === 'PINCH'), seq.join(','));
+});
+check('two hands keep their own ids when their labels swap', () => {
+  const a = hand([UP, UP, UP, UP]), b = shifted(hand([DOWN, DOWN, DOWN, DOWN]), 0.4);
+  const out = run(Array.from({ length: 12 }, (_, k) => [flip(a, k), flip(b, k + 1)]));
+  const byPos = (hs) => [...hs].sort((p, q) => p.palm.x - q.palm.x).map((h) => h.id).join();
+  assert.equal(byPos(out.at(-1)), byPos(out[3]));
+  assert.deepEqual([...out.at(-1)].sort((p, q) => p.palm.x - q.palm.x).map((h) => h.gesture), ['OPEN', 'FIST']);
 });
 
 // Part selection: sticky hover
