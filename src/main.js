@@ -6,6 +6,9 @@ import { GestureEngine, HAND_CONNECTIONS } from './gestureEngine.js';
 import { clamp } from './utils.js';
 import { LEVELS } from './content/levels.js';
 import { loadLevel, saveLevel, mapPart } from './levels.js';
+import { EARTH } from './content/earth/index.js';
+import { REFS } from './content/references.js';
+import { mountPanel } from './ui/panel.js';
 
 const $ = (id) => document.getElementById(id);
 const video = $('video');
@@ -73,6 +76,7 @@ for (const cat of [...new Set(MODELS.map((m) => m.category))]) {
   chips.appendChild(grp);
 }
 
+const panel = mountPanel($('info'));
 scene.onModel = (i, def, g) => {
   $('m-name').textContent = def.name;
   $('m-sub').textContent = def.subtitle;
@@ -118,9 +122,7 @@ function setLevel(id) {
 
 function showPart(i) {
   const p = i >= 0 ? scene.parts[i] : null;
-  $('pc-name').textContent = p ? p.name : 'No part selected';
-  $('pc-desc').textContent = p ? p.desc : 'Point at a part, or click one, to read what it does.';
-  $('pc-dot').style.background = p ? p.color : '#555a70';
+  panel.show(p ? EARTH[level].parts.find((c) => c.id === p.id) || null : null, REFS, p?.color);
 }
 
 const rExplode = $('r-explode');

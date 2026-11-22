@@ -35,8 +35,8 @@
       <div class="slider"><label>Explode intensity <b id="v-int">100%</b></label><input id="r-int" type="range" min="30" max="150" value="100" /></div>
     </section>
 
-    <section class="gest">
-      <h4>Gestures</h4>
+    <details class="gest">
+      <summary><h4>Gestures</h4></summary>
       <ul id="gest">
         <li data-g="OPEN"><i>✋</i><p><b>Open slowly</b><span>explode it, see inside</span></p></li>
         <li data-g="FIST"><i>✊</i><p><b>Close your hand</b><span>pull it back together</span></p></li>
@@ -46,12 +46,9 @@
         <li data-g="TWO"><i>🙌</i><p><b>Two hands</b><span>apart or together to zoom</span></p></li>
         <li data-g="PEACE"><i>✌️</i><p><b>Peace</b><span>jump to the next model</span></p></li>
       </ul>
-    </section>
+    </details>
 
-    <section class="partcard" id="partcard">
-      <div class="pc-name"><i id="pc-dot"></i><b id="pc-name">No part selected</b></div>
-      <p id="pc-desc">Point at a part, or click one, to read what it does.</p>
-    </section>
+    <section class="info" id="info" aria-live="polite"></section>
 
     <section class="btns">
       <button id="b-explode">Explode</button>
