@@ -2,8 +2,9 @@
 import { checkContent } from '../src/content/check.js';
 import { EARTH } from '../src/content/earth/index.js';
 import { REFS } from '../src/content/references.js';
+import { LESSONS } from '../src/content/earth/lessons.js';
 
-const { errors, warnings } = checkContent(EARTH, REFS, { release: process.argv.includes('--release') });
+const { errors, warnings } = checkContent(EARTH, REFS, { release: process.argv.includes('--release') }, LESSONS);
 for (const w of warnings) console.warn('warning:', w);
 for (const e of errors) console.error('error:', e);
 console.log(`content: ${errors.length} errors, ${warnings.length} warnings`);

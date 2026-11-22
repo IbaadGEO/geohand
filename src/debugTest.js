@@ -22,7 +22,7 @@ const median = (a) => {
   return s.length ? +s[s.length >> 1].toFixed(2) : null;
 };
 
-/** get() returns { gesture, hover, sel, grabbed, model, parts, hands, tracking } from main.js */
+/** get() returns { gesture, hover, sel, grabbed, model, level, peaceCount, parts, hands, tracking } from main.js */
 export function mount(get) {
   const panel = document.createElement('div');
   css(panel, { position: 'fixed', right: '16px', bottom: '72px', zIndex: 9999, maxWidth: 'min(560px, calc(100vw - 32px))', maxHeight: '60vh', overflow: 'auto', padding: '12px 14px', borderRadius: '12px', background: 'rgba(12,12,22,0.92)', color: '#eee', font: '13px ui-sans-serif, system-ui, sans-serif' });
@@ -75,7 +75,7 @@ function run(get, cue, done) {
     const tin = t - (a - step.s);
     cue.textContent = `${step.say}  ${Math.ceil(step.s - tin)}`;
     const g = get();
-    samples.push({ step: step.id, tin, gesture: g.gesture, hover: g.hover, sel: g.sel, grabbed: g.grabbed, model: g.model, hands: g.hands.length, m: g.hands[0]?.metrics, part: (i) => g.parts[i]?.name });
+    samples.push({ step: step.id, tin, gesture: g.gesture, hover: g.hover, sel: g.sel, grabbed: g.grabbed, model: g.model, peaceCount: g.peaceCount, hands: g.hands.length, m: g.hands[0]?.metrics, part: (i) => g.parts[i]?.name });
     requestAnimationFrame(tick);
   };
   tick();
@@ -83,7 +83,7 @@ function run(get, cue, done) {
 
 function report(samples) {
   const out = { when: new Date().toISOString(), steps: {} };
-  samples.forEach((s, k) => (s.prevModel = k ? samples[k - 1].model : s.model)); // so a switch on a step's first frame counts
+  samples.forEach((s, k) => (s.prevPeace = k ? samples[k - 1].peaceCount : s.peaceCount)); // so a fire on a step's first frame counts
   let aimed = -1, aimedName = null;
   for (const st of STEPS) {
     const rows = samples.filter((s) => s.step === st.id);
@@ -118,7 +118,7 @@ function report(samples) {
       r.grabbed = g ? g.part(g.grabbed) : null;
       r.grabbedAimedPart = g ? g.grabbed === aimed : false;
     }
-    if (st.id === 'PEACE') r.modelSwitches = rows.filter((s) => s.model !== s.prevModel).length;
+    if (st.id === 'PEACE') r.peaceFired = rows.reduce((n, s) => n + (s.peaceCount - s.prevPeace), 0);
     out.steps[st.id] = r;
   }
   return out;
@@ -129,7 +129,7 @@ function verdict(id, r) {
   if (id === 'RELAX') return r.falsePct <= 10;
   if (id === 'AIM') return r.recognisedPct >= 80 && r.hoverFlipsPerS <= 0.5 && r.locked;
   if (id === 'PINCH') return r.recognisedPct >= 80 && r.grabbedAimedPart;
-  if (id === 'PEACE') return r.recognisedPct >= 80 && r.modelSwitches === 1;
+  if (id === 'PEACE') return r.recognisedPct >= 80 && r.peaceFired === 1;
   return r.recognisedPct >= 80;
 }
 
@@ -140,11 +140,11 @@ function table(res) {
     if (r.hoverFlipsPerS != null) notes.push(`hover flips ${r.hoverFlipsPerS}/s`);
     if (r.aimedAt !== undefined) notes.push(`aimed: ${r.aimedAt ?? 'none'}${r.locked ? ' (locked)' : ''}`);
     if (r.grabbed !== undefined) notes.push(`grabbed: ${r.grabbed ?? 'none'}${r.grabbedAimedPart ? ' = aimed' : ''}`);
-    if (r.modelSwitches != null) notes.push(`model switches ${r.modelSwitches}`);
+    if (r.peaceFired != null) notes.push(`peace fired ${r.peaceFired}`);
     const other = Object.entries(r.seen).filter(([g]) => !(STEPS.find((s) => s.id === id).ok || []).includes(g)).sort((a, b) => b[1] - a[1]).slice(0, 2);
     if (other.length) notes.push('else: ' + other.map(([g, p]) => `${g} ${p}%`).join(', '));
     const score = r.falsePct != null ? `${r.falsePct}% false` : `${r.recognisedPct}%`;
     return `<tr><td>${verdict(id, r) ? '✅' : '❌'} ${id}</td><td>${score}</td><td>${r.firstHitS ?? ''}</td><td>${esc(notes.join(' · '))}</td></tr>`;
   });
-  return `<table style="border-collapse:collapse;width:100%"><tr style="text-align:left;opacity:.7"><th>Step</th><th>Score</th><th>1st hit s</th><th>Notes</th></tr>${rows.join('')}</table><div style="opacity:.6;margin-top:6px">Targets are suggestions: ≥80% recognised, ≤10% false on a relaxed hand, ≤0.5 hover flips/s, pinch grabs the aimed part, one model switch per peace.</div>`;
+  return `<table style="border-collapse:collapse;width:100%"><tr style="text-align:left;opacity:.7"><th>Step</th><th>Score</th><th>1st hit s</th><th>Notes</th></tr>${rows.join('')}</table><div style="opacity:.6;margin-top:6px">Targets are suggestions: ≥80% recognised, ≤10% false on a relaxed hand, ≤0.5 hover flips/s, pinch grabs the aimed part, one peace trigger per peace.</div>`;
 }

@@ -10,6 +10,9 @@ import { EARTH } from './content/earth/index.js';
 import { REFS } from './content/references.js';
 import { mountPanel, mountSearch } from './ui/panel.js';
 import { searchBank } from './ui/search.js';
+import { renderRich } from './ui/richText.js';
+import { Lesson } from './lesson.js';
+import { LESSONS } from './content/earth/lessons.js';
 
 const $ = (id) => document.getElementById(id);
 const video = $('video');
@@ -44,6 +47,7 @@ function toast(msg) {
 
 // ------------------------------------------------------------------ scene + UI
 let level = loadLevel() || 'alevel';
+let mode = 'explore'; // or 'lesson'
 let pendingSel = null; // part id to select once a level rebuild finishes
 let scene;
 try {
@@ -93,6 +97,7 @@ scene.onModel = (i, def, g) => {
   pendingSel = null;
   scene.setSel(keep);
   showPart(keep);
+  if (mode === 'lesson') enterStep();
   toast(def.name);
 };
 // initial UI for model 0 (constructor loaded it before the callback existed)
@@ -114,6 +119,40 @@ for (const host of [$('levels'), $('start-levels')]) {
 const markLevel = () => levelButtons.forEach((b) => b.classList.toggle('on', b.dataset.level === level));
 markLevel();
 
+// ------------------------------------------------------------------ lessons
+let lesson = new Lesson(LESSONS[level]);
+let viewTarget = null; // eased camera angle for the current lesson step
+let peaceCount = 0; // still-peace triggers, read by the ?debug test
+
+function setMode(m) {
+  mode = m;
+  $('mode-explore').classList.toggle('on', m === 'explore');
+  $('mode-lesson').classList.toggle('on', m === 'lesson');
+  $('lesson-box').hidden = m !== 'lesson';
+  if (m === 'lesson') enterStep();
+  else viewTarget = null;
+}
+function enterStep() {
+  const s = lesson.step;
+  if (!s) return;
+  scene.explodeTarget = s.explode;
+  scene.autoSpin = false;
+  $('b-spin').classList.remove('on');
+  viewTarget = s.view;
+  const i = scene.parts.findIndex((p) => p.id === s.focus);
+  scene.setSel(i);
+  showPart(i);
+  $('lesson-count').textContent = `Step ${lesson.i + 1} of ${lesson.steps.length}`;
+  renderRich($('lesson-text'), s.text);
+  $('lesson-back').disabled = lesson.i === 0;
+  $('lesson-next').disabled = lesson.i === lesson.steps.length - 1;
+}
+const lessonMove = (forward) => (forward ? lesson.next() : lesson.back()) && enterStep();
+$('mode-explore').onclick = () => setMode('explore');
+$('mode-lesson').onclick = () => setMode('lesson');
+$('lesson-back').onclick = () => lessonMove(false);
+$('lesson-next').onclick = () => lessonMove(true);
+
 function setLevel(id) {
   if (id === level) return;
   const selId = scene.sel >= 0 ? scene.parts[scene.sel]?.id : null;
@@ -121,6 +160,8 @@ function setLevel(id) {
   level = id;
   saveLevel(id);
   grab = null; // a grabbed part may not exist at the new level
+  lesson = new Lesson(LESSONS[id]);
+  lesson.jumpToPart(pendingSel);
   scene.reload(scene.index, id);
   markLevel();
   toast(LEVELS.find((l) => l.id === id).label);
@@ -356,7 +397,9 @@ function control(t, dt) {
       if (peaceArmed && peaceStill >= PEACE_STILL_S && t > peaceCool) {
         peaceArmed = false;
         peaceCool = t + 1.6;
-        scene.next();
+        peaceCount++;
+        if (mode === 'lesson') lessonMove(true);
+        else if (MODELS.length > 1) scene.next();
       }
     }
     setActive(g);
@@ -402,8 +445,8 @@ addEventListener('keydown', (e) => {
   if (e.key === ' ') {
     e.preventDefault();
     scene.explodeTarget = scene.explodeTarget > 0.5 ? 0 : 1;
-  } else if (e.key === 'ArrowRight') scene.next(1);
-  else if (e.key === 'ArrowLeft') scene.next(-1);
+  } else if (e.key === 'ArrowRight') mode === 'lesson' ? lessonMove(true) : scene.next(1);
+  else if (e.key === 'ArrowLeft') mode === 'lesson' ? lessonMove(false) : scene.next(-1);
   else if (e.key.toLowerCase() === 'r') scene.resetView();
   else if (e.key >= '1' && e.key <= String(MODELS.length)) scene.setModel(+e.key - 1);
 });
@@ -592,6 +635,13 @@ function frame(now) {
     perc = engine.update(hands, t, mapPoint, (video.videoWidth || 16) / (video.videoHeight || 9));
   }
   control(t, dt);
+  if (viewTarget && !scene.holdVel) {
+    // ease toward the lesson step's view; a hand or mouse steering the model takes over
+    const k = Math.min(1, dt * 3);
+    for (const a of ['x', 'y', 'z']) scene.rot[a] += (viewTarget[a] - scene.rot[a]) * k;
+    scene.vel.x = scene.vel.y = 0;
+    if (['x', 'y', 'z'].every((a) => Math.abs(viewTarget[a] - scene.rot[a]) < 0.01)) viewTarget = null;
+  }
 
   if (!draggingExplode) rExplode.value = Math.round(clamp(scene.explode, 0, 1) * 100);
   $('v-explode').textContent = Math.round(clamp(scene.explode, 0, 1) * 100) + '%';
@@ -613,6 +663,7 @@ if (new URLSearchParams(location.search).has('debug')) {
       grabbed: grab ? grab.part : -1,
       model: scene.index,
       level,
+      peaceCount,
       parts: scene.parts,
       hands: perc.hands.filter((h) => !h.held).sort((a, b) => (b.id === primaryId) - (a.id === primaryId)),
       tracking: trackingState,

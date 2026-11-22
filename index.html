@@ -44,9 +44,20 @@
         <li data-g="POINT"><i>☝️</i><p><b>Point up</b><span>move your fingertip over a part</span></p></li>
         <li data-g="PINCH"><i>🤏</i><p><b>Pinch</b><span>grab the highlighted part, drag it</span></p></li>
         <li data-g="TWO"><i>🙌</i><p><b>Two hands</b><span>apart or together to zoom</span></p></li>
-        <li data-g="PEACE"><i>✌️</i><p><b>Peace</b><span>jump to the next model</span></p></li>
+        <li data-g="PEACE"><i>✌️</i><p><b>Peace</b><span>held still: next lesson step</span></p></li>
       </ul>
     </details>
+
+    <section class="mode">
+      <div class="levels" role="group" aria-label="Mode">
+        <button type="button" id="mode-explore" class="on">Explore</button>
+        <button type="button" id="mode-lesson">Lesson</button>
+      </div>
+      <div id="lesson-box" hidden>
+        <div class="lesson-head"><b id="lesson-count"></b><span><button type="button" id="lesson-back">Back</button><button type="button" id="lesson-next">Next</button></span></div>
+        <p id="lesson-text"></p>
+      </div>
+    </section>
 
     <section class="info" id="info" aria-live="polite"></section>
 
