@@ -124,6 +124,19 @@ Section 4 was checked on 2026-11-22 against the text of the owner's PDFs. Lay et
 
 Section 5 was checked on 2026-11-22 against the text of the owner's PDFs. The Song & Richards PDF has a font that the usual text extractor cannot read, so its text was taken with a second extractor (pdfminer). Song & Richards's 1° per year (1996) and Yang & Song's pause since 2009 (2023) are shown together on purpose: the second revises the first.
 
-## What these papers don't cover yet
+## 22. Deuss (2014)
 
-- **Still to come:** the base of the lithosphere (Fischer et al. 2010, #9); transition-zone mineralogy (Frost 2008, #11); slab tomography (Grand 2002, #14); post-perovskite and the lower mantle (Murakami et al. 2004, #17; Garnero & McNamara 2008, #18); core composition, temperature and inner-core structure (Hirose et al. 2013, #20; Anzellini et al. 2013, #21; Deuss 2014, #22); and the three textbooks (Lowrie & Fichtner, e-reader only; Turcotte & Schubert; Stacey & Davis).
+Checked against the publisher version in the Utrecht University repository (dspace.library.uu.nl/handle/1874/307029).
+
+- [x] Abstract, p. 103: polar direction faster than equatorial; top 60–80 km isotropic; evidence for an innermost inner core less compelling; western hemisphere more anisotropic, slower and less attenuating
+- [x] p. 108: 3–4% anisotropy down to the centre; isotropic layer 50–80 km
+- [x] p. 111: innermost inner core reported at 300–500 km radius, but "not compelling"; no reflection found; may be an artefact of averaging over the hemispheres (Lythgoe et al. 2013)
+- [x] p. 112: western hemisphere about 1.5% slower in the top 100 km
+- [x] p. 113: west up to 5% anisotropy below the isotropic layer; east less than 0.7%
+- [x] p. 115: body-wave rotation rates fell from 1–3° per year to under 0.5° per year; some studies find none; Waszek et al. (2011) 0.1–1° per million years
+
+Deuss doubts the innermost inner core that Ishii & Dziewoński (2002) proposed. The postgrad panel shows both sides rather than dropping the part.
+
+## Not used
+
+These could not be obtained, so they were removed from the app and nothing cites them: Fischer et al. 2010 (#9), Frost 2008 (#11), Grand 2002 (#14), Murakami et al. 2004 (#17), Garnero & McNamara 2008 (#18), Hirose et al. 2013 (#20), Anzellini et al. 2013 (#21; the Valencia repository copy is restricted and HAL has only a record), and the three textbooks (Lowrie & Fichtner, Turcotte & Schubert, Stacey & Davis).

@@ -17,6 +17,7 @@ const LA = (where) => ({ refs: ['lay1998'], where }); // Lay, Williams & Garnero
 const SR = (where = 'p. 221') => ({ refs: ['song1996'], where }); // Song & Richards (1996)
 const YS = (where = 'Abstract, p. 182') => ({ refs: ['yang2023'], where }); // Yang & Song (2023)
 const ID = (where = 'Abstract, p. 14026') => ({ refs: ['ishii2002'], where }); // Ishii & Dziewoński (2002)
+const DE = (where = 'Abstract, p. 103') => ({ refs: ['deuss2014'], where }); // Deuss (2014), review
 
 const n = (label, value, src) => ({ label, value, ...src });
 
@@ -100,6 +101,7 @@ export const NUMBERS = {
       n('Density', '12.76–13.09 g/cm^3^', PREM()),
       n('Size', 'radius about 1,220 km; less than 1% of Earth’s volume', { refs: ['song1996', 'ishii2002'], where: 'Song & Richards p. 221; Ishii & Dziewoński p. 14026' }),
       n('Rotation', 'reported in 1996 as about 1° per year faster than the mantle; since about 2009 it seems to have paused, part of a roughly 70-year oscillation', { refs: ['song1996', 'yang2023'], where: 'Song & Richards p. 221; Yang & Song pp. 182, 184' }),
+      n('Structure', 'seismic waves travel faster pole to pole than across the equator, and the western half differs from the eastern', DE()),
     ],
     moho: [
       n('Depth', '38 km under continents, 12.6 km below sea level under oceans (CRUST 5.1)', CR('Section 8, p. 735')),
@@ -178,11 +180,15 @@ export const NUMBERS = {
       n('Super-rotation (Song & Richards)', 'BC−DF times on South Sandwich Islands–Alaska (COL) paths rose about 0.3 s over 1967–95; best fit 1.1° per year faster than the mantle', SR('pp. 222–223')),
       n('Recent pause (Yang & Song)', 'overturn in late 2009 (95% CI 2009.0–2011.0); about a seven-decade oscillation with another turning point in the early 1970s, matching length-of-day and magnetic-field changes', YS('pp. 182, 184')),
       n('Anisotropy of the bulk inner core', 'slowest P-wave direction is east–west', ID()),
+      n('Anisotropy (Deuss review)', 'polar direction fast, equatorial slow: 3–4% in the deeper inner core; the top 60–80 km is isotropic', DE('Abstract, p. 103; p. 108')),
+      n('Hemispheres', 'west: up to 5% anisotropy below the isotropic layer and about 1.5% slower in the top 100 km; east: less than 0.7% anisotropy and more strongly attenuating', DE('pp. 112–113')),
+      n('Rotation estimates over time', 'body-wave rates fell from 1–3° per year (1996) to under 0.5° per year, and some studies find none; frozen-in hemisphere boundaries give 0.1–1° per million years', DE('p. 115')),
     ],
     'innermost-inner-core': [
       n('Radius', 'about 300 km', ID()),
       n('Anisotropy', 'slowest direction about 45° from east–west, against east–west in the inner core above', ID()),
       n('Meaning', 'may be fossil evidence of an early stage of inner-core growth', ID()),
+      n('Debate', 'not compelling, says Deuss (2014): no reflection from its top has been found, and it may be an artefact of averaging the two hemispheres', DE('p. 111')),
     ],
     moho: [
       n('Mean depth below sea level (CRUST 5.1)', '21.8 km global, 38.0 km continents, 12.6 km oceans (with 4.0 km of water)', CR('Section 8, p. 735')),
