@@ -128,7 +128,7 @@ export function buildEarth(level = 'alevel') {
   for (const id of ids) {
     if (meta[id].kind !== 'boundary') continue;
     const r = KM(GEOMETRY[id][0]);
-    const c = ellipsoid(r, r, r, Math.round(250 + r * r * 220)).merge(ring(r, 0, Math.round(200 + r * 180)));
+    const c = ellipsoid(r, r, r, Math.round(120 + r * r * 90)).merge(ring(r, 0, Math.round(90 + r * 70)));
     parts.push(make(id, [I(c, [0, 0, 0], anchorAt(r, 300 + parts.length * 9))], 'boundary', BOUNDARY));
   }
   return parts;

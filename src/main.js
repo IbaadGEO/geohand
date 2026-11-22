@@ -4,6 +4,8 @@ import { MODELS } from './models/index.js';
 import { HandTracker } from './handTracking.js';
 import { GestureEngine, HAND_CONNECTIONS } from './gestureEngine.js';
 import { clamp } from './utils.js';
+import { LEVELS } from './content/levels.js';
+import { loadLevel, saveLevel, mapPart } from './levels.js';
 
 const $ = (id) => document.getElementById(id);
 const video = $('video');
@@ -37,9 +39,11 @@ function toast(msg) {
 }
 
 // ------------------------------------------------------------------ scene + UI
+let level = loadLevel() || 'alevel';
+let pendingSel = null; // part id to select once a level rebuild finishes
 let scene;
 try {
-  scene = new HoloScene($('scene'), MODELS);
+  scene = new HoloScene($('scene'), MODELS, level);
 } catch (e) {
   console.error(e);
   showBanner('WebGL is not available. Use a current Chrome, Edge or Firefox with hardware acceleration on.');
@@ -75,11 +79,42 @@ scene.onModel = (i, def, g) => {
   $('m-cat').textContent = def.category;
   $('m-count').textContent = `${g.meta.length} parts`;
   chips.querySelectorAll('button').forEach((b) => b.classList.toggle('active', +b.dataset.i === i));
-  showPart(-1);
+  const keep = pendingSel ? scene.parts.findIndex((p) => p.id === pendingSel) : -1;
+  pendingSel = null;
+  scene.setSel(keep);
+  showPart(keep);
   toast(def.name);
 };
 // initial UI for model 0 (constructor loaded it before the callback existed)
 scene.onModel(scene.index, MODELS[scene.index], scene.cache.get(scene.index));
+
+// level picker: same buttons in the panel header and on the start screen
+const levelButtons = [];
+for (const host of [$('levels'), $('start-levels')]) {
+  for (const l of LEVELS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = l.label;
+    b.dataset.level = l.id;
+    b.onclick = () => setLevel(l.id);
+    host.appendChild(b);
+    levelButtons.push(b);
+  }
+}
+const markLevel = () => levelButtons.forEach((b) => b.classList.toggle('on', b.dataset.level === level));
+markLevel();
+
+function setLevel(id) {
+  if (id === level) return;
+  const selId = scene.sel >= 0 ? scene.parts[scene.sel]?.id : null;
+  pendingSel = mapPart(selId, level, id);
+  level = id;
+  saveLevel(id);
+  grab = null; // a grabbed part may not exist at the new level
+  scene.reload(scene.index, id);
+  markLevel();
+  toast(LEVELS.find((l) => l.id === id).label);
+}
 
 function showPart(i) {
   const p = i >= 0 ? scene.parts[i] : null;
@@ -568,6 +603,7 @@ if (new URLSearchParams(location.search).has('debug')) {
       sel: scene.sel,
       grabbed: grab ? grab.part : -1,
       model: scene.index,
+      level,
       parts: scene.parts,
       hands: perc.hands.filter((h) => !h.held).sort((a, b) => (b.id === primaryId) - (a.id === primaryId)),
       tracking: trackingState,

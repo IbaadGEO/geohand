@@ -67,8 +67,9 @@ function hexRgb(hex) {
 }
 
 export class HoloScene {
-  constructor(canvas, models) {
+  constructor(canvas, models, buildArg) {
     this.models = models;
+    this.buildArg = buildArg; // passed to every model's build(), e.g. the level
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
     this.renderer.setClearColor(0x000000, 0);
     this.camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
@@ -149,7 +150,7 @@ export class HoloScene {
   _geometry(i) {
     if (this.cache.has(i)) return this.cache.get(i);
     const def = this.models[i];
-    const parts = def.build();
+    const parts = def.build(this.buildArg);
     if (parts.length > MAXP) throw new Error(`${def.name} has ${parts.length} parts; the shader supports at most ${MAXP}`);
     let total = 0;
     for (const p of parts) for (const inst of p.instances) total += inst.cloud.n;
@@ -235,11 +236,14 @@ export class HoloScene {
     this.uniforms.uHi.value = -1;
     this.uniforms.uSel.value = -1;
     this.releaseAll(true);
-    const v = this.models[i].view;
-    this.rot.x = v.x;
-    this.rot.y = v.y;
-    this.rot.z = v.z;
-    this.vel.x = this.vel.y = 0;
+    if (!this.keepView) {
+      const v = this.models[i].view;
+      this.rot.x = v.x;
+      this.rot.y = v.y;
+      this.rot.z = v.z;
+      this.vel.x = this.vel.y = 0;
+    }
+    this.keepView = false;
     this.scatterTarget = 0;
     if (this.onModel) this.onModel(i, this.models[i], g);
   }
@@ -248,6 +252,15 @@ export class HoloScene {
     const n = this.models.length;
     i = ((i % n) + n) % n;
     if (i === this.index && this.pending < 0) return;
+    this.pending = i;
+    this.scatterTarget = 1;
+  }
+  /** Rebuild model i with a new build argument (e.g. level), keeping view, zoom and explode. onModel fires when done. */
+  reload(i, buildArg) {
+    this.releaseAll(false);
+    this.buildArg = buildArg;
+    this.cache.clear();
+    this.keepView = true;
     this.pending = i;
     this.scatterTarget = 1;
   }
