@@ -1,5 +1,5 @@
 // Raw MediaPipe landmarks -> stable per-hand state: gesture, openness (0 fist .. 1 open palm),
-// smoothed palm / fingertip / pinch positions in viewport space, and wrist roll.
+// smoothed palm and fingertip positions in viewport space, and wrist roll.
 import { clamp, angleDelta } from './utils.js';
 
 export const HAND_CONNECTIONS = [
@@ -10,9 +10,6 @@ export const HAND_CONNECTIONS = [
 const FINGERS = [[8, 5], [12, 9], [16, 13], [20, 17]]; // [tip, mcp] for index, middle, ring, pinky
 // finger hysteresis: becomes extended above UP, curled below DOWN, otherwise keeps its last state
 const UP = 1.5, DOWN = 1.4;
-// pinch: thumb-index gap in hand sizes to start / end, and frames it must hold
-// ON is tight because pointing at the camera squashes depth and puts the thumb ~0.25 from the index tip (real pinch ~0.13)
-const PINCH_ON = 0.18, PINCH_OFF = 0.4, PINCH_FRAMES = 4;
 // point also counts when the index clearly outreaches the other fingers, even if it never passes UP (depth squash)
 const POINT_MIN = 1.25, POINT_MARGIN = 0.45;
 // a detection belongs to a tracked hand if its wrist is within this distance (fraction of the image) of where that hand was
@@ -23,11 +20,9 @@ class HandState {
     this.stable = 'NONE';
     this.cand = 'NONE';
     this.streak = 0;
-    this.pinching = false;
     this.ext = null; // per-finger extended state, null until first frame
     this.palm = null;
     this.tip = null;
-    this.pp = null;
     this.lastRoll = null;
     this.rollSm = 0;
     this.open = 0.5;
@@ -114,15 +109,9 @@ export class GestureEngine {
     const rawOpen = clamp((avg - 1.05) / (1.8 - 1.05), 0, 1);
     st.open += (rawOpen - st.open) * 0.45;
 
-    // pinch with hysteresis
-    const pr = d(4, 8) / size;
-    const canPinch = d(8, 0) / Math.max(1e-4, d(6, 0)) > 0.88;
-    if (!st.pinching && pr < PINCH_ON && canPinch) st.pinching = true;
-    else if (st.pinching && (pr > PINCH_OFF || !canPinch)) st.pinching = false;
-
+    // pinch is not a gesture: on camera it is too close to pointing (2026-11-22 recordings)
     let g = 'NONE';
-    if (st.pinching) g = 'PINCH';
-    else if (ext[0] && ext[1] && ext[2] && ext[3]) g = 'OPEN';
+    if (ext[0] && ext[1] && ext[2] && ext[3]) g = 'OPEN';
     else if (ext[0] && ext[1] && curl[2] && curl[3]) g = 'PEACE';
     else if ((ext[0] || (ratios[0] > POINT_MIN && ratios[0] - Math.max(ratios[1], ratios[2], ratios[3]) > POINT_MARGIN)) && curl[1] && curl[2] && curl[3]) g = 'POINT';
     else if (curl[0] && curl[1] && curl[2] && curl[3]) g = 'FIST';
@@ -132,7 +121,7 @@ export class GestureEngine {
       st.cand = g;
       st.streak = 1;
     }
-    const need = g === 'PINCH' ? PINCH_FRAMES : g === 'PEACE' ? 8 : 3;
+    const need = g === 'PEACE' ? 8 : 3;
     if (st.streak >= need && st.stable !== st.cand) st.stable = st.cand;
 
     // viewport-space positions
@@ -143,7 +132,6 @@ export class GestureEngine {
     });
     st.palm = smooth(st.palm, avgPts([0, 5, 9, 13, 17]), dt);
     st.tip = smooth(st.tip, M[8], dt);
-    st.pp = smooth(st.pp, avgPts([4, 8]), dt);
 
     // wrist roll (twist)
     const rawRoll = Math.atan2(L[9].x - L[0].x, -(L[9].y - L[0].y));
@@ -161,11 +149,9 @@ export class GestureEngine {
       lm: M,
       palm: { ...st.palm },
       tip: { ...st.tip },
-      pinchPt: { ...st.pp },
       openness: st.open,
-      pinching: st.pinching,
       rollDelta,
-      metrics: { ratios, pinchGap: pr }, // raw shape numbers, shown by the ?debug test
+      metrics: { ratios, thumbGap: d(4, 8) / size }, // raw shape numbers, recorded by the ?debug test
     };
     return st.last;
   }

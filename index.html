@@ -18,18 +18,44 @@
     </div>
 
     <section class="levels" id="levels" aria-label="Level"></section>
+    <button type="button" id="tour-play">▶ Play the tour <span>automatic, no hands or mouse needed</span></button>
 
     <section class="mode">
       <div class="levels" role="group" aria-label="Mode">
         <button type="button" id="mode-explore" class="on">Explore</button>
         <button type="button" id="mode-lesson">Lesson</button>
       </div>
+      <p id="lesson-availability" hidden>Guided lesson available at A-level. Explore the cited data at this level.</p>
       <div id="lesson-box" hidden>
         <div class="lesson-head"><b id="lesson-count"></b><span><button type="button" id="lesson-back">Back</button><button type="button" id="lesson-next">Next</button></span></div>
+        <button type="button" id="lesson-play" aria-pressed="false">Play walkthrough</button>
         <p id="lesson-text"></p>
+        <div id="lesson-activity" hidden></div>
         <p id="lesson-src"></p>
+        <button type="button" id="lesson-finish" hidden>Finish and explore</button>
       </div>
     </section>
+
+    <section class="gest" aria-label="Hand controls">
+      <h4>Hand controls <span>Hold still until the ring fills</span></h4>
+      <ul id="gest">
+        <li data-g="MOVE"><i>✋</i><p><b>Open hand, move</b><span>Turn the Earth</span></p></li>
+        <li data-g="PEACE"><i>✌️</i><p><b>Peace, hold still</b><span id="gest-peace">Next layer</span></p><em class="ring" id="ring-peace"></em></li>
+        <li data-g="TWO"><i>🙌</i><p><b>Two hands</b><span>Move apart or together to zoom</span></p></li>
+        <li data-g="RESET"><i>✊✊</i><p><b>Two fists, hold still</b><span>Reset the model</span></p><em class="ring" id="ring-reset"></em></li>
+      </ul>
+    </section>
+
+    <div class="learning-tools">
+      <label for="layer-picker">Find a layer or boundary</label>
+      <select id="layer-picker"></select>
+      <button type="button" id="part-pull" hidden>Pull part aside</button>
+      <button type="button" id="part-study" hidden>Start lesson here</button>
+      <details class="question-bank">
+        <summary>Ask a question</summary>
+        <div id="question-bank"></div>
+      </details>
+    </div>
 
     <section class="info" id="info" aria-live="polite"></section>
 
@@ -45,21 +71,9 @@
         <div><label>Hands</label><b id="s-hands">0</b></div>
       </section>
       <section class="sliders">
-        <div class="slider"><label>Explode <b id="v-explode">0%</b></label><input id="r-explode" type="range" min="0" max="100" value="85" /></div>
+        <div class="slider"><label>Explode <b id="v-explode">0%</b></label><input id="r-explode" type="range" min="0" max="100" value="0" /></div>
         <div class="slider"><label>Explode intensity <b id="v-int">100%</b></label><input id="r-int" type="range" min="30" max="150" value="100" /></div>
       </section>
-      <details class="gest">
-        <summary><h4>Gestures</h4></summary>
-        <ul id="gest">
-          <li data-g="OPEN"><i>✋</i><p><b>Open slowly</b><span>explode it, see inside</span></p></li>
-          <li data-g="FIST"><i>✊</i><p><b>Close your hand</b><span>pull it back together</span></p></li>
-          <li data-g="MOVE"><i>👋</i><p><b>Move or twist</b><span>rotate and tilt it</span></p></li>
-          <li data-g="POINT"><i>☝️</i><p><b>Point up</b><span>move your fingertip over a part</span></p></li>
-          <li data-g="PINCH"><i>🤏</i><p><b>Pinch</b><span>grab the highlighted part, drag it</span></p></li>
-          <li data-g="TWO"><i>🙌</i><p><b>Two hands</b><span>apart or together to zoom</span></p></li>
-          <li data-g="PEACE"><i>✌️</i><p><b>Peace</b><span>held still: next lesson step</span></p></li>
-        </ul>
-      </details>
       <section class="btns">
         <button id="b-explode">Explode</button>
         <button id="b-spin" class="on">Auto-spin</button>
@@ -72,10 +86,22 @@
     <button id="t-feed" class="on" title="Camera background"><svg viewBox="0 0 24 24"><path d="M3 7h3l2-2h8l2 2h3v12H3z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
     <button id="t-skel" class="on" title="Hand skeleton"><svg viewBox="0 0 24 24"><path d="M7 21v-8M11 21V5M15 21V8M19 21v-7M7 13l-3-2"/></svg></button>
     <button id="t-labels" title="Show all labels"><svg viewBox="0 0 24 24"><path d="M4 7h10M4 12h16M4 17h10"/><circle cx="18" cy="7" r="1.6"/></svg></button>
+    <button id="t-reset" title="Reset the model (R, or double-click)"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>
     <button id="t-full" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </div>
 
   <div id="toast"></div>
+  <section id="tour" aria-label="Tour" aria-live="polite" hidden>
+    <div class="tour-head"><b id="tour-title"></b><span id="tour-count"></span></div>
+    <p id="tour-text"></p>
+    <div class="tour-bar"><i id="tour-progress"></i></div>
+    <div class="tour-btns">
+      <button type="button" id="tour-back">Back</button>
+      <button type="button" id="tour-pause" aria-pressed="false">Pause</button>
+      <button type="button" id="tour-next">Next</button>
+      <button type="button" id="tour-stop">Stop tour</button>
+    </div>
+  </section>
   <div id="banner"></div>
 
   <div id="start">
@@ -86,7 +112,8 @@
       <div class="levels start-levels" id="start-levels" aria-label="Choose your level"></div>
       <button id="btn-cam" class="primary">Start camera</button>
       <button id="btn-mouse" class="ghost">Use mouse instead</button>
-      <small>Mouse: drag to rotate, scroll to zoom, click a layer to inspect it. Space opens the Earth up.</small>
+      <button id="btn-tour" class="ghost">Watch the tour</button>
+      <small>Mouse: click a layer to highlight it, drag it to pull it out, drag empty space to rotate, scroll to zoom. Arrow keys step through the layers. Double-click or press R to reset.</small>
     </div>
   </div>
 

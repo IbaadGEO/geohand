@@ -1,8 +1,11 @@
 import './styles.css';
 import { HoloScene } from './scene.js';
 import { MODELS } from './models/index.js';
+import { GEOMETRY } from './models/earth.js';
 import { HandTracker } from './handTracking.js';
 import { GestureEngine, HAND_CONNECTIONS } from './gestureEngine.js';
+import { Hold, HOLD_S } from './hold.js';
+import { buildTour } from './tour.js';
 import { clamp } from './utils.js';
 import { LEVELS } from './content/levels.js';
 import { loadLevel, saveLevel, mapPart } from './levels.js';
@@ -14,6 +17,7 @@ import { openAsk } from './ui/ask.js';
 import { renderRich } from './ui/richText.js';
 import { Lesson } from './lesson.js';
 import { LESSONS } from './content/earth/lessons.js';
+import { showCrustActivity } from './ui/crustActivity.js';
 
 const $ = (id) => document.getElementById(id);
 const video = $('video');
@@ -63,18 +67,17 @@ const ui = { skeleton: true, labels: false, feed: false }; // labels: show every
 let trackingState = 'Off';
 
 
-// gesture state that holds part indices; cleared whenever the parts list is rebuilt (level switch)
-let grab = null;
-let lastHover = { i: -1, t: 0 };
-let dwell = { i: -1, t: 0 };
 let mouseHover = -1; // part under the mouse cursor (labels it)
+let mouseDrag = null;
 const panel = mountPanel($('info'));
-mountSearch(panel.searchSlot, {
+const questionBank = $('question-bank');
+const layerPicker = $('layer-picker');
+mountSearch(questionBank, {
   find: (q) => searchBank(q, EARTH, level),
   levelLabel: (id) => LEVELS.find((l) => l.id === id).label,
   currentLevel: () => level,
   onAsk: (q) =>
-    openAsk(panel.searchSlot.querySelector('.ask-host'), q, () => ({
+    openAsk(questionBank.querySelector('.ask-host'), q, () => ({
       level,
       model: 'earth',
       part: scene.sel >= 0 ? scene.parts[scene.sel].id : 'general',
@@ -85,10 +88,9 @@ scene.onModel = (i, def, g) => {
   $('m-sub').textContent = def.subtitle;
   $('m-cat').textContent = def.category;
   $('m-count').textContent = `${g.meta.length} parts`;
-  grab = null; // part indices from the old parts list no longer mean anything
-  lastHover = { i: -1, t: 0 };
-  dwell = { i: -1, t: 0 };
+  mouseDrag = null; // part indices from the old parts list no longer mean anything
   mouseHover = -1;
+  layerPicker.replaceChildren(new Option('Select a part', ''), ...scene.parts.map((p) => new Option(p.name, p.id)));
   const keep = pendingSel ? scene.parts.findIndex((p) => p.id === pendingSel) : -1;
   pendingSel = null;
   scene.setSel(keep);
@@ -112,51 +114,106 @@ for (const host of [$('levels'), $('start-levels')]) {
     levelButtons.push(b);
   }
 }
-const markLevel = () => levelButtons.forEach((b) => b.classList.toggle('on', b.dataset.level === level));
+const markLevel = () => {
+  levelButtons.forEach((b) => b.classList.toggle('on', b.dataset.level === level));
+  $('mode-lesson').disabled = level !== 'alevel';
+  $('lesson-availability').hidden = level === 'alevel';
+};
 markLevel();
 
 // ------------------------------------------------------------------ lessons
 let lesson = new Lesson(LESSONS[level]);
 let viewTarget = null; // eased camera angle for the current lesson step
-let peaceCount = 0; // still-peace triggers, read by the ?debug test
+let walkthroughPlaying = false;
+let walkthroughTimer;
+let walkthroughComplete = false;
 
-function setMode(m) {
+function setWalkthrough(playing) {
+  walkthroughPlaying = playing;
+  clearTimeout(walkthroughTimer);
+  $('lesson-play').textContent = playing ? 'Pause walkthrough' : 'Play walkthrough';
+  $('lesson-play').setAttribute('aria-pressed', String(playing));
+}
+
+function setMode(m, keepIsolation = false) {
   mode = m;
   $('mode-explore').classList.toggle('on', m === 'explore');
   $('mode-lesson').classList.toggle('on', m === 'lesson');
   $('lesson-box').hidden = m !== 'lesson';
   if (m === 'lesson') enterStep();
-  else viewTarget = null;
+  else {
+    setWalkthrough(false);
+    viewTarget = null;
+    if (!keepIsolation) restoreParts();
+    $('info').hidden = false;
+  }
 }
 function enterStep() {
   const s = lesson.step;
   if (!s) return;
+  walkthroughComplete = false;
   scene.explodeTarget = s.explode;
   scene.autoSpin = false;
   $('b-spin').classList.remove('on');
   viewTarget = s.view;
   const i = scene.parts.findIndex((p) => p.id === s.focus);
   scene.setSel(i);
+  scene.isolate(walkthroughPlaying || s.activity === 'compare' ? i : -1);
+  if (walkthroughPlaying) scene.pullAside();
+  scene.setHover(-1);
   showPart(i);
+  $('info').hidden = Boolean(s.activity);
+  showCrustActivity($('lesson-activity'), s.activity, walkthroughPlaying);
   $('lesson-count').textContent = `Step ${lesson.i + 1} of ${lesson.steps.length}`;
   renderRich($('lesson-text'), s.text);
-  $('lesson-src').textContent = s.refs?.length ? `Sources: ${s.refs.map((id) => shortRef(REFS[id])).join('; ')}` : '';
+  const sources = s.where || s.refs?.map((id) => shortRef(REFS[id])).join('; ');
+  $('lesson-src').textContent = sources ? `Sources: ${sources}` : '';
   $('lesson-back').disabled = lesson.i === 0;
   $('lesson-next').disabled = lesson.i === lesson.steps.length - 1;
+  $('lesson-finish').hidden = lesson.i !== lesson.steps.length - 1;
+  clearTimeout(walkthroughTimer);
+  if (walkthroughPlaying) {
+    walkthroughTimer = setTimeout(() => {
+      if (lesson.next()) enterStep();
+      else {
+        walkthroughComplete = true;
+        setWalkthrough(false);
+      }
+    }, s.activity ? 16000 : 12000);
+  }
 }
 const lessonMove = (forward) => (forward ? lesson.next() : lesson.back()) && enterStep();
 $('mode-explore').onclick = () => setMode('explore');
 $('mode-lesson').onclick = () => setMode('lesson');
 $('lesson-back').onclick = () => lessonMove(false);
 $('lesson-next').onclick = () => lessonMove(true);
+$('lesson-play').onclick = () => {
+  const playing = !walkthroughPlaying;
+  setWalkthrough(playing);
+  if (!playing) return;
+  if (walkthroughComplete) lesson.jumpToPart('crust');
+  enterStep();
+};
+$('lesson-finish').onclick = () => {
+  setMode('explore');
+  lesson.jumpToPart('crust');
+};
+layerPicker.onchange = () => {
+  const picked = layerPicker.value;
+  setMode('explore');
+  const i = scene.parts.findIndex((p) => p.id === picked);
+  scene.setSel(i);
+  showPart(i);
+};
 
 function setLevel(id) {
   if (id === level) return;
+  stopTour(); // its steps belong to the old level
   const selId = scene.sel >= 0 ? scene.parts[scene.sel]?.id : null;
   pendingSel = mapPart(selId, level, id);
   level = id;
+  if (id !== 'alevel' && mode === 'lesson') setMode('explore');
   saveLevel(id);
-  grab = null; // a grabbed part may not exist at the new level
   lesson = new Lesson(LESSONS[id]);
   lesson.jumpToPart(pendingSel);
   scene.reload(scene.index, id);
@@ -166,8 +223,126 @@ function setLevel(id) {
 
 function showPart(i) {
   const p = i >= 0 ? scene.parts[i] : null;
+  layerPicker.value = p?.id || '';
   panel.show(p ? EARTH[level].parts.find((c) => c.id === p.id) || null : null, REFS, p?.color);
+  const button = $('part-pull');
+  button.hidden = mode === 'lesson' || (!p && scene.isolatedPart < 0);
+  button.textContent = scene.isolatedPart >= 0 ? 'Restore all parts' : 'Pull part aside';
+  $('part-study').hidden = mode !== 'explore' || level !== 'alevel' || !p;
 }
+
+$('part-study').onclick = () => {
+  const id = layerPicker.value;
+  const focus = { asthenosphere: 'mantle', cmb: 'outer-core' }[id] || id;
+  lesson.jumpToPart(focus);
+  setMode('lesson');
+  $('panel').scrollTop = 0;
+};
+
+function isolateForInspection(i) {
+  if (mode === 'lesson') setMode('explore', scene.isolatedPart === i);
+  scene.isolate(i);
+  scene.setSel(i);
+  scene.setHover(-1);
+  mouseHover = -1;
+  showPart(i);
+}
+
+function restoreParts() {
+  scene.isolate();
+  showPart(scene.sel);
+}
+
+/** Parts from the surface down; a boundary comes just before the layer that starts at it. */
+const byDepth = (a, b) => {
+  const [ta, ba] = GEOMETRY[a.id] || [Infinity, Infinity], [tb, bb] = GEOMETRY[b.id] || [Infinity, Infinity];
+  return ta - tb || (ba - ta) - (bb - tb);
+};
+const layerOrder = () => [...EARTH[level].parts].sort(byDepth);
+
+/** Step through whole Earth -> each layer -> whole Earth again. A highlighted layer stays in place with the others faded. */
+function browseParts(direction) {
+  if (scene.pending >= 0) return;
+  if (scene.isolatedPart >= 0) scene.isolate(); // a part pulled aside with the mouse goes back first
+  const parts = layerOrder();
+  const current = parts.findIndex((p) => p.id === scene.parts[scene.sel]?.id); // -1 = whole Earth
+  const k = ((current + 1 + direction) % (parts.length + 1) + parts.length + 1) % (parts.length + 1) - 1;
+  highlight(k < 0 ? -1 : scene.parts.findIndex((part) => part.id === parts[k].id));
+  toast(k < 0 ? 'Whole Earth' : parts[k].title);
+}
+
+/** Highlight part i in place (others faded, layers spread), or -1 for the whole Earth, assembled. */
+function highlight(i) {
+  scene.setSel(i);
+  scene.setHover(-1);
+  mouseHover = -1;
+  scene.explodeTarget = i < 0 ? 0 : Math.max(scene.explodeTarget, 0.65);
+  showPart(i);
+  $('panel').scrollTop = 0;
+}
+
+// ------------------------------------------------------------------ automatic tour (no hands or mouse needed)
+let tour = null; // { steps, i, t, paused }
+const tourBar = $('tour');
+
+function startTour() {
+  setWalkthrough(false);
+  if (mode === 'lesson') setMode('explore');
+  scene.resetView();
+  scene.autoSpin = true;
+  $('b-spin').classList.add('on');
+  tour = { steps: buildTour(layerOrder(), LEVELS.find((l) => l.id === level).label), i: 0, t: 0, paused: false };
+  tourBar.hidden = false;
+  pauseTour(false);
+  showTourStep();
+}
+function showTourStep() {
+  const s = tour.steps[tour.i];
+  highlight(s.id ? scene.parts.findIndex((p) => p.id === s.id) : -1);
+  $('tour-title').textContent = s.title;
+  renderRich($('tour-text'), s.text);
+  $('tour-count').textContent = `${tour.i + 1} of ${tour.steps.length}`;
+  $('tour-back').disabled = tour.i === 0;
+  tour.t = 0;
+}
+function tourMove(d) {
+  if (!tour) return;
+  if (tour.i + d >= tour.steps.length) return stopTour();
+  tour.i = Math.max(0, tour.i + d);
+  showTourStep();
+}
+function stopTour() {
+  tour = null;
+  tourBar.hidden = true;
+}
+function pauseTour(paused) {
+  if (!tour) return;
+  tour.paused = paused;
+  $('tour-pause').textContent = paused ? 'Resume' : 'Pause';
+  $('tour-pause').setAttribute('aria-pressed', String(paused));
+}
+function tourTick(dt) {
+  if (!tour) return;
+  if (!tour.paused && scene.pending < 0) tour.t += dt;
+  const s = tour.steps[tour.i];
+  $('tour-progress').style.width = `${Math.min(100, (100 * tour.t) / s.dur)}%`;
+  if (tour.t >= s.dur) tourMove(1);
+}
+$('tour-play').onclick = startTour;
+$('tour-back').onclick = () => tourMove(-1);
+$('tour-next').onclick = () => tourMove(1);
+$('tour-pause').onclick = () => pauseTour(!tour.paused);
+$('tour-stop').onclick = stopTour;
+
+$('part-pull').onclick = () => {
+  if (scene.isolatedPart >= 0) restoreParts();
+  else {
+    const i = scene.parts.findIndex((p) => p.id === layerPicker.value);
+    if (i < 0) return;
+    isolateForInspection(i);
+    scene.pullAside();
+  }
+};
 
 const rExplode = $('r-explode');
 const rInt = $('r-int');
@@ -185,10 +360,21 @@ $('b-spin').onclick = () => {
   scene.autoSpin = !scene.autoSpin;
   $('b-spin').classList.toggle('on', scene.autoSpin);
 };
-$('b-reset').onclick = () => {
+/** Back to the original model from any state: whole Earth, assembled, starting view and zoom, nothing highlighted. */
+function resetAll() {
+  stopTour();
+  setWalkthrough(false);
+  if (mode === 'lesson') setMode('explore');
   scene.resetView();
+  scene.explodeTarget = 0;
+  viewTarget = null;
+  mouseHover = -1;
+  scene.setHover(-1);
   showPart(-1);
-};
+  toast('Model reset');
+}
+$('b-reset').onclick = resetAll;
+$('t-reset').onclick = resetAll;
 
 function toggle(id, key, after) {
   $(id).onclick = () => {
@@ -211,6 +397,7 @@ let perc = { hands: [] };
 
 async function startCamera() {
   $('start').classList.add('gone');
+  $('start').inert = true;
   setTracking('Starting…', 'warn');
   if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext) {
     enterMouseMode('Camera needs http://localhost or https.');
@@ -254,9 +441,17 @@ function setTracking(text, cls) {
 }
 
 $('btn-cam').onclick = startCamera;
+$('btn-tour').onclick = () => {
+  $('start').classList.add('gone');
+  $('start').inert = true;
+  enterMouseMode('');
+  startTour();
+};
 $('btn-mouse').onclick = () => {
   $('start').classList.add('gone');
+  $('start').inert = true;
   enterMouseMode('');
+  $('mode-explore').focus();
 };
 
 /** raw camera landmark -> viewport 0..1 (mirrored, matches object-fit: cover) */
@@ -268,18 +463,17 @@ function mapPoint(p) {
 }
 
 // ------------------------------------------------------------------ gesture -> action
+// Every command is a hand shape held still (src/hold.js); only an open hand moving acts at once, by turning the Earth.
 let zoomRef = null;
-let peaceCool = 0;
 let twoSince = -1;
 let twoActive = false;
 let primaryId = null;
 const TWO_HOLD = 0.25;
-let peaceArmed = true; // peace switches model once; the hand must leave peace before it can switch again
-let peaceStill = 0; // seconds the peace sign has been held still
-let peaceSpeed = 0; // smoothed palm speed while in peace (px/s)
-// shortcut: thresholds picked from one live session (a loose point while sweeping read as peace); retune with ?debug if needed
-const PEACE_MAX_SPEED = 250, PEACE_STILL_S = 0.15;
+const TWO_FIST_S = 1; // two fists held this long (and still) reset the model
+let twoFist = null; // { d: palm distance when the fists started, s: seconds held, done }
 const prevPalm = new Map();
+const hold = new Hold();
+const fireLog = []; // fired commands, read by the ?debug test
 let activeKey = '';
 
 function setActive(key) {
@@ -288,18 +482,30 @@ function setActive(key) {
   document.querySelectorAll('#gest li').forEach((li) => li.classList.toggle('active', li.dataset.g === key));
 }
 
-function endGrab() {
-  if (grab) scene.releaseAll();
-  grab = null;
+// the panel rows say what each held shape will do now
+const gestText = { PEACE: $('gest-peace') };
+const gestRings = { PEACE: $('ring-peace') };
+const resetRing = $('ring-reset');
+function updateLegend() {
+  const last = scene.sel >= 0 && layerOrder().at(-1).id === scene.parts[scene.sel]?.id;
+  const peace = mode === 'lesson' ? 'Next lesson step' : last ? 'Back to the whole Earth' : 'Next layer';
+  if (gestText.PEACE.textContent !== peace) gestText.PEACE.textContent = peace;
+  for (const [g, el] of Object.entries(gestRings)) el.style.setProperty('--p', hold.shape === g ? hold.progress.toFixed(3) : '0');
+  resetRing.style.setProperty('--p', twoFist ? Math.min(1, twoFist.s / TWO_FIST_S).toFixed(3) : '0');
 }
 
-function control(t, dt) {
+function control(t, dt, freshFrame) {
   const live = perc.hands.filter((h) => !h.held);
   $('s-hands').textContent = String(live.length);
-  if (!live.some((h) => h.gesture === 'PEACE')) {
-    peaceArmed = true;
-    peaceStill = 0;
-    peaceSpeed = 0;
+  if (walkthroughPlaying || mouseDrag) {
+    hold.reset();
+    scene.holdVel = Boolean(mouseDrag);
+    zoomRef = null;
+    twoActive = false;
+    twoSince = -1;
+    prevPalm.clear();
+    setActive('');
+    return;
   }
 
   // two hands: distance between palms = zoom. Held hands count, so a one-frame dropout doesn't fall back to one-hand rotate.
@@ -309,27 +515,39 @@ function control(t, dt) {
   else if (twoSince < 0) twoSince = t;
   twoActive = both && t - twoSince >= TWO_HOLD;
   if (twoActive) {
+    hold.reset();
+    scene.holdVel = true;
+    scene.idle = 0;
+    prevPalm.clear();
+    // after a reset, zoom stays off until the hands part, so fists still held can't drift the zoom (live run 2026-11-22)
+    if (twoFist?.done) return setActive('RESET');
     const a = perc.hands[0].palm, b = perc.hands[1].palm;
     const dist = Math.hypot((a.x - b.x) * W, (a.y - b.y) * H);
     if (!zoomRef) zoomRef = { d0: Math.max(60, dist), s0: scene.scaleTarget };
     scene.scaleTarget = clamp((zoomRef.s0 * dist) / zoomRef.d0, 0.5, 2.6);
-    scene.holdVel = true;
-    scene.idle = 0;
-    endGrab();
-    scene.setHover(-1);
-    prevPalm.clear();
-    setActive('TWO');
+    // two fists held still: reset. Moving them apart or together restarts the hold, so zooming with fists is safe.
+    const fists = perc.hands[0].gesture === 'FIST' && perc.hands[1].gesture === 'FIST';
+    if (!fists) twoFist = null;
+    else if (!twoFist || Math.abs(dist - twoFist.d) > 0.06 * W) twoFist = { d: dist, s: 0, done: false };
+    else if (!twoFist.done && (twoFist.s += dt) >= TWO_FIST_S) {
+      twoFist.done = true;
+      fireLog.push({ g: 'RESET', t });
+      resetAll();
+      zoomRef = null;
+    }
+    setActive(fists ? 'RESET' : 'TWO');
     return;
   }
   zoomRef = null;
+  twoFist = null;
 
   // stay with the hand already in control; a newly detected hand doesn't take over
   const h = live.find((x) => x.id === primaryId) || live[0];
   primaryId = h ? h.id : null;
   if (!h) {
-    endGrab();
-    scene.holdVel = draggingMouse;
-    if (!draggingMouse) scene.setHover(mouseHover);
+    hold.reset();
+    scene.holdVel = false;
+    scene.setHover(mouseHover);
     prevPalm.clear();
     setActive('');
     return;
@@ -338,112 +556,94 @@ function control(t, dt) {
   scene.holdVel = true;
   scene.idle = 0;
   const g = h.gesture;
-  const palmPx = { x: h.palm.x * W, y: h.palm.y * H };
+  const fired = hold.update(g, h.palm, t, dt, freshFrame);
+  if (fired) {
+    fireLog.push({ g: fired, t });
+    if (tour) tourMove(1);
+    else mode === 'lesson' ? lessonMove(true) : browseParts(1);
+  }
 
-  if (g === 'OPEN' || g === 'FIST' || g === 'NONE') {
-    // openness drives the explosion
-    scene.explodeTarget = g === 'FIST' ? 0 : clamp((h.openness - 0.12) / 0.78, 0, 1);
-    // moving the hand rotates the model
+  const palmPx = { x: h.palm.x * W, y: h.palm.y * H };
+  if (g === 'OPEN' || g === 'NONE') {
+    // an open or loose hand turns the Earth; a peace sign or fist keeps it still
     const prev = prevPalm.get(h.id);
     if (prev) {
       const dx = palmPx.x - prev.x, dy = palmPx.y - prev.y;
       if (Math.hypot(dx, dy) > 1.5) scene.rotateBy(dx * 0.0048, dy * 0.0032, dt);
     }
     if (h.rollDelta) scene.rollBy(h.rollDelta * 0.7);
-    scene.setHover(-1);
-    setActive(g === 'NONE' ? 'MOVE' : g);
-    if (g === 'OPEN' && prev && Math.hypot(palmPx.x - prev.x, palmPx.y - prev.y) > 6) setActive('MOVE');
-  } else {
-    if (g === 'POINT') {
-      const idx = scene.pick(h.tip.x * W, h.tip.y * H, 95, scene.hover);
-      scene.setHover(idx);
-      if (idx >= 0) {
-        lastHover = { i: idx, t };
-        showPart(idx);
-      }
-      if (idx >= 0 && idx === dwell.i) {
-        dwell.t += dt;
-        if (dwell.t > 0.7 && scene.sel !== idx) scene.setSel(idx);
-      } else dwell = { i: idx, t: 0 };
-    } else if (g === 'PINCH') {
-      const pp = { x: h.pinchPt.x * W, y: h.pinchPt.y * H };
-      if (!grab) {
-        // grab what you aimed at: the part pointed at in the last 2 s, else the locked part,
-        // and only search near the pinch when neither exists (switching from point to pinch can take over a second)
-        const idx = t - lastHover.t < 2 ? lastHover.i : scene.sel >= 0 ? scene.sel : scene.pick(pp.x, pp.y, 120);
-        if (idx >= 0) {
-          grab = { part: idx, last: pp };
-          scene.setSel(idx);
-          scene.setHover(idx);
-          showPart(idx);
-        }
-      } else {
-        scene.dragPart(grab.part, pp.x - grab.last.x, pp.y - grab.last.y);
-        grab.last = pp;
-      }
-    } else if (g === 'PEACE') {
-      // a deliberate peace sign is held still; a moving hand that only looks like one (e.g. a loose point) must not switch model
-      const prev = prevPalm.get(h.id);
-      const inst = prev ? Math.hypot(palmPx.x - prev.x, palmPx.y - prev.y) / dt : PEACE_MAX_SPEED * 2;
-      peaceSpeed += (inst - peaceSpeed) * 0.2; // smooth: the palm only moves on frames with a new camera image
-      peaceStill = peaceSpeed < PEACE_MAX_SPEED ? peaceStill + dt : 0;
-      if (peaceArmed && peaceStill >= PEACE_STILL_S && t > peaceCool) {
-        peaceArmed = false;
-        peaceCool = t + 1.6;
-        peaceCount++;
-        if (mode === 'lesson') lessonMove(true);
-        else if (MODELS.length > 1) scene.next();
-      }
-    }
-    setActive(g);
-  }
-  if (g !== 'PINCH') endGrab();
+    setActive('MOVE');
+  } else setActive(g in HOLD_S ? g : '');
   prevPalm.set(h.id, palmPx);
 }
 
 // ------------------------------------------------------------------ mouse + keyboard
-let draggingMouse = false;
-let mouseStart = null;
-let mouseLast = null;
-const onUi = (e) => e.target.closest && e.target.closest('#panel,#toolbar,#start');
+const onUi = (e) => e.target.closest && e.target.closest('#panel,#toolbar,#start,#tour');
 
 addEventListener('pointerdown', (e) => {
-  if (e.button !== 0 || onUi(e)) return;
-  draggingMouse = true;
-  mouseStart = mouseLast = { x: e.clientX, y: e.clientY };
+  if (e.button !== 0 || !e.isPrimary || onUi(e)) return;
+  pauseTour(true); // looking closer with the mouse pauses the tour
+  setWalkthrough(false);
+  const part = e.shiftKey ? -1 : scene.pick(e.clientX, e.clientY, 36, scene.sel);
+  mouseDrag = { id: e.pointerId, part, x: e.clientX, y: e.clientY, moved: false };
 });
 addEventListener('pointermove', (e) => {
-  if (!draggingMouse) {
+  if (!mouseDrag) {
     mouseHover = onUi(e) ? -1 : scene.pick(e.clientX, e.clientY, 80, mouseHover);
     return;
   }
+  if (mouseDrag.id !== e.pointerId) return;
+  const dx = e.clientX - mouseDrag.x, dy = e.clientY - mouseDrag.y;
+  if (!mouseDrag.moved) {
+    if (Math.hypot(dx, dy) < 7) return;
+    mouseDrag.moved = true;
+    if (mouseDrag.part >= 0) isolateForInspection(mouseDrag.part);
+  }
   scene.holdVel = true;
-  scene.rotateBy((e.clientX - mouseLast.x) * 0.006, (e.clientY - mouseLast.y) * 0.004, 1 / 60);
-  mouseLast = { x: e.clientX, y: e.clientY };
+  if (mouseDrag.part >= 0) scene.dragPart(dx, dy);
+  else scene.rotateBy(dx * 0.006, dy * 0.004, 1 / 60);
+  mouseDrag.x = e.clientX;
+  mouseDrag.y = e.clientY;
 });
 addEventListener('pointerup', (e) => {
-  if (!draggingMouse) return;
-  draggingMouse = false;
+  if (mouseDrag?.id !== e.pointerId) return;
+  const moved = mouseDrag.moved;
+  mouseDrag = null;
   scene.holdVel = false;
-  if (Math.hypot(e.clientX - mouseStart.x, e.clientY - mouseStart.y) < 5) {
+  if (!moved && mode === 'explore' && scene.isolatedPart < 0) {
     const idx = scene.pick(e.clientX, e.clientY, 80);
     scene.setSel(idx === scene.sel ? -1 : idx);
     showPart(scene.sel);
   }
 });
+// double-click anywhere off the panel: reset
+addEventListener('dblclick', (e) => {
+  if (!onUi(e)) resetAll();
+});
+addEventListener('pointercancel', (e) => {
+  if (mouseDrag?.id === e.pointerId) mouseDrag = null;
+});
+addEventListener('blur', () => (mouseDrag = null));
 addEventListener('wheel', (e) => {
   if (onUi(e)) return;
   scene.zoomBy(Math.exp(-e.deltaY * 0.0012));
 }, { passive: true });
 addEventListener('keydown', (e) => {
-  if (e.target.closest?.('input[type=search], textarea')) return; // typing a question, not a shortcut
+  if (e.target.closest?.('input[type=search], textarea, select, #lesson-activity')) return;
   if (e.target.tagName === 'INPUT' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
   if (e.key === ' ') {
+    if (e.target.closest?.('button, summary')) return;
     e.preventDefault();
     scene.explodeTarget = scene.explodeTarget > 0.5 ? 0 : 1;
-  } else if (e.key === 'ArrowRight') mode === 'lesson' ? lessonMove(true) : scene.next(1);
-  else if (e.key === 'ArrowLeft') mode === 'lesson' ? lessonMove(false) : scene.next(-1);
-  else if (e.key.toLowerCase() === 'r') scene.resetView();
+  } else if (e.key === 'Escape' && (walkthroughPlaying || scene.isolatedPart >= 0)) {
+    if (walkthroughPlaying) setWalkthrough(false);
+    else if (mode === 'lesson') setMode('explore');
+    else restoreParts();
+  } else if (tour && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) tourMove(e.key === 'ArrowRight' ? 1 : -1);
+  else if (tour && e.key === 'Escape') stopTour();
+  else if (e.key === 'ArrowRight') mode === 'lesson' ? lessonMove(true) : browseParts(1);
+  else if (e.key === 'ArrowLeft') mode === 'lesson' ? lessonMove(false) : browseParts(-1);
+  else if (e.key.toLowerCase() === 'r') $('b-reset').click();
   else if (e.key >= '1' && e.key <= String(MODELS.length)) scene.setModel(+e.key - 1);
 });
 
@@ -475,68 +675,42 @@ function drawHand(h) {
 function drawRing(h) {
   const pts = h.lm;
   const cx = h.palm.x * W, cy = h.palm.y * H;
-  const g = h.gesture;
+  const len = Math.hypot((pts[0].x - pts[12].x) * W, (pts[0].y - pts[12].y) * H);
+  const target = len * 0.95 + 22;
+  const r = (ringR.get(h.id) ?? target) * 0.85 + target * 0.15;
+  ringR.set(h.id, r);
   ctx.save();
   ctx.lineCap = 'round';
   ctx.shadowColor = 'rgba(242, 201, 76, 0.9)';
   ctx.shadowBlur = 14;
-  if (g === 'POINT') {
-    const x = h.tip.x * W, y = h.tip.y * H;
-    ctx.strokeStyle = '#f2c94c';
-    ctx.lineWidth = 2.5;
+  ctx.strokeStyle = 'rgba(242, 201, 76, 0.55)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+  // the hold filling up: the command fires when the white arc closes
+  const p = h.id === primaryId ? hold.progress : 0;
+  if (p > 0.01) {
+    ctx.shadowColor = 'rgba(255,255,255,0.9)';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.arc(x, y, 20, 0, Math.PI * 2);
+    ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * p);
     ctx.stroke();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (g === 'PINCH') {
-    const x = h.pinchPt.x * W, y = h.pinchPt.y * H;
-    ctx.strokeStyle = '#f2c94c';
-    ctx.fillStyle = 'rgba(242, 201, 76, 0.35)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(x, y, 16, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-  } else {
-    const len = Math.hypot((pts[0].x - pts[12].x) * W, (pts[0].y - pts[12].y) * H);
-    const target = len * 0.95 + 22;
-    const r = (ringR.get(h.id) ?? target) * 0.85 + target * 0.15;
-    ringR.set(h.id, r);
-    ctx.strokeStyle = 'rgba(242, 201, 76, 0.95)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.stroke();
-    // white arc = how far it is exploded
-    const e = clamp(scene.explode, 0, 1);
-    if (e > 0.01) {
-      ctx.shadowColor = 'rgba(255,255,255,0.9)';
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 4.5;
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * e);
-      ctx.stroke();
-    }
   }
   ctx.restore();
-  // name of the part a pinch would grab (point) or is holding (pinch)
-  if (g === 'POINT') tipLabel(scene.parts[scene.hover], h.tip.x * W + 28, h.tip.y * H);
-  else if (g === 'PINCH' && grab) tipLabel(scene.parts[grab.part], h.pinchPt.x * W + 24, h.pinchPt.y * H);
+  if (p > 0.01 && !(p >= 1)) tipLabel(gestText[hold.shape].textContent, '#f2c94c', cx - r, cy + r + 18);
 }
 
-function tipLabel(part, x, y) {
-  if (!part) return;
+function tipLabel(text, color, x, y) {
   ctx.save();
   ctx.font = '600 13px ui-sans-serif, system-ui, "Segoe UI", sans-serif';
   ctx.textBaseline = 'middle';
-  const w = ctx.measureText(part.name).width;
+  const w = ctx.measureText(text).width;
   ctx.fillStyle = 'rgba(10, 10, 20, 0.78)';
   ctx.fillRect(x - 7, y - 12, w + 14, 24);
-  ctx.fillStyle = part.color;
-  ctx.fillText(part.name, x, y);
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
   ctx.restore();
 }
 
@@ -557,7 +731,8 @@ function drawZoom(a, b) {
   ctx.font = '600 13px ui-sans-serif, system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.shadowBlur = 6;
-  ctx.fillText(`zoom ${scene.scale.toFixed(2)}x`, (x1 + x2) / 2, (y1 + y2) / 2 - 12);
+  const label = twoFist ? (twoFist.done ? 'reset' : `hold to reset ${Math.round((100 * twoFist.s) / TWO_FIST_S)}%`) : `zoom ${scene.scale.toFixed(2)}x`;
+  ctx.fillText(label, (x1 + x2) / 2, (y1 + y2) / 2 - 12);
   ctx.restore();
 }
 
@@ -629,12 +804,14 @@ function frame(now) {
   const dt = Math.min(0.05, Math.max(0.001, t - lastT));
   lastT = t;
 
-  if (camOn && tracker.ready && video.readyState >= 2 && video.currentTime !== lastVideoTime) {
+  const freshFrame = camOn && tracker.ready && video.readyState >= 2 && video.currentTime !== lastVideoTime;
+  if (freshFrame) {
     lastVideoTime = video.currentTime;
     const hands = tracker.detect(video, now);
     perc = engine.update(hands, t, mapPoint, (video.videoWidth || 16) / (video.videoHeight || 9));
   }
-  control(t, dt);
+  control(t, dt, freshFrame);
+  updateLegend();
   if (viewTarget && !scene.holdVel) {
     // ease toward the lesson step's view; a hand or mouse steering the model takes over
     const k = Math.min(1, dt * 3);
@@ -647,6 +824,7 @@ function frame(now) {
   $('v-explode').textContent = Math.round(clamp(scene.explode, 0, 1) * 100) + '%';
   $('b-explode').textContent = scene.explodeTarget > 0.5 ? 'Assemble' : 'Explode';
 
+  tourTick(dt);
   scene.update(dt, t);
   drawOverlay();
   requestAnimationFrame(frame);
@@ -660,13 +838,22 @@ if (new URLSearchParams(location.search).has('debug')) {
       gesture: activeKey,
       hover: scene.hover,
       sel: scene.sel,
-      grabbed: grab ? grab.part : -1,
       model: scene.index,
       level,
-      peaceCount,
+      fired: fireLog,
+      hold: hold.progress,
       parts: scene.parts,
       hands: perc.hands.filter((h) => !h.held).sort((a, b) => (b.id === primaryId) - (a.id === primaryId)),
       tracking: trackingState,
-    })),
+      isolated: scene.isolatedPart,
+      scale: scene.scaleTarget,
+      frameTime: lastVideoTime,
+      aspect: W / H,
+    }), () => {
+      setMode('explore');
+      restoreParts();
+      scene.setSel(-1);
+      showPart(-1);
+    }),
   );
 }

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { clamp, damp } from './utils.js';
 
-const MAXP = 24; // max parts per model (must match the shader array size)
+const MAXP = 24; // maximum parts in the scene
 const CAM_Z = 9.5;
 const FOV = 38;
 const FIT = 2.7; // exploded radius in world units
@@ -19,12 +19,12 @@ uniform float uPR;
 uniform float uScatter;
 uniform float uHi;
 uniform float uSel;
-uniform vec3 uOff[${MAXP}];
+uniform float uIsolate;
+uniform vec2 uPull;
 varying vec3 vColor;
 varying float vA;
 void main() {
-  int idx = int(aPart + 0.5);
-  vec3 p = position + aDir * uExplode + uOff[idx];
+  vec3 p = position + aDir * uExplode;
   p += 0.010 * vec3(sin(uTime * 1.3 + aSeed * 40.0), cos(uTime * 1.1 + aSeed * 31.0), sin(uTime * 0.9 + aSeed * 23.0));
   p += aRand * uScatter * 4.0;
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -34,8 +34,12 @@ void main() {
   float boost = max(hi, sel);
   gl_PointSize = uSize * uPR * (0.8 + 0.5 * fract(aSeed * 7.13)) * (1.0 + 0.7 * boost) * (${CAM_Z.toFixed(1)} / -mv.z);
   vColor = mix(aColor * tw, vec3(1.0), 0.45 * boost);
-  vA = (0.9 - 0.9 * uScatter) * (1.0 + 0.2 * boost);
+  float visiblePart = uIsolate < 0.0 || abs(aPart - uIsolate) < 0.5 ? 1.0 : 0.0;
+  // with a layer highlighted, the others fade back so it reads clearly
+  float dim = uSel >= 0.0 && sel < 0.5 ? 0.3 : 1.0;
+  vA = (0.9 - 0.9 * uScatter) * (1.0 + 0.2 * boost) * visiblePart * dim;
   gl_Position = projectionMatrix * mv;
+  gl_Position.xy += uPull * gl_Position.w;
 }`;
 
 const FRAG = /* glsl */ `
@@ -43,7 +47,7 @@ varying vec3 vColor;
 varying float vA;
 void main() {
   float d = length(gl_PointCoord - 0.5);
-  if (d > 0.5) discard;
+  if (d > 0.5 || vA <= 0.0) discard;
   float a = smoothstep(0.5, 0.05, d);
   gl_FragColor = vec4(vColor, a * vA);
 }`;
@@ -86,7 +90,8 @@ export class HoloScene {
       uScatter: { value: 1 },
       uHi: { value: -1 },
       uSel: { value: -1 },
-      uOff: { value: Array.from({ length: MAXP }, () => new THREE.Vector3()) },
+      uIsolate: { value: -1 },
+      uPull: { value: new THREE.Vector2() },
     };
     this.material = new THREE.ShaderMaterial({
       vertexShader: VERT,
@@ -100,7 +105,7 @@ export class HoloScene {
 
     // live state
     this.explode = 0;
-    this.explodeTarget = 0.85;
+    this.explodeTarget = 0;
     this.intensity = 1;
     this.rot = { x: 0, y: 0, z: 0 };
     this.vel = { x: 0, y: 0 };
@@ -115,7 +120,7 @@ export class HoloScene {
     this.hover = -1;
     this.sel = -1;
     this.shift = 0;
-    this.offT = Array.from({ length: MAXP }, () => new THREE.Vector3());
+    this.pullTarget = new THREE.Vector2();
     this.cache = new Map();
     this.onModel = null;
 
@@ -143,7 +148,6 @@ export class HoloScene {
     const unitsPerPx = (2 * Math.tan((FOV * Math.PI) / 360) * CAM_Z) / H;
     const panel = W > 900 ? 300 : 0;
     this.shift = (panel / 2) * unitsPerPx;
-    this.unitsPerPx = unitsPerPx;
   }
 
   // ------------------------------------------------------------------ models
@@ -151,7 +155,7 @@ export class HoloScene {
     if (this.cache.has(i)) return this.cache.get(i);
     const def = this.models[i];
     const parts = def.build(this.buildArg);
-    if (parts.length > MAXP) throw new Error(`${def.name} has ${parts.length} parts; the shader supports at most ${MAXP}`);
+    if (parts.length > MAXP) throw new Error(`${def.name} has ${parts.length} parts; the scene supports at most ${MAXP}`);
     let total = 0;
     for (const p of parts) for (const inst of p.instances) total += inst.cloud.n;
 
@@ -235,7 +239,7 @@ export class HoloScene {
     this.sel = -1;
     this.uniforms.uHi.value = -1;
     this.uniforms.uSel.value = -1;
-    this.releaseAll(true);
+    this.isolate();
     if (!this.keepView) {
       const v = this.models[i].view;
       this.rot.x = v.x;
@@ -257,7 +261,7 @@ export class HoloScene {
   }
   /** Rebuild model i with a new build argument (e.g. level), keeping view, zoom and explode. onModel fires when done. */
   reload(i, buildArg) {
-    this.releaseAll(false);
+    this.isolate();
     this.buildArg = buildArg;
     this.cache.clear();
     this.keepView = true;
@@ -276,6 +280,15 @@ export class HoloScene {
   setSel(i) {
     this.sel = i;
     this.uniforms.uSel.value = i;
+  }
+  isolate(i = -1) {
+    if (i === this.isolatedPart) return;
+    this.uniforms.uIsolate.value = i;
+    this.uniforms.uPull.value.set(0, 0);
+    this.pullTarget.set(0, 0);
+  }
+  get isolatedPart() {
+    return this.uniforms.uIsolate.value;
   }
   rotateBy(dyaw, dpitch, dt = 1 / 60) {
     this.rot.y += dyaw;
@@ -298,28 +311,25 @@ export class HoloScene {
     this.rot.z = v.z;
     this.vel.x = this.vel.y = 0;
     this.scaleTarget = 1;
-    this.releaseAll();
+    this.isolate();
     this.setSel(-1);
   }
-  /** move a part by a screen-space pixel delta */
-  dragPart(i, dx, dy) {
-    if (i < 0 || i >= this.parts.length) return;
-    const v = new THREE.Vector3(dx * this.unitsPerPx, -dy * this.unitsPerPx, 0);
-    v.applyQuaternion(this.group.quaternion.clone().invert()).divideScalar(Math.max(1e-4, this.group.scale.x));
-    this.offT[i].add(v);
+  /** Screen-space movement remains stable while turning or zooming the isolated part. */
+  dragPart(dx, dy) {
+    if (this.isolatedPart < 0) return;
+    this.pullTarget.x = clamp(this.pullTarget.x + 2 * dx / this.W, -0.4, 0.4);
+    this.pullTarget.y = clamp(this.pullTarget.y - 2 * dy / this.H, -0.42, 0.42);
     this.idle = 0;
   }
-  releaseAll(snap = false) {
-    for (let i = 0; i < MAXP; i++) {
-      this.offT[i].set(0, 0, 0);
-      if (snap) this.uniforms.uOff.value[i].set(0, 0, 0);
-    }
+  pullAside() {
+    this.pullTarget.set(this.W > 600 ? 0.2 : 0, this.W > 600 ? 0 : 0.32);
   }
 
   // ------------------------------------------------------------------ projection
   _toScreen(local, out) {
     out.set(local[0], local[1], local[2]).applyMatrix4(this.group.matrixWorld).project(this.camera);
-    return { x: (out.x * 0.5 + 0.5) * this.W, y: (-out.y * 0.5 + 0.5) * this.H, z: out.z };
+    const pull = this.uniforms.uPull.value;
+    return { x: ((out.x + pull.x) * 0.5 + 0.5) * this.W, y: (-(out.y + pull.y) * 0.5 + 0.5) * this.H, z: out.z };
   }
 
   /** Nearest part to a screen point (px), or -1. With `prefer`, that part is kept until another is clearly closer. */
@@ -327,12 +337,13 @@ export class HoloScene {
     const e = this.shownExplode;
     const v = new THREE.Vector3();
     const dists = this.parts.map(() => Infinity);
+    const isolated = this.isolatedPart;
     this.group.updateMatrixWorld(true);
     this.parts.forEach((p, i) => {
+      if (isolated >= 0 && i !== isolated) return;
       const s = p.samples;
-      const off = this.uniforms.uOff.value[i];
       for (let k = 0; k < s.length; k += 6) {
-        const sp = this._toScreen([s[k] + s[k + 3] * e + off.x, s[k + 1] + s[k + 4] * e + off.y, s[k + 2] + s[k + 5] * e + off.z], v);
+        const sp = this._toScreen([s[k] + s[k + 3] * e, s[k + 1] + s[k + 4] * e, s[k + 2] + s[k + 5] * e], v);
         dists[i] = Math.min(dists[i], Math.hypot(sp.x - px, sp.y - py));
       }
     });
@@ -344,12 +355,12 @@ export class HoloScene {
     const e = this.shownExplode;
     const v = new THREE.Vector3();
     this.group.updateMatrixWorld(true);
+    const isolated = this.isolatedPart;
     return this.parts.map((p, i) => {
       const { a, d } = p.anchors[0];
-      const off = this.uniforms.uOff.value[i];
-      const s = this._toScreen([a[0] + d[0] * e + off.x, a[1] + d[1] * e + off.y, a[2] + d[2] * e + off.z], v);
+      const s = this._toScreen([a[0] + d[0] * e, a[1] + d[1] * e, a[2] + d[2] * e], v);
       return { i, x: s.x, y: s.y, name: p.name, color: p.color };
-    });
+    }).filter((p) => isolated < 0 || p.i === isolated);
   }
   centerScreen() {
     const v = new THREE.Vector3();
@@ -382,11 +393,7 @@ export class HoloScene {
       if (this.autoSpin && this.idle > 2.0 && Math.hypot(this.vel.x, this.vel.y) < 0.05) this.rot.y += 0.14 * dt;
     }
 
-    const off = this.uniforms.uOff.value;
-    for (let i = 0; i < MAXP; i++) {
-      const grabbed = this.offT[i].lengthSq() > 1e-6;
-      off[i].lerp(this.offT[i], 1 - Math.exp(-(grabbed ? 16 : 4) * dt));
-    }
+    this.uniforms.uPull.value.lerp(this.pullTarget, 1 - Math.exp(-12 * dt));
 
     this.uniforms.uExplode.value = this.explode * this.intensity;
     this.uniforms.uTime.value = t;

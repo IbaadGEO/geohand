@@ -69,10 +69,8 @@ check('index + middle -> PEACE within 10 frames', () => {
   assert.equal(seq.at(-1), 'PEACE');
   assert.ok(firstAt(seq, 'PEACE') <= 10);
 });
-check('thumb on index tip -> PINCH within 4 frames', () => {
-  const seq = gestures(run(repeat(8, hand([UP, DOWN, DOWN, DOWN], 0.05))));
-  assert.equal(seq.at(-1), 'PINCH');
-  assert.ok(firstAt(seq, 'PINCH') <= 4);
+check('thumb on index tip with index up -> POINT (pinch is not a gesture)', () => {
+  assert.equal(gestures(run(repeat(8, hand([UP, DOWN, DOWN, DOWN], 0.05)))).at(-1), 'POINT');
 });
 
 // Regressions seen in the live test (2026-11-22)
@@ -80,22 +78,8 @@ check('index pointing at the camera -> POINT (3D, not FIST)', () => {
   assert.equal(gestures(run(repeat(10, pointAtCamera()))).at(-1), 'POINT');
 });
 // Measured live (2026-11-22): pointing at the screen gave index 1.42, others ~0.8, thumb 0.25 from index tip
-check('half-extended index with curled others and thumb at 0.25 -> POINT, not PINCH', () => {
-  const seq = gestures(run(repeat(10, hand([1.42, 0.78, 0.69, 0.82], 0.25))));
-  assert.equal(seq.at(-1), 'POINT');
-  assert.ok(!seq.includes('PINCH'), seq.join(','));
-});
-check('OK-sign pinch (other fingers up, gap 0.13) -> PINCH', () => {
-  assert.equal(gestures(run(repeat(8, hand([1.27, 1.55, 1.56, 1.62], 0.13)))).at(-1), 'PINCH');
-});
-check('relaxed thumb near index (0.4 hand sizes) is not a pinch', () => {
-  const seq = gestures(run(repeat(10, hand([UP, DOWN, DOWN, DOWN], 0.4))));
-  assert.ok(!seq.includes('PINCH'), seq.join(','));
-});
-check('a two-frame pinch blip does not trigger PINCH', () => {
-  const p = hand([UP, DOWN, DOWN, DOWN]), q = hand([UP, DOWN, DOWN, DOWN], 0.05);
-  const seq = gestures(run([...repeat(5, p), [q], [q], ...repeat(5, p)]));
-  assert.ok(!seq.includes('PINCH'), seq.join(','));
+check('half-extended index with curled others and thumb at 0.25 -> POINT', () => {
+  assert.equal(gestures(run(repeat(10, hand([1.42, 0.78, 0.69, 0.82], 0.25)))).at(-1), 'POINT');
 });
 check('open hand with one finger wobbling at 1.42-1.48 stays OPEN', () => {
   const frames = repeat(5, hand([UP, UP, UP, UP]));
@@ -123,10 +107,6 @@ check('one hand whose label flips keeps its gesture (POINT)', () => {
 check('one hand whose label flips is never reported as two', () => {
   const out = run(Array.from({ length: 20 }, (_, k) => [flip(hand([UP, UP, UP, UP]), k)]));
   assert.ok(out.every((hs) => hs.length === 1), out.map((hs) => hs.length).join(','));
-});
-check('pinch survives label flips (drag is not dropped)', () => {
-  const seq = gestures(run(Array.from({ length: 20 }, (_, k) => [flip(hand([UP, DOWN, DOWN, DOWN], 0.05), k)]))).slice(5);
-  assert.ok(seq.every((g) => g === 'PINCH'), seq.join(','));
 });
 check('two hands keep their own ids when their labels swap', () => {
   const a = hand([UP, UP, UP, UP]), b = shifted(hand([DOWN, DOWN, DOWN, DOWN]), 0.4);
