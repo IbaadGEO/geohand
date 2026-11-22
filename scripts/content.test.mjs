@@ -27,6 +27,11 @@ const noLong = model([part('crust', { long: '' })]);
 
 test('passes a valid fixture', () => assert.deepEqual(checkContent(ok, refs, {}).errors, []));
 test('unknown ref id', () => assert.match(checkContent(withRef('nope'), refs, {}).errors[0], /unknown reference "nope"/));
+test('DRAFT text is a warning, release error', () => {
+  const m = model([part('crust', { short: 'DRAFT: x' })]);
+  assert.match(checkContent(m, refs, {}).warnings[0], /DRAFT/);
+  assert.match(checkContent(m, refs, { release: true }).errors[0], /DRAFT/);
+});
 test('unchecked ref is a warning, release error', () => {
   assert.equal(checkContent(ok, uncheckedRefs, {}).errors.length, 0);
   assert.ok(checkContent(ok, uncheckedRefs, {}).warnings.length > 0);

@@ -1,14 +1,16 @@
 // Guided lessons, one per level. A step: { focus: partId, explode: 0..1, view: { x, y, z } radians, text, refs }.
 // shortcut: DRAFT skeleton steps until the real cited lesson text is written (plan Task 11).
 const step = (focus, explode, y, text) => ({ focus, explode, view: { x: 0.35, y, z: 0 }, text: `DRAFT: ${text}`, refs: ['prem1981'] });
+const say = (focus, explode, y, text, ...refs) => ({ focus, explode, view: { x: 0.35, y, z: 0 }, text, refs });
 
 export const LESSONS = {
   alevel: [
-    step('crust', 0, 0.6, 'The thin rocky outer layer we live on.'),
-    step('moho', 0.5, 0.9, 'Where the crust ends and the mantle begins.'),
-    step('mantle', 0.85, 1.2, 'Hot solid rock that slowly flows.'),
-    step('outer-core', 1, 1.5, 'Liquid iron that makes the magnetic field.'),
-    step('inner-core', 1, 1.8, 'A solid iron ball at the centre.'),
+    say('crust', 0, 0.6, 'Start at the surface. The crust is about 7 km thick under the oceans and about 40 km under the continents.', 'white1992', 'mooney1998'),
+    say('moho', 0.5, 0.9, 'At the Moho, seismic waves speed up as they pass from crust into denser mantle rock.', 'prem1981'),
+    say('lithosphere', 0.6, 1.0, 'The crust and the top of the mantle together make the tectonic plates, about 80 km thick in PREM.', 'prem1981', 'garnero2016'),
+    say('mantle', 0.85, 1.2, 'The mantle is solid rock, but over geological time it convects, heated by the core below and by radioactive decay.', 'garnero2016'),
+    say('outer-core', 1, 1.5, 'At about 2,890 km, shear waves stop. The outer core is liquid iron, and its movement makes the magnetic field.', 'prem1981', 'song1996'),
+    say('inner-core', 1, 1.8, 'At the centre is a solid iron ball about 1,220 km in radius, still growing as the liquid around it freezes.', 'song1996'),
   ],
   undergrad: [
     step('oceanic-crust', 0, 0.6, 'Thin, dense crust under the oceans.'),

@@ -46,6 +46,13 @@ export function checkContent(model, refs, { release = false } = {}, lessons) {
     }
   }
 
+  // placeholder text must not ship
+  for (const level of ORDER) {
+    const drafts = (model[level]?.parts || []).filter((p) => JSON.stringify(p).includes('DRAFT')).length
+      + (lessons?.[level] || []).filter((s) => s.text?.includes('DRAFT')).length;
+    if (drafts) (release ? errors : warnings).push(`${level}: ${drafts} part(s) or lesson step(s) still have DRAFT text`);
+  }
+
   for (const id of seenRefs) {
     if (!refs[id].checked) (release ? errors : warnings).push(`reference "${id}" is not checked against the paper yet`);
   }
