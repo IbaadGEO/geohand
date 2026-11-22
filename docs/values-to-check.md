@@ -1,15 +1,15 @@
 # Values to check
 
-**Checked 2026-11-22** against the text of the owner's PDFs, paper by paper, in the sections below. Each ticked line was found on the page cited. Some displayed values are calculations from a source (for example PREM values evaluated from its Table I polynomials), and some are modelling choices (for example drawing the Moho at 35 km); the notes say which.
+**Source checks dated 2026-11-22.** The entries below identify printed values and calculations. PREM densities and velocities at specific depths are evaluated from the Table I polynomials. The depth transform, schematic geometry and citation display are checked in code.
 
-Every number GeoHand shows comes from one of the papers listed below. A reference gets a `checked` date only when all its lines are ticked.
+The references listed below support the geological values. Drawing choices are documented separately. A reference gets a `checked` date only when all its lines are ticked.
 
 ## External review, 2026-11-22
 
-An external reviewer checked the numbers, A-level text, lesson and drawing notes against 16 of the PDFs (Deuss 2014 was not in their set; it was checked separately, section 22). Every finding was re-checked against the papers before fixing. Fixed:
+An external reviewer checked the numbers, A-level text, lesson and drawing notes against 16 of the PDFs (Deuss 2014 was not in their set; it was checked separately, section 22). The fixes below use the cited papers for geological claims and the code for geometry and citation display.
 
 - The 32.5% of Earth's mass is the whole core, not the outer core (McDonough & Sun p. 244).
-- Inner-core rotation: Yang & Song (2023) report the relative rotation nearly stopping around 2009 with a slight turning-back since (abstract p. 182, p. 184), as part of a proposed oscillation. Song & Richards' rate is shown as the 1996 estimate, and their 0.3 s is for travel-time residuals relative to PREM.
+- Inner-core rotation: Yang & Song (2023) infer relative rotation nearly stopped around 2009 and may have reversed slightly during their observation period, through 2021 (pp. 182, 184–185), as part of a proposed oscillation. Song & Richards' rate is shown as the 1996 estimate, and their 0.3 s is for travel-time residuals relative to PREM.
 - PREM has a liquid ocean layer, so the outer core is not "the only liquid layer in PREM".
 - Ocean crust is basaltic lavas and dykes (layer 2) over a layer that is probably mainly gabbro (layer 3) (White et al. p. 19,683), not "basalt".
 - 7 km is the thickness of normal oceanic igneous crust, measured from its top, not depth below the sea floor.
@@ -28,11 +28,9 @@ An external reviewer checked the numbers, A-level text, lesson and drawing notes
 - The innermost inner core is labelled "proposed"; its radius and anisotropy are from the Ishii & Dziewoński model.
 - 70 km under Tibet is the CRUST 5.1 value; Christensen & Mooney report 72 km from refraction (p. 9764).
 - Christensen & Mooney's 61.8 wt% SiO~2~ is labelled as their model mean, beside Rudnick & Gao's 60.6.
-- The depth scale: depths above 660 km are redrawn; below 660 km the scale is within about 1% of true, not exactly true.
+- The depth scale: depths above 660 km are redrawn; below 660 km intervals are about 1% thicker than true-scale intervals, while absolute depths remain shifted.
 - Drawing: under oceanic crust there was a 28 km gap down to a Moho drawn at 35 km. The Moho and the lithospheric mantle now follow the crust drawn above them (7 km under oceans, 35 km under continents).
-- The panel now shows each number's page locator, and lesson steps show their sources.
-
-## 1. PREM: Dziewonski & Anderson (1981), Table I, p. 308
+- The panel shows page locators for numerical values and the A-level text and questions. A-level lesson steps show author names and page locators.
 
 ## 1. PREM: Dziewonski & Anderson (1981), Table I, p. 308
 
@@ -150,10 +148,10 @@ Section 4 was checked on 2026-11-22 against the text of the owner's PDFs. Lay et
 
 ## 25. Yang & Song (2023)
 
-- [x] Abstract, p. 182: differential rotation recently paused, with a gradual turning-back; about a seven-decade oscillation with another turning point in the early 1970s; matches length-of-day and magnetic-field changes; inner-core radius about 1,220 km
+- [x] Abstract, p. 182: differential relative rotation nearly stopped around 2009 and may have reversed slightly within the period studied; about a seven-decade oscillation with another turning point in the early 1970s; matches length-of-day and magnetic-field changes; inner-core radius about 1,220 km
 - [x] p. 184: overturn in late 2009, 95% CI 2009.0–2011.0
 
-Section 5 was checked on 2026-11-22 against the text of the owner's PDFs. The Song & Richards PDF has a font that the usual text extractor cannot read, so its text was taken with a second extractor (pdfminer). Song & Richards's 1° per year (1996) and Yang & Song's pause since 2009 (2023) are shown together on purpose: the second revises the first.
+Section 5 was checked on 2026-11-22 against the text of the owner's PDFs. The Song & Richards PDF has a font that the usual text extractor cannot read, so its text was taken with a second extractor (pdfminer). Song & Richards's estimate of roughly 1° per year refers to an earlier observation period. Yang & Song infer a near-zero relative rate around 2009 and a possible slight reversal within their observation period, through 2021.
 
 ## 22. Deuss (2014)
 

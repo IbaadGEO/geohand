@@ -15,7 +15,7 @@ export const GEOMETRY = {
 
 const R = 1.6; // display radius
 const EARTH_KM = 6371;
-// Depths above 660 km are redrawn so thin layers are visible; below 660 km the scale is within about 1% of true. [real km, drawn km]
+// Near-surface thicknesses are exaggerated. Below 660 km, intervals are about 1% thicker and absolute depths are shifted. [real km, drawn km]
 const STRETCH = [[0, 0], [7, 30], [35, 150], [100, 260], [410, 430], [660, 600], [EARTH_KM, EARTH_KM]];
 export function drawnDepth(km) {
   for (let i = 1; i < STRETCH.length; i++) {

@@ -1,6 +1,6 @@
 // Checks a model's content (all three levels) against the reference list. Pure: no DOM, no imports.
 const ORDER = ['alevel', 'undergrad', 'postgrad'];
-export const MAX_PARTS = 24; // scene shader limit (MAXP)
+export const MAX_PARTS = 24; // scene part limit (MAXP)
 
 export function checkContent(model, refs, { release = false } = {}, lessons) {
   const errors = [], warnings = [];

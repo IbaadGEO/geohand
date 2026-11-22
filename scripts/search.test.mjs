@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { searchBank, normalise } from '../src/ui/search.js';
+import { EARTH } from '../src/content/earth/index.js';
 
 const q = (q, a = 'Answer.') => ({ q, a, refs: ['prem1981'] });
 const bank = {
@@ -31,3 +32,13 @@ test('at most 8 results', () => {
   assert.equal(searchBank('core question', big, 'alevel').length, 8);
 });
 test('normalise drops stop words and accents', () => assert.deepEqual(normalise('Why is the Mohorovičić boundary?'), ['mohorovicic', 'boundary']));
+test('finds a cited answer when the learner searches for S waves in liquid', () => {
+  const [hit] = searchBank('Why do S waves stop in liquid?', EARTH, 'alevel');
+  assert.match(hit.a, /liquid/);
+  assert.match(hit.where, /308/);
+});
+test('exact question leads over a similar phrase and draft questions are excluded', () => {
+  const results = searchBank('what is the lithosphere made of', EARTH, 'undergrad');
+  assert.equal(results[0].q, 'What is the lithosphere made of?');
+  assert.ok(results.every((result) => !result.q.includes('DRAFT')));
+});

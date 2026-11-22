@@ -30,13 +30,12 @@ const el = (tag, cls, text) => {
  */
 export function mountPanel(root) {
   let current;
-  const searchSlot = el('div', 'info-search');
 
   function show(part, refs, color = '#555a70') {
     if (part === current) return;
     current = part;
     if (!part) {
-      root.replaceChildren(el('p', 'info-prompt', 'What do you want to learn about?'), el('p', 'info-empty', 'Point at a layer, or click one.'));
+      root.replaceChildren(el('p', 'info-prompt', 'What do you want to learn about?'), el('p', 'info-empty', 'Hold a peace sign to highlight a layer, or click one.'));
       return;
     }
     // number references in order of first use
@@ -51,10 +50,12 @@ export function mountPanel(root) {
     head.append(dot, el('b', '', part.title));
     if (part.kind === 'boundary') head.append(el('span', 'tag ghost', 'boundary'));
 
-    const more = el('details', 'more');
-    more.append(el('summary', '', 'More detail'), el('p', '', part.long));
-
-    const parts = [head, el('p', 'short', part.short), more];
+    const parts = [head];
+    if (!part.draft) {
+      const more = el('details', 'more');
+      more.append(el('summary', '', 'More detail'), el('p', '', part.long));
+      parts.push(el('p', 'short', part.short), more);
+    }
 
     if (part.numbers?.length) {
       const table = el('table', 'nums');
@@ -69,17 +70,17 @@ export function mountPanel(root) {
     }
     if (part.simplification) parts.push(el('p', 'simp', `Simplified: ${part.simplification}`));
 
-    if (part.questions?.length) {
+    if (!part.draft && part.questions?.length) {
       const qs = el('details', 'qs');
       qs.append(el('summary', '', `Common questions (${part.questions.length})`));
       for (const q of part.questions) {
         const d = el('details', 'q');
         d.append(el('summary', '', q.q), el('p', '', `${q.a}${cite(q.refs)}`));
+        if (q.where) d.append(el('p', 'where', q.where));
         qs.append(d);
       }
       parts.push(qs);
     }
-    parts.push(searchSlot);
 
     if (order.length) {
       const ol = el('ol', 'refs');
@@ -103,7 +104,7 @@ export function mountPanel(root) {
   }
 
   show(null);
-  return { show, searchSlot };
+  return { show };
 }
 
 /**
@@ -118,7 +119,7 @@ export function mountSearch(slot, { find, levelLabel, currentLevel, onAsk }) {
   input.maxLength = 500;
   const list = el('div', 'search-out');
   const askHost = el('div', 'ask-host'); // separate from the results, so more typing in search keeps a half-written question
-  slot.append(el('h4', '', "Don't get something?"), input, list, askHost);
+  slot.append(input, list, askHost);
 
   input.addEventListener('input', () => {
     const query = input.value;
@@ -128,6 +129,7 @@ export function mountSearch(slot, { find, levelLabel, currentLevel, onAsk }) {
       const s = el('summary', '', h.q);
       if (h.level !== currentLevel()) s.append(el('span', 'tag ghost', levelLabel(h.level)));
       d.append(s, el('p', '', h.a));
+      if (h.where) d.append(el('p', 'where', h.where));
       return d;
     });
     if (!hits.length && query.trim().length >= 5) {

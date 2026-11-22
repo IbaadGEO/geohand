@@ -8,22 +8,30 @@ export function normalise(s) {
     .normalize('NFKD')
     .replace(/\p{M}/gu, '')
     .replace(/['’]s\b/g, '')
+    .replace(/\b(?:s|shear)[\s-]+waves?\b/g, 'shear wave')
+    .replace(/\bliquids\b/g, 'liquid')
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .split(' ')
     .filter((w) => w && !STOP.has(w));
 }
 
-/** Best matches first (shared words / query words, at least half); ties go to the current level. At most 8. */
+/** Rank question matches first, using the answer text for searches phrased differently. */
 export function searchBank(query, content, level) {
   const words = normalise(query);
   if (!words.length) return [];
   const hits = [];
   for (const [lv, { parts }] of Object.entries(content)) {
     for (const p of parts) {
+      if (p.draft) continue;
       for (const q of p.questions || []) {
-        const have = new Set(normalise(q.q));
-        const score = words.filter((w) => have.has(w)).length / words.length;
-        if (score >= 0.5) hits.push({ partId: p.id, level: lv, q: q.q, a: q.a, refs: q.refs, score });
+        const questionWords = normalise(q.q);
+        const title = new Set(questionWords);
+        const terms = new Set([...title, ...normalise(q.a)]);
+        const titleMatches = words.filter((w) => title.has(w)).length;
+        const contentMatches = words.filter((w) => terms.has(w)).length;
+        const exact = questionWords.join(' ') === words.join(' ');
+        const score = exact ? 2 : Math.max(titleMatches, contentMatches * 0.75) / words.length;
+        if (score >= 0.5) hits.push({ partId: p.id, level: lv, q: q.q, a: q.a, refs: q.refs, where: q.where, score });
       }
     }
   }

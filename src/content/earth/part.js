@@ -5,5 +5,5 @@ export const part = (level, id, kind, title, text, parent) => ({
   id, kind, title, ...(parent && { parent }), ...text, numbers: NUMBERS[level][id] || [],
 });
 
-/** A bank question with its reference ids. */
-export const q = (question, a, ...refs) => ({ q: question, a, refs });
+/** A bank question with its reference ids and page locators. */
+export const q = (question, a, where, ...refs) => ({ q: question, a, where, refs });
