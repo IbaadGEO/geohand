@@ -25,7 +25,7 @@ test('same level builds the same points every time', () => {
   assert.deepEqual(Array.from(a.slice(0, 30)), Array.from(b.slice(0, 30)));
 });
 
-import { GEOMETRY } from '../src/models/earth.js';
+import { GEOMETRY, drawnDepth } from '../src/models/earth.js';
 import { NUMBERS } from '../src/content/earth/numbers.js';
 test('geometry follows the cited depths (PREM Table I, ak135 Table 3)', () => {
   assert.deepEqual(GEOMETRY.lab, [80, 80]);
@@ -40,11 +40,36 @@ test('every part at every level has its numbers entry', () => {
     for (const p of EARTH[lv].parts) assert.ok(Array.isArray(NUMBERS[lv][p.id]), `${lv}/${p.id}`);
 });
 test('parts with no source in hand are not shown', () => {
-  for (const lv of ['alevel', 'undergrad', 'postgrad'])
-    for (const id of ['llsvp', 'innermost-inner-core']) assert.ok(!EARTH[lv].parts.some((p) => p.id === id), `${lv}/${id}`);
+  for (const lv of ['alevel', 'undergrad', 'postgrad']) assert.ok(!EARTH[lv].parts.some((p) => p.id === 'innermost-inner-core'), lv);
+});
+test('LLSVPs are postgrad only, with cited numbers', () => {
+  assert.ok(EARTH.postgrad.parts.some((p) => p.id === 'llsvp'));
+  assert.ok(!EARTH.undergrad.parts.some((p) => p.id === 'llsvp'));
+  assert.ok(NUMBERS.postgrad.llsvp.length > 0);
 });
 test('every crust part and the Moho show cited numbers at every level', () => {
   for (const lv of ['alevel', 'undergrad', 'postgrad'])
     for (const p of EARTH[lv].parts.filter((p) => /crust|moho/.test(p.id))) assert.ok(NUMBERS[lv][p.id].length > 0, `${lv}/${p.id}`);
 });
 test('oceanic crust drawn at White et al. thickness', () => assert.deepEqual(GEOMETRY['oceanic-crust'], [0, 7]));
+test('LLSVPs drawn at Garnero et al. size: ±45° caps on the CMB, at most 1,200 km tall', () => {
+  const llsvp = buildEarth('postgrad').find((p) => p.id === 'llsvp');
+  const KM = (d) => 1.6 * (1 - drawnDepth(d) / 6371), rCmb = KM(2891), top = KM(2891 - 1200);
+  for (const inst of llsvp.instances) {
+    const p = inst.cloud.p;
+    for (let i = 0; i < p.length; i += 3) {
+      const r = Math.hypot(p[i], p[i + 2]);
+      assert.ok(r >= rCmb - 1e-9 && r <= top + 1e-9, `radius ${r}`);
+    }
+  }
+  assert.equal(llsvp.instances.length, 2);
+});
+test('boundaries are picked only by their cross-section ring', () => {
+  for (const lv of ['alevel', 'undergrad', 'postgrad'])
+    for (const p of buildEarth(lv).filter((p) => p.kind === 'boundary')) {
+      const pickable = p.instances.filter((i) => i.pickable !== false);
+      assert.equal(pickable.length, 1, p.id);
+      const q = pickable[0].cloud.p;
+      for (let i = 1; i < q.length; i += 3) assert.ok(Math.abs(q[i]) < 0.02, `${lv}/${p.id} y=${q[i]}`);
+    }
+});

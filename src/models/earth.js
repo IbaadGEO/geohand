@@ -2,7 +2,7 @@ import { Cloud, P, I, ellipsoid, disc, ring, unitVec, rand, reseed } from './sha
 import { EARTH } from '../content/earth/index.js';
 
 // Real depths in km. PREM = Dziewonski & Anderson (1981) Table I; ak135 = Kennett et al. (1995) Table 3.
-// Crust: White et al. (1992) oceanic 7.1 km; continental drawn at ak135's 35 km (CRUST 5.1 averages 38 km). Innermost inner core and LLSVPs await their papers.
+// Crust: White et al. (1992) oceanic 7.1 km; continental drawn at ak135's 35 km (CRUST 5.1 averages 38 km). LLSVPs from Garnero et al. (2016); the innermost inner core awaits its paper.
 export const GEOMETRY = {
   crust: [0, 35], 'continental-crust': [0, 35], 'oceanic-crust': [0, 7], // ak135 Moho 35 km; White et al. 7.1 km
   lithosphere: [35, 80], 'lithospheric-mantle': [35, 80], // PREM lid base 80 km
@@ -89,6 +89,7 @@ export function buildEarth(level = 'alevel') {
   const shells = [...ids].filter((id) => meta[id].kind === 'layer' && GEOMETRY[id] && !/crust|inner-core/.test(id));
   shells.sort((a, b) => GEOMETRY[a][0] - GEOMETRY[b][0]);
   const parts = [];
+  const lifts = {};
 
   if (ids.has('crust')) parts.push(make('crust', plates(KM(35), 9000, ALL)));
   if (ids.has('continental-crust')) parts.push(make('continental-crust', plates(KM(35), 9000, CONTINENTAL)));
@@ -100,20 +101,24 @@ export function buildEarth(level = 'alevel') {
     const rOut = KM(top), rIn = KM(base), vol = rOut ** 3 - rIn ** 3;
     const { top: t, bot: b } = halves(rIn, rOut, Math.round(1500 + vol * 900), Math.round(300 + (rOut ** 2 - rIn ** 2) * 220));
     const lift = 1.35 - (n / Math.max(1, shells.length - 1)) * 1.0;
+    lifts[id] = lift;
     parts.push(make(id, [I(t, [0, lift, 0], anchorAt((rIn + rOut) / 2, 20 + n * 47)), I(b, [0, -lift, 0])]));
   });
 
   if (ids.has('llsvp')) {
-    // two antipodal blobs at the base of the mantle (African and Pacific provinces), on the cross-section
-    const r = KM(2750), blobs = [new Cloud(), new Cloud()];
-    [0, 180].forEach((deg, j) => {
-      const [cx, , cz] = anchorAt(r, deg, 0);
-      for (const [x, y, z] of Array.from({ length: 700 }, unitVec)) {
-        const s = Math.cbrt(rand());
-        blobs[j].add(cx + x * 0.16 * s, Math.abs(y) * 0.12 * s, cz + z * 0.1 * s);
+    // Garnero et al. (2016) p. 481: two antipodal provinces covering ~30% of the CMB (a cap ~45° in radius each),
+    // reduced velocities up to 1,200 km above the CMB in places. Drawn on the cross-section, tallest at the centre.
+    const rCmb = KM(GEOMETRY.cmb[0]), hMax = KM(GEOMETRY.cmb[0] - 1200) - rCmb, half = (45 * Math.PI) / 180;
+    const blobs = [0, 180].map((deg) => {
+      const c = new Cloud(), mid = (deg * Math.PI) / 180;
+      for (let i = 0; i < 1400; i++) {
+        const u = rand() * 2 - 1, a = mid + u * half;
+        const r = rCmb + hMax * (1 - u * u) * rand();
+        c.add(r * Math.cos(a), 0.006 + rand() * 0.02, r * Math.sin(a));
       }
+      return c;
     });
-    parts.push(make('llsvp', blobs.map((c) => I(c, [0, 0.6, 0]))));
+    parts.push(make('llsvp', blobs.map((c, j) => I(c, [0, lifts['d-double-prime'] ?? lifts['lower-mantle'] ?? 0.6, 0], j ? undefined : anchorAt(rCmb + hMax / 2, 0)))));
   }
 
   const rIc = KM(GEOMETRY.icb[0]);
@@ -130,8 +135,9 @@ export function buildEarth(level = 'alevel') {
   for (const id of ids) {
     if (meta[id].kind !== 'boundary') continue;
     const r = KM(GEOMETRY[id][0]);
-    const c = ellipsoid(r, r, r, Math.round(120 + r * r * 90)).merge(ring(r, 0, Math.round(90 + r * 70)));
-    parts.push(make(id, [I(c, [0, 0, 0], anchorAt(r, 300 + parts.length * 9))], 'boundary', BOUNDARY));
+    // only the ring is pickable: the sparse surface would otherwise cover every part inside it on screen
+    const surface = { ...I(ellipsoid(r, r, r, Math.round(120 + r * r * 90))), pickable: false };
+    parts.push(make(id, [I(ring(r, 0, Math.round(90 + r * 70)), [0, 0, 0], anchorAt(r, 300 + parts.length * 9)), surface], 'boundary', BOUNDARY));
   }
   return parts;
 }

@@ -22,6 +22,7 @@ test('save then load', () => {
 test('maps to parent going down a level', () => assert.equal(mapPart('transition-zone', 'undergrad', 'alevel'), 'mantle'));
 test('maps to first child going up a level', () => assert.equal(mapPart('mantle', 'alevel', 'undergrad'), 'upper-mantle'));
 test('postgrad-only part maps to its parent', () => assert.equal(mapPart('d-double-prime', 'postgrad', 'undergrad'), 'lower-mantle'));
+test('LLSVP maps to the lower mantle', () => assert.equal(mapPart('llsvp', 'postgrad', 'undergrad'), 'lower-mantle'));
 test('same id kept', () => assert.equal(mapPart('cmb', 'alevel', 'postgrad'), 'cmb'));
 test('walks the parent chain', () => assert.equal(mapPart('d-double-prime', 'postgrad', 'alevel'), 'mantle'));
 test('boundary with no match gives null', () => assert.equal(mapPart('d410', 'undergrad', 'alevel'), null));

@@ -6,6 +6,7 @@ export default {
   parts: [
     ...undergrad.parts.map((p) => draft('postgrad', p.id, p.kind, p.title, p.parent)),
     draft('postgrad', 'd-double-prime', 'layer', 'D″ layer', 'lower-mantle'),
-    // large low-velocity provinces and the innermost inner core return when their papers are in hand
+    draft('postgrad', 'llsvp', 'layer', 'Large low-shear-velocity provinces', 'lower-mantle'),
+    // the innermost inner core returns when its paper is in hand
   ],
 };

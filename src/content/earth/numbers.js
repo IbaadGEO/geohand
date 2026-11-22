@@ -12,6 +12,8 @@ const MS = (where = 'Table 4, p. 237') => ({ refs: ['mcdonough1995'], where }); 
 const PE = (where = 'Abstract, p. 221') => ({ refs: ['pearson2014'], where }); // Pearson et al. (2014)
 const FO = (where = 'Abstract, p. 5920') => ({ refs: ['fukao2013'], where }); // Fukao & Obayashi (2013)
 const FR = (where) => ({ refs: ['french2015'], where }); // French & Romanowicz (2015)
+const GA = (where) => ({ refs: ['garnero2016'], where }); // Garnero, McNamara & Shim (2016)
+const LA = (where) => ({ refs: ['lay1998'], where }); // Lay, Williams & Garnero (1998)
 
 const n = (label, value, src) => ({ label, value, ...src });
 
@@ -98,7 +100,13 @@ export const NUMBERS = {
     lab: [n('Depth (base of PREM lid)', '80 km', PREM())],
     d410: [n('Depth', '410 km (ak135); 400 km (PREM)', BOTH), n('Density jump', '3.54 → 3.72 g/cm^3^', PREM())],
     d660: [n('Depth', '660 km (ak135); 670 km (PREM)', BOTH), n('Density jump', '3.99 → 4.38 g/cm^3^', PREM()), n('Sinking slabs', 'many lie flat on top of it or are held just below it, at 660–1,000 km', FO())],
-    cmb: [n('Depth', '2,891 km (PREM); 2,891.5 km (ak135)', BOTH), n('Density jump', '5.57 → 9.90 g/cm^3^', PREM()), n('S-wave speed', '7.27 → 0 km/s', PREM())],
+    cmb: [
+      n('Depth', '2,891 km (PREM); 2,891.5 km (ak135)', BOTH),
+      n('Density jump', '5.57 → 9.90 g/cm^3^', PREM()),
+      n('S-wave speed', '7.27 → 0 km/s', PREM()),
+      n('Temperature jump across the base of the mantle', 'about 1,000 ± 500 K', LA('p. 461')),
+      n('Above it', 'two continent-sized low-velocity zones cover about 30% of its area', GA('p. 481')),
+    ],
     icb: [n('Depth', '5,149.5 km (PREM); 5,153.5 km (ak135)', BOTH), n('S-wave speed', '0 → 3.50 km/s', PREM()), n('Density jump', '12.17 → 12.76 g/cm^3^', PREM())],
   },
   postgrad: {
@@ -144,6 +152,15 @@ export const NUMBERS = {
     'd-double-prime': [
       n('PREM basal region', '2,741–2,891 km (radius 3,480–3,630 km), its own velocity polynomial', PREM()),
       n('Plume roots', 'patches 500–800 km across of strongly reduced v~S~; under Hawaii, Iceland and Samoa they match known ultralow-velocity zones', FR('Abstract, p. 95; p. 96')),
+      n('Seismic definition', 'lowermost ~200 km; intermittent 1.5–3% P and S jumps 150–300 km above the CMB; laterally varying S-wave anisotropy', LA('p. 461')),
+      n('Ultralow-velocity zones', '5–40 km thick, P and S speeds >10% low; beneath the central Pacific, Alaska, Iceland and Africa', LA('p. 462')),
+    ],
+    llsvp: [
+      n('What they are', 'two nearly antipodal provinces of low v~S~: one beneath the Pacific, one beneath the Atlantic and western and southern Africa', GA('p. 481')),
+      n('Size', 'about 30% of the core–mantle boundary area; reduced velocities up to 1,200 km above the CMB in places', GA('p. 481')),
+      n('Shape', 'Pacific roughly round; African elongated north–south, stretched eastward in the south', GA('p. 481')),
+      n('Likely nature', 'thermochemical piles, denser than the surrounding mantle; an intrinsic density excess of up to a few per cent is enough to form them', GA('Abstract, p. 481; p. 485')),
+      n('ULVZs', 'commonly 5–20 km thick, within and near LLSVP margins', GA('p. 482')),
     ],
     'outer-core': [n('Light element', '5–15% (about 10 ± 5%) of O, S, Si or a mix; about 86% of Earth’s Fe is in the core', MS('Abstract, p. 223')), n('PREM ρ, v~P~ at top', '9.903 g/cm^3^, 8.065 km/s', PREM()), n('PREM ρ, v~P~ at bottom', '12.166 g/cm^3^, 10.356 km/s', PREM())],
     'inner-core': [n('PREM ρ, v~P~, v~S~ at top', '12.764 g/cm^3^, 11.028, 3.504 km/s', PREM()), n('PREM ρ at centre', '13.088 g/cm^3^', PREM())],
@@ -155,7 +172,11 @@ export const NUMBERS = {
     lab: [n('PREM lid base', '80 km: Q~μ~ falls from 600 to 80', PREM())],
     d410: [n('Depth', '400 km (PREM); 410 km (ak135)', BOTH), n('PREM v~P~ jump', '8.905 → 9.134 km/s', PREM())],
     d660: [n('Depth', '670 km (PREM); 660 km (ak135)', BOTH), n('PREM v~P~ jump', '10.266 → 10.751 km/s', PREM())],
-    cmb: [n('Depth', '2,891.0 km (PREM); 2,891.5 km (ak135)', BOTH), n('PREM v~P~ drop', '13.717 → 8.065 km/s', PREM())],
+    cmb: [
+      n('Depth', '2,891.0 km (PREM); 2,891.5 km (ak135)', BOTH),
+      n('PREM v~P~ drop', '13.717 → 8.065 km/s', PREM()),
+      n('Thermal boundary layer', 'temperature contrast 1,000 ± 500 K; ambient about 3,000 K; plumes may carry 10–15% of surface heat flux', LA('p. 461')),
+    ],
     icb: [n('Depth', '5,149.5 km (PREM); 5,153.5 km (ak135)', BOTH), n('PREM v~P~ jump', '10.356 → 11.028 km/s', PREM())],
   },
 };

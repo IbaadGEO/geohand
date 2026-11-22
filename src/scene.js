@@ -202,7 +202,7 @@ export class HoloScene {
           rnd.set([s * Math.cos(tt) * rr, uu * rr, s * Math.sin(tt) * rr], k * 3);
           seed[k] = Math.random();
           maxR = Math.max(maxR, Math.hypot(x + inst.dir[0], y + inst.dir[1], z + inst.dir[2]));
-          if (Math.random() < 160 / Math.max(160, n)) samples.push(x, y, z, inst.dir[0], inst.dir[1], inst.dir[2]);
+          if (inst.pickable !== false && Math.random() < 160 / Math.max(160, n)) samples.push(x, y, z, inst.dir[0], inst.dir[1], inst.dir[2]);
         }
       });
       meta.push({ id: p.id, kind: p.kind, name: p.name, desc: p.desc, color: p.color, anchors, samples: new Float32Array(samples) });

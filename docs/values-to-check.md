@@ -94,7 +94,20 @@ The "about half of all heat loss" note for young ocean floor is worked out (23.1
 
 Section 3 was checked on 2026-11-22 against the text of the owner's PDFs, like the sections above. Frost (2008, #11) and Grand (2002, #14) were not in this batch.
 
+## 16. Lay, Williams & Garnero (1998)
+
+- [x] p. 461: thermal boundary layer contrast 1,000 ± 500 K; ambient about 3,000 K; plumes may carry 10–15% of surface heat flux; D″ is the lowermost 200 km; 1.5–3% P and S discontinuities 150–300 km above the CMB; laterally varying S-wave anisotropy
+- [x] p. 462: ultralow-velocity layer 5–40 km thick with P and S reductions over 10%; extensive beneath the central Pacific, Alaska, Iceland and Africa
+
+## 19. Garnero, McNamara & Shim (2016)
+
+- [x] p. 481: two nearly antipodal LLSVPs, beneath the Pacific and beneath the Atlantic and western and southern Africa; about 30% of the CMB area; reduced velocities up to 1,200 km above the CMB in places; Pacific round, African elongated north–south and stretched eastward in the south; abstract calls them thermochemical piles denser than the surrounding mantle
+- [x] p. 482: ULVZs commonly 5–20 km thick, within and near LLSVP margins
+- [x] p. 485: an intrinsic density increase of up to a few per cent is enough to form piles
+
+Section 4 was checked on 2026-11-22 against the text of the owner's PDFs. Lay et al. give ULVZs as 5–40 km thick and Garnero et al. as commonly 5–20 km; both are shown, each with its own source. D″ is the lowermost ~200 km in Lay et al., while PREM's basal region is 150 km (2,741–2,891 km); the model draws PREM's.
+
 ## What these papers don't cover yet
 
-- **Large low-velocity provinces and the innermost inner core:** need #19 and #23. They are left out of the postgraduate model for now.
-- **Temperatures, compositions and how each layer formed:** crust composition is now in (#8); mantle composition, water, slabs and plumes are now in (#10, #12, #13, #15); the core and lowermost mantle still need #16–25. The base of the lithosphere also needs #9.
+- **Innermost inner core:** needs #23. It is left out of the postgraduate model for now. The large low-velocity provinces are back, from #19.
+- **Temperatures, compositions and how each layer formed:** crust composition is now in (#8); mantle composition, water, slabs and plumes are now in (#10, #12, #13, #15); the lowermost mantle is in (#16, #19); post-perovskite and the core still need #17, #18 and #20–25. The base of the lithosphere also needs #9.
