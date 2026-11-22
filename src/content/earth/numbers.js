@@ -8,6 +8,10 @@ const CM = (where = 'Abstract, p. 9761') => ({ refs: ['christensen1995'], where 
 const WH = (where = 'Abstract, p. 19,683') => ({ refs: ['white1992'], where }); // White, McKenzie & O'Nions (1992)
 const CR = (where) => ({ refs: ['mooney1998'], where }); // CRUST 5.1, Mooney, Laske & Masters (1998)
 const RG = (where = 'Table 11, p. 53') => ({ refs: ['rudnick2003'], where }); // Rudnick & Gao (2003)
+const MS = (where = 'Table 4, p. 237') => ({ refs: ['mcdonough1995'], where }); // McDonough & Sun (1995), pyrolite model
+const PE = (where = 'Abstract, p. 221') => ({ refs: ['pearson2014'], where }); // Pearson et al. (2014)
+const FO = (where = 'Abstract, p. 5920') => ({ refs: ['fukao2013'], where }); // Fukao & Obayashi (2013)
+const FR = (where) => ({ refs: ['french2015'], where }); // French & Romanowicz (2015)
 
 const n = (label, value, src) => ({ label, value, ...src });
 
@@ -35,8 +39,13 @@ export const NUMBERS = {
     ],
     lithosphere: [n('Base', 'about 80 km deep', PREM()), n('Density below the crust', 'about 3.4 g/cm^3^', PREM())],
     asthenosphere: [n('Depth', 'about 80–220 km', PREM())],
-    mantle: [n('Depth', 'about 35–2,890 km', BOTH), n('Density', '3.4 at the top to 5.6 g/cm^3^ at the bottom', PREM())],
-    'outer-core': [n('Depth', 'about 2,890–5,150 km', PREM()), n('Shear (S) wave speed', '0: S waves cannot pass, so it is liquid', PREM()), n('Density', '9.9–12.2 g/cm^3^', PREM())],
+    mantle: [
+      n('Depth', 'about 35–2,890 km', BOTH),
+      n('Density', '3.4 at the top to 5.6 g/cm^3^ at the bottom', PREM()),
+      n('Main ingredients', 'about 45% silica (SiO~2~) and 38% magnesium oxide (MgO)', MS()),
+      n('Hot plumes', 'rise from the base of the mantle beneath Hawaii, Iceland and Samoa', FR('Abstract, p. 95')),
+    ],
+    'outer-core': [n('Made of', 'iron and nickel, with about 10% of lighter elements such as oxygen, sulfur or silicon', MS('Abstract, p. 223')), n('Depth', 'about 2,890–5,150 km', PREM()), n('Shear (S) wave speed', '0: S waves cannot pass, so it is liquid', PREM()), n('Density', '9.9–12.2 g/cm^3^', PREM())],
     'inner-core': [n('Depth', 'about 5,150 km to the centre (6,371 km)', PREM()), n('Shear (S) wave speed', 'about 3.5 km/s: S waves pass, so it is solid', PREM()), n('Density at the centre', 'about 13 g/cm^3^', PREM())],
     moho: [n('Depth', 'about 7 km below the sea floor; about 40 km under continents', { refs: ['white1992', 'mooney1998'], where: 'White et al. abstract, p. 19,683; CRUST 5.1 Plate 1 caption, p. 733' })],
     cmb: [n('Depth', 'about 2,890 km', BOTH), n('Density jump', '5.6 → 9.9 g/cm^3^', PREM())],
@@ -60,10 +69,26 @@ export const NUMBERS = {
       n('S-wave speed', 'falls with depth, 4.47 → 4.42 km/s', PREM()),
       n('Shear quality factor Q~μ~', '80, against 600 in the lid above: it damps waves more', PREM()),
     ],
-    'upper-mantle': [n('Depth', '220 km (base of PREM low-velocity zone) to 410 km (ak135)', BOTH), n('Density', '3.44–3.54 g/cm^3^', PREM())],
-    'transition-zone': [n('Depth', '410–660 km (ak135); 400–670 km (PREM)', BOTH), n('Density', '3.72–3.99 g/cm^3^', PREM())],
-    'lower-mantle': [n('Depth', '660–2,891 km', BOTH), n('Density', '4.38–5.57 g/cm^3^', PREM()), n('P-wave speed', '10.75–13.72 km/s', PREM())],
-    'outer-core': [n('Depth', '2,891–5,149.5 km', PREM()), n('S-wave speed', '0 km/s (liquid)', PREM()), n('P-wave speed', '8.06–10.36 km/s', PREM()), n('Density', '9.90–12.17 g/cm^3^', PREM())],
+    'upper-mantle': [
+      n('Depth', '220 km (base of PREM low-velocity zone) to 410 km (ak135)', BOTH),
+      n('Density', '3.44–3.54 g/cm^3^', PREM()),
+      n('Main mineral', 'olivine (Mg~2~SiO~4~), down to about 400 km', PE('p. 221')),
+      n('Mantle composition (pyrolite, wt%)', 'SiO~2~ 45.0, MgO 37.8, FeO 8.05, Al~2~O~3~ 4.45, CaO 3.55', MS()),
+    ],
+    'transition-zone': [
+      n('Depth', '410–660 km (ak135); 400–670 km (PREM)', BOTH),
+      n('Density', '3.72–3.99 g/cm^3^', PREM()),
+      n('Main minerals', 'wadsleyite and ringwoodite, denser forms of olivine', PE()),
+      n('Water', 'its minerals can hold up to about 2.5% water by weight; a ringwoodite crystal in a Brazilian diamond shows about 1% in one place', PE()),
+    ],
+    'lower-mantle': [
+      n('Depth', '660–2,891 km', BOTH),
+      n('Density', '4.38–5.57 g/cm^3^', PREM()),
+      n('P-wave speed', '10.75–13.72 km/s', PREM()),
+      n('Sinking slabs', 'most either stall above the 660 or are held at 660–1,000 km', FO()),
+      n('Plumes', 'about 800–1,000 km wide under Hawaii, rising from the core–mantle boundary to about 1,000 km depth', FR('pp. 95–96')),
+    ],
+    'outer-core': [n('Make-up', 'iron–nickel alloy with 10 ± 5% of a light element (O, S or Si)', MS('Abstract, p. 223')), n('Share of Earth’s mass', 'about 32.5%', MS('Section 6, p. 244')), n('Depth', '2,891–5,149.5 km', PREM()), n('S-wave speed', '0 km/s (liquid)', PREM()), n('P-wave speed', '8.06–10.36 km/s', PREM()), n('Density', '9.90–12.17 g/cm^3^', PREM())],
     'inner-core': [n('Depth', '5,149.5–6,371 km', PREM()), n('S-wave speed', '3.50–3.67 km/s (solid)', PREM()), n('Density', '12.76–13.09 g/cm^3^', PREM())],
     moho: [
       n('Depth', '38 km under continents, 12.6 km below sea level under oceans (CRUST 5.1)', CR('Section 8, p. 735')),
@@ -72,7 +97,7 @@ export const NUMBERS = {
     ],
     lab: [n('Depth (base of PREM lid)', '80 km', PREM())],
     d410: [n('Depth', '410 km (ak135); 400 km (PREM)', BOTH), n('Density jump', '3.54 → 3.72 g/cm^3^', PREM())],
-    d660: [n('Depth', '660 km (ak135); 670 km (PREM)', BOTH), n('Density jump', '3.99 → 4.38 g/cm^3^', PREM())],
+    d660: [n('Depth', '660 km (ak135); 670 km (PREM)', BOTH), n('Density jump', '3.99 → 4.38 g/cm^3^', PREM()), n('Sinking slabs', 'many lie flat on top of it or are held just below it, at 660–1,000 km', FO())],
     cmb: [n('Depth', '2,891 km (PREM); 2,891.5 km (ak135)', BOTH), n('Density jump', '5.57 → 9.90 g/cm^3^', PREM()), n('S-wave speed', '7.27 → 0 km/s', PREM())],
     icb: [n('Depth', '5,149.5 km (PREM); 5,153.5 km (ak135)', BOTH), n('S-wave speed', '0 → 3.50 km/s', PREM()), n('Density jump', '12.17 → 12.76 g/cm^3^', PREM())],
   },
@@ -98,11 +123,29 @@ export const NUMBERS = {
       n('PREM low-velocity zone', '80–220 km, Q~μ~ = 80', PREM()),
       n('Isotropic-equivalent v~S~', '4.471 km/s at 80 km → 4.419 km/s at 220 km', PREM('Table I footnote, p. 308')),
     ],
-    'upper-mantle': [n('Depth', '220–400 km (PREM); 210–410 km region in ak135', BOTH), n('PREM ρ, v~P~, v~S~ at 220 km', '3.436 g/cm^3^, 8.559, 4.644 km/s', PREM())],
-    'transition-zone': [n('Depth', '400–670 km (PREM); 410–660 km (ak135)', BOTH), n('PREM internal boundary', '600 km (radius 5,771 km)', PREM())],
-    'lower-mantle': [n('PREM ρ at 670 km / 2,741 km', '4.381 / 5.491 g/cm^3^', PREM()), n('PREM v~S~ at 670 km / 2,741 km', '5.945 / 7.266 km/s', PREM())],
-    'd-double-prime': [n('PREM basal region', '2,741–2,891 km (radius 3,480–3,630 km), its own velocity polynomial', PREM())],
-    'outer-core': [n('PREM ρ, v~P~ at top', '9.903 g/cm^3^, 8.065 km/s', PREM()), n('PREM ρ, v~P~ at bottom', '12.166 g/cm^3^, 10.356 km/s', PREM())],
+    'upper-mantle': [
+      n('Depth', '220–400 km (PREM); 210–410 km region in ak135', BOTH),
+      n('PREM ρ, v~P~, v~S~ at 220 km', '3.436 g/cm^3^, 8.559, 4.644 km/s', PREM()),
+      n('Pyrolite silicate Earth (wt%)', 'SiO~2~ 45.0, MgO 37.8, FeO 8.05, Al~2~O~3~ 4.45, CaO 3.55, Na~2~O 0.36; Mg# 89.3', MS()),
+    ],
+    'transition-zone': [
+      n('Depth', '400–670 km (PREM); 410–660 km (ak135)', BOTH),
+      n('PREM internal boundary', '600 km (radius 5,771 km)', PREM()),
+      n('Ringwoodite in Juína diamond JUc29', '1.4–1.5 wt% H~2~O by FTIR: the first terrestrial high-pressure olivine polymorph found', PE('Abstract, p. 221; p. 222')),
+      n('Water in the zone sampled', 'about 1.0 wt%, against a capacity of about 2.5 wt% in wadsleyite and ringwoodite', PE('pp. 221, 223')),
+    ],
+    'lower-mantle': [
+      n('PREM ρ at 670 km / 2,741 km', '4.381 / 5.491 g/cm^3^', PREM()),
+      n('PREM v~S~ at 670 km / 2,741 km', '5.945 / 7.266 km/s', PREM()),
+      n('Slab stages (P-wave tomography, >10 million travel times)', 'I stagnant above the 660; II penetrating; III trapped at 660–1,000 km; IV sinking deeper. Most are at I or III', FO()),
+      n('Plume conduits (SEMUCB-WM1)', 'v~S~ 1.5–2% low, 800–1,000 km wide, vertical from the CMB to ≥1,000 km depth', FR('pp. 95–96')),
+      n('Plume temperature excess', '400–500 °C plausible for broad conduits; a 200 km-wide tail would need 1,500–2,000 °C', FR('pp. 96–97')),
+    ],
+    'd-double-prime': [
+      n('PREM basal region', '2,741–2,891 km (radius 3,480–3,630 km), its own velocity polynomial', PREM()),
+      n('Plume roots', 'patches 500–800 km across of strongly reduced v~S~; under Hawaii, Iceland and Samoa they match known ultralow-velocity zones', FR('Abstract, p. 95; p. 96')),
+    ],
+    'outer-core': [n('Light element', '5–15% (about 10 ± 5%) of O, S, Si or a mix; about 86% of Earth’s Fe is in the core', MS('Abstract, p. 223')), n('PREM ρ, v~P~ at top', '9.903 g/cm^3^, 8.065 km/s', PREM()), n('PREM ρ, v~P~ at bottom', '12.166 g/cm^3^, 10.356 km/s', PREM())],
     'inner-core': [n('PREM ρ, v~P~, v~S~ at top', '12.764 g/cm^3^, 11.028, 3.504 km/s', PREM()), n('PREM ρ at centre', '13.088 g/cm^3^', PREM())],
     moho: [
       n('Mean depth below sea level (CRUST 5.1)', '21.8 km global, 38.0 km continents, 12.6 km oceans (with 4.0 km of water)', CR('Section 8, p. 735')),

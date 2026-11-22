@@ -69,7 +69,32 @@ The "about half of all heat loss" note for young ocean floor is worked out (23.1
 - The Christensen & Mooney header in the PDF text reads "NO. B7", but the publisher's download line says B6, which matches the DOI record. The reference keeps B6.
 - #9 (Fischer et al. 2010, lithosphere–asthenosphere boundary) was not in this batch.
 
+## 10. McDonough & Sun (1995)
+
+- [x] Abstract, p. 223: core is Fe–Ni with 5–15% of a light element (about 10 ± 5%; O, S, Si); about 86% of Earth's Fe is in the core
+- [x] Table 4, p. 237, pyrolite column 1: SiO~2~ 45.0, Al~2~O~3~ 4.45, FeO 8.05, MgO 37.8, CaO 3.55, Na~2~O 0.36; 100Mg/(Mg+Fe) 89.3
+- [x] Section 6, p. 244: the core is about 32.5% of Earth's mass
+
+## 12. Pearson et al. (2014)
+
+- [x] Abstract, p. 221: transition zone 410–660 km; wadsleyite and ringwoodite hold up to about 2.5 wt% water; ringwoodite in a diamond from Juína, Brazil; the zone is hydrous to about 1 wt% locally; olivine (Mg~2~SiO~4~) dominant to about 400 km
+- [x] p. 222: the inclusion holds 1.4–1.5 wt% H~2~O (FTIR)
+- [x] p. 223: about 1.0 wt% for the transition zone the diamond sampled
+
+## 13. Fukao & Obayashi (2013), abstract, p. 5920
+
+- [x] More than 10 million travel times; Stage I stagnant above the 660, II penetrating, III trapped at 660–1,000 km, IV descending into the deep lower mantle; most slabs at Stage I or III
+
+## 15. French & Romanowicz (2015)
+
+- [x] Abstract, p. 95: plumes rooted at the base of the mantle; ultralow-velocity zones under Hawaii, Iceland and Samoa
+- [x] p. 95: v~S~ reduced by more than 1.5–2%; conduits extend up to at least 1,000 km depth
+- [x] p. 96: root patches 500–800 km across; a ~200 km-wide plume would need >10% reduction (1,500–2,000 °C excess); 800–1,000 km wide under Hawaii
+- [x] p. 97: 400–500 °C excess plausible
+
+Section 3 was checked on 2026-11-22 against the text of the owner's PDFs, like the sections above. Frost (2008, #11) and Grand (2002, #14) were not in this batch.
+
 ## What these papers don't cover yet
 
 - **Large low-velocity provinces and the innermost inner core:** need #19 and #23. They are left out of the postgraduate model for now.
-- **Temperatures, compositions and how each layer formed:** crust composition is now in (#8); mantle and core still need #9–25. The base of the lithosphere also needs #9.
+- **Temperatures, compositions and how each layer formed:** crust composition is now in (#8); mantle composition, water, slabs and plumes are now in (#10, #12, #13, #15); the core and lowermost mantle still need #16–25. The base of the lithosphere also needs #9.
