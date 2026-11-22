@@ -14,6 +14,9 @@ const FO = (where = 'Abstract, p. 5920') => ({ refs: ['fukao2013'], where }); //
 const FR = (where) => ({ refs: ['french2015'], where }); // French & Romanowicz (2015)
 const GA = (where) => ({ refs: ['garnero2016'], where }); // Garnero, McNamara & Shim (2016)
 const LA = (where) => ({ refs: ['lay1998'], where }); // Lay, Williams & Garnero (1998)
+const SR = (where = 'p. 221') => ({ refs: ['song1996'], where }); // Song & Richards (1996)
+const YS = (where = 'Abstract, p. 182') => ({ refs: ['yang2023'], where }); // Yang & Song (2023)
+const ID = (where = 'Abstract, p. 14026') => ({ refs: ['ishii2002'], where }); // Ishii & Dziewoński (2002)
 
 const n = (label, value, src) => ({ label, value, ...src });
 
@@ -48,7 +51,7 @@ export const NUMBERS = {
       n('Hot plumes', 'rise from the base of the mantle beneath Hawaii, Iceland and Samoa', FR('Abstract, p. 95')),
     ],
     'outer-core': [n('Made of', 'iron and nickel, with about 10% of lighter elements such as oxygen, sulfur or silicon', MS('Abstract, p. 223')), n('Depth', 'about 2,890–5,150 km', PREM()), n('Shear (S) wave speed', '0: S waves cannot pass, so it is liquid', PREM()), n('Density', '9.9–12.2 g/cm^3^', PREM())],
-    'inner-core': [n('Depth', 'about 5,150 km to the centre (6,371 km)', PREM()), n('Shear (S) wave speed', 'about 3.5 km/s: S waves pass, so it is solid', PREM()), n('Density at the centre', 'about 13 g/cm^3^', PREM())],
+    'inner-core': [n('Depth', 'about 5,150 km to the centre (6,371 km)', PREM()), n('Shear (S) wave speed', 'about 3.5 km/s: S waves pass, so it is solid', PREM()), n('Density at the centre', 'about 13 g/cm^3^', PREM()), n('Spin', 'it turns at a slightly different rate from the rest of the Earth, and seems to have paused around 2009', { refs: ['song1996', 'yang2023'], where: 'Song & Richards p. 221; Yang & Song p. 184' })],
     moho: [n('Depth', 'about 7 km below the sea floor; about 40 km under continents', { refs: ['white1992', 'mooney1998'], where: 'White et al. abstract, p. 19,683; CRUST 5.1 Plate 1 caption, p. 733' })],
     cmb: [n('Depth', 'about 2,890 km', BOTH), n('Density jump', '5.6 → 9.9 g/cm^3^', PREM())],
   },
@@ -91,7 +94,13 @@ export const NUMBERS = {
       n('Plumes', 'about 800–1,000 km wide under Hawaii, rising from the core–mantle boundary to about 1,000 km depth', FR('pp. 95–96')),
     ],
     'outer-core': [n('Make-up', 'iron–nickel alloy with 10 ± 5% of a light element (O, S or Si)', MS('Abstract, p. 223')), n('Share of Earth’s mass', 'about 32.5%', MS('Section 6, p. 244')), n('Depth', '2,891–5,149.5 km', PREM()), n('S-wave speed', '0 km/s (liquid)', PREM()), n('P-wave speed', '8.06–10.36 km/s', PREM()), n('Density', '9.90–12.17 g/cm^3^', PREM())],
-    'inner-core': [n('Depth', '5,149.5–6,371 km', PREM()), n('S-wave speed', '3.50–3.67 km/s (solid)', PREM()), n('Density', '12.76–13.09 g/cm^3^', PREM())],
+    'inner-core': [
+      n('Depth', '5,149.5–6,371 km', PREM()),
+      n('S-wave speed', '3.50–3.67 km/s (solid)', PREM()),
+      n('Density', '12.76–13.09 g/cm^3^', PREM()),
+      n('Size', 'radius about 1,220 km; less than 1% of Earth’s volume', { refs: ['song1996', 'ishii2002'], where: 'Song & Richards p. 221; Ishii & Dziewoński p. 14026' }),
+      n('Rotation', 'reported in 1996 as about 1° per year faster than the mantle; since about 2009 it seems to have paused, part of a roughly 70-year oscillation', { refs: ['song1996', 'yang2023'], where: 'Song & Richards p. 221; Yang & Song pp. 182, 184' }),
+    ],
     moho: [
       n('Depth', '38 km under continents, 12.6 km below sea level under oceans (CRUST 5.1)', CR('Section 8, p. 735')),
       n('P-wave speed just below it (Pn)', '8.09 km/s on average under continents', CM()),
@@ -163,7 +172,18 @@ export const NUMBERS = {
       n('ULVZs', 'commonly 5–20 km thick, within and near LLSVP margins', GA('p. 482')),
     ],
     'outer-core': [n('Light element', '5–15% (about 10 ± 5%) of O, S, Si or a mix; about 86% of Earth’s Fe is in the core', MS('Abstract, p. 223')), n('PREM ρ, v~P~ at top', '9.903 g/cm^3^, 8.065 km/s', PREM()), n('PREM ρ, v~P~ at bottom', '12.166 g/cm^3^, 10.356 km/s', PREM())],
-    'inner-core': [n('PREM ρ, v~P~, v~S~ at top', '12.764 g/cm^3^, 11.028, 3.504 km/s', PREM()), n('PREM ρ at centre', '13.088 g/cm^3^', PREM())],
+    'inner-core': [
+      n('PREM ρ, v~P~, v~S~ at top', '12.764 g/cm^3^, 11.028, 3.504 km/s', PREM()),
+      n('PREM ρ at centre', '13.088 g/cm^3^', PREM()),
+      n('Super-rotation (Song & Richards)', 'BC−DF times on South Sandwich Islands–Alaska (COL) paths rose about 0.3 s over 1967–95; best fit 1.1° per year faster than the mantle', SR('pp. 222–223')),
+      n('Recent pause (Yang & Song)', 'overturn in late 2009 (95% CI 2009.0–2011.0); about a seven-decade oscillation with another turning point in the early 1970s, matching length-of-day and magnetic-field changes', YS('pp. 182, 184')),
+      n('Anisotropy of the bulk inner core', 'slowest P-wave direction is east–west', ID()),
+    ],
+    'innermost-inner-core': [
+      n('Radius', 'about 300 km', ID()),
+      n('Anisotropy', 'slowest direction about 45° from east–west, against east–west in the inner core above', ID()),
+      n('Meaning', 'may be fossil evidence of an early stage of inner-core growth', ID()),
+    ],
     moho: [
       n('Mean depth below sea level (CRUST 5.1)', '21.8 km global, 38.0 km continents, 12.6 km oceans (with 4.0 km of water)', CR('Section 8, p. 735')),
       n('Reference models', '24.4 km (PREM, global average with a 3 km ocean layer); 35 km (ak135)', BOTH),

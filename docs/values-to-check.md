@@ -107,7 +107,23 @@ Section 3 was checked on 2026-11-22 against the text of the owner's PDFs, like t
 
 Section 4 was checked on 2026-11-22 against the text of the owner's PDFs. Lay et al. give ULVZs as 5–40 km thick and Garnero et al. as commonly 5–20 km; both are shown, each with its own source. D″ is the lowermost ~200 km in Lay et al., while PREM's basal region is 150 km (2,741–2,891 km); the model draws PREM's.
 
+## 23. Ishii & Dziewoński (2002), abstract, p. 14026
+
+- [x] Innermost inner core radius about 300 km; slowest direction about 45° from east–west, against east–west in the overlying inner core; may be fossil evidence of early inner-core history; the inner core is less than 1% of Earth's volume
+
+## 24. Song & Richards (1996)
+
+- [x] p. 221: rotation about 1° per year faster than the mantle and crust; inner-core radius about 1,220 km
+- [x] p. 222: BC−DF residuals on South Sandwich Islands to College, Alaska (COL) paths rose about 0.3 s over 1967–95
+- [x] p. 223: best estimate 1.1° per year faster
+
+## 25. Yang & Song (2023)
+
+- [x] Abstract, p. 182: rotation recently paused; about a seven-decade oscillation with another turning point in the early 1970s; matches length-of-day and magnetic-field changes; inner-core radius about 1,220 km
+- [x] p. 184: overturn in late 2009, 95% CI 2009.0–2011.0
+
+Section 5 was checked on 2026-11-22 against the text of the owner's PDFs. The Song & Richards PDF has a font that the usual text extractor cannot read, so its text was taken with a second extractor (pdfminer). Song & Richards's 1° per year (1996) and Yang & Song's pause since 2009 (2023) are shown together on purpose: the second revises the first.
+
 ## What these papers don't cover yet
 
-- **Innermost inner core:** needs #23. It is left out of the postgraduate model for now. The large low-velocity provinces are back, from #19.
-- **Temperatures, compositions and how each layer formed:** crust composition is now in (#8); mantle composition, water, slabs and plumes are now in (#10, #12, #13, #15); the lowermost mantle is in (#16, #19); post-perovskite and the core still need #17, #18 and #20–25. The base of the lithosphere also needs #9.
+- **Still to come:** the base of the lithosphere (Fischer et al. 2010, #9); transition-zone mineralogy (Frost 2008, #11); slab tomography (Grand 2002, #14); post-perovskite and the lower mantle (Murakami et al. 2004, #17; Garnero & McNamara 2008, #18); core composition, temperature and inner-core structure (Hirose et al. 2013, #20; Anzellini et al. 2013, #21; Deuss 2014, #22); and the three textbooks (Lowrie & Fichtner, e-reader only; Turcotte & Schubert; Stacey & Davis).

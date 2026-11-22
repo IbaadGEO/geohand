@@ -39,8 +39,10 @@ test('every part at every level has its numbers entry', () => {
   for (const lv of ['alevel', 'undergrad', 'postgrad'])
     for (const p of EARTH[lv].parts) assert.ok(Array.isArray(NUMBERS[lv][p.id]), `${lv}/${p.id}`);
 });
-test('parts with no source in hand are not shown', () => {
-  for (const lv of ['alevel', 'undergrad', 'postgrad']) assert.ok(!EARTH[lv].parts.some((p) => p.id === 'innermost-inner-core'), lv);
+test('innermost inner core is postgrad only, 300 km radius (Ishii & Dziewoński)', () => {
+  assert.ok(EARTH.postgrad.parts.some((p) => p.id === 'innermost-inner-core'));
+  assert.ok(!EARTH.undergrad.parts.some((p) => p.id === 'innermost-inner-core'));
+  assert.equal(6371 - GEOMETRY['innermost-inner-core'][0], 300);
 });
 test('LLSVPs are postgrad only, with cited numbers', () => {
   assert.ok(EARTH.postgrad.parts.some((p) => p.id === 'llsvp'));
