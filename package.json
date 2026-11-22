@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "0.10.14",
+    "@upstash/redis": "^1.41.0",
     "three": "^0.170.0"
   },
   "devDependencies": {

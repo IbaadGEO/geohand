@@ -10,6 +10,7 @@ import { EARTH } from './content/earth/index.js';
 import { REFS } from './content/references.js';
 import { mountPanel, mountSearch } from './ui/panel.js';
 import { searchBank } from './ui/search.js';
+import { openAsk } from './ui/ask.js';
 import { renderRich } from './ui/richText.js';
 import { Lesson } from './lesson.js';
 import { LESSONS } from './content/earth/lessons.js';
@@ -86,6 +87,12 @@ mountSearch(panel.searchSlot, {
   find: (q) => searchBank(q, EARTH, level),
   levelLabel: (id) => LEVELS.find((l) => l.id === id).label,
   currentLevel: () => level,
+  onAsk: (q) =>
+    openAsk(panel.searchSlot.querySelector('.search-out'), q, () => ({
+      level,
+      model: 'earth',
+      part: scene.sel >= 0 ? scene.parts[scene.sel].id : 'general',
+    })),
 });
 scene.onModel = (i, def, g) => {
   $('m-name').textContent = def.name;

@@ -176,3 +176,9 @@ details.gest[open] summary h4::after { content: ' ▾'; }
 .lesson-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
 .lesson-head button { margin-left: 5px; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); }
 .lesson-head button:disabled { opacity: 0.35; cursor: default; }
+.ask-form { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.ask-form textarea { width: 100%; resize: vertical; padding: 7px 9px; border-radius: 9px; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.25); color: var(--text); font: inherit; }
+.ask-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.ask-note { color: var(--muted); font-size: 10.5px; }
+.ask-status { color: var(--gold); }
+.ask-btn:disabled { opacity: 0.4; cursor: default; }
