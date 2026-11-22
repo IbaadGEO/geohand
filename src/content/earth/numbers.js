@@ -40,7 +40,7 @@ export const NUMBERS = {
       n('S-wave speed', 'falls with depth, 4.47 → 4.42 km/s', PREM()),
       n('Shear quality factor Q~μ~', '80, against 600 in the lid above: it damps waves more', PREM()),
     ],
-    'upper-mantle': [n('Depth', '220–410 km', BOTH), n('Density', '3.44–3.54 g/cm^3^', PREM())],
+    'upper-mantle': [n('Depth', '220 km (base of PREM low-velocity zone) to 410 km (ak135)', BOTH), n('Density', '3.44–3.54 g/cm^3^', PREM())],
     'transition-zone': [n('Depth', '410–660 km (ak135); 400–670 km (PREM)', BOTH), n('Density', '3.72–3.99 g/cm^3^', PREM())],
     'lower-mantle': [n('Depth', '660–2,891 km', BOTH), n('Density', '4.38–5.57 g/cm^3^', PREM()), n('P-wave speed', '10.75–13.72 km/s', PREM())],
     'outer-core': [n('Depth', '2,891–5,149.5 km', PREM()), n('S-wave speed', '0 km/s (liquid)', PREM()), n('P-wave speed', '8.06–10.36 km/s', PREM()), n('Density', '9.90–12.17 g/cm^3^', PREM())],
