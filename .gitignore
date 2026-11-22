@@ -5,3 +5,4 @@ public/wasm
 public/models
 .env*
 .vercel
+papers/

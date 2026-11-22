@@ -35,7 +35,8 @@ export function mountPanel(root) {
     // number references in order of first use
     const order = [];
     const num = (id) => (order.includes(id) ? order : (order.push(id), order)).indexOf(id) + 1;
-    const cite = (ids) => (ids?.length ? `^${ids.map(num).join(',')}^` : '');
+    // bracketed so a citation can't read as a power (g/cm³ then citation 1 is not cm³¹)
+    const cite = (ids) => (ids?.length ? `^[${ids.map(num).join(',')}]^` : '');
 
     const head = el('div', 'pc-name');
     const dot = el('i');

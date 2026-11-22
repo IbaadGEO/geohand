@@ -24,3 +24,22 @@ test('same level builds the same points every time', () => {
   const a = buildEarth('undergrad')[0].instances[0].cloud.p, b = buildEarth('undergrad')[0].instances[0].cloud.p;
   assert.deepEqual(Array.from(a.slice(0, 30)), Array.from(b.slice(0, 30)));
 });
+
+import { GEOMETRY } from '../src/models/earth.js';
+import { NUMBERS } from '../src/content/earth/numbers.js';
+test('geometry follows the cited depths (PREM Table I, ak135 Table 3)', () => {
+  assert.deepEqual(GEOMETRY.lab, [80, 80]);
+  assert.deepEqual(GEOMETRY.asthenosphere, [80, 220]);
+  assert.deepEqual(GEOMETRY['upper-mantle'], [220, 410]);
+  assert.deepEqual(GEOMETRY['d-double-prime'], [2741, 2891]);
+  assert.deepEqual(GEOMETRY.icb, [5149.5, 5149.5]);
+  assert.deepEqual(GEOMETRY['outer-core'], [2891, 5149.5]);
+});
+test('every part at every level has its numbers entry', () => {
+  for (const lv of ['alevel', 'undergrad', 'postgrad'])
+    for (const p of EARTH[lv].parts) assert.ok(Array.isArray(NUMBERS[lv][p.id]), `${lv}/${p.id}`);
+});
+test('parts with no source in hand are not shown', () => {
+  for (const lv of ['alevel', 'undergrad', 'postgrad'])
+    for (const id of ['llsvp', 'innermost-inner-core']) assert.ok(!EARTH[lv].parts.some((p) => p.id === id), `${lv}/${id}`);
+});

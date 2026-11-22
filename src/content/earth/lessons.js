@@ -20,7 +20,7 @@ export const LESSONS = {
   postgrad: [
     step('d660', 0.6, 0.6, 'Slabs stall or sink through 660 km.'),
     step('d-double-prime', 0.9, 0.9, 'A complex layer above the core.'),
-    step('llsvp', 0.9, 1.2, 'Two continent-sized slow regions at the base of the mantle.'),
-    step('innermost-inner-core', 1, 1.6, 'A distinct centre inside the inner core.'),
+    step('cmb', 1, 1.3, 'Seismic speeds drop sharply into the liquid core.'),
+    step('icb', 1, 1.6, 'Shear waves reappear in the solid inner core.'),
   ],
 };

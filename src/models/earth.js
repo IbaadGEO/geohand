@@ -1,14 +1,16 @@
 import { Cloud, P, I, ellipsoid, disc, ring, unitVec, rand, reseed } from './shapes.js';
 import { EARTH } from '../content/earth/index.js';
 
-// Real depths in km. Draft values to confirm against PREM (Dziewonski & Anderson 1981) when the content is written.
+// Real depths in km. PREM = Dziewonski & Anderson (1981) Table I; ak135 = Kennett et al. (1995) Table 3.
+// shortcut: oceanic crust (7 km) has no source in hand yet (White et al. 1992); innermost inner core and LLSVPs await theirs.
 export const GEOMETRY = {
-  crust: [0, 35], 'continental-crust': [0, 35], 'oceanic-crust': [0, 7],
-  lithosphere: [35, 100], 'lithospheric-mantle': [35, 100],
-  asthenosphere: [100, 410], mantle: [410, 2891],
-  'transition-zone': [410, 660], 'lower-mantle': [660, 2891], 'd-double-prime': [2641, 2891],
-  'outer-core': [2891, 5150], 'inner-core': [5150, 6371], 'innermost-inner-core': [6071, 6371],
-  moho: [35, 35], lab: [100, 100], d410: [410, 410], d660: [660, 660], cmb: [2891, 2891], icb: [5150, 5150],
+  crust: [0, 35], 'continental-crust': [0, 35], 'oceanic-crust': [0, 7], // ak135 Moho 35 km
+  lithosphere: [35, 80], 'lithospheric-mantle': [35, 80], // PREM lid base 80 km
+  asthenosphere: [80, 220], // PREM low-velocity zone
+  'upper-mantle': [220, 410], mantle: [220, 2891], // A-level mantle drawn from the asthenosphere down
+  'transition-zone': [410, 660], 'lower-mantle': [660, 2891], 'd-double-prime': [2741, 2891], // ak135 410/660; PREM basal region
+  'outer-core': [2891, 5149.5], 'inner-core': [5149.5, 6371], 'innermost-inner-core': [6071, 6371], // PREM CMB and ICB
+  moho: [35, 35], lab: [80, 80], d410: [410, 410], d660: [660, 660], cmb: [2891, 2891], icb: [5149.5, 5149.5],
 };
 
 const R = 1.6; // display radius
@@ -27,7 +29,7 @@ const KM = (depth) => R * (1 - drawnDepth(depth) / EARTH_KM);
 const COLORS = {
   crust: '#d9b38c', 'continental-crust': '#d9b38c', 'oceanic-crust': '#8fa8c8',
   lithosphere: '#c98b5a', 'lithospheric-mantle': '#c98b5a', asthenosphere: '#ffb347',
-  mantle: '#f07a3a', 'transition-zone': '#ff8c42', 'lower-mantle': '#e8553a', 'd-double-prime': '#b8333a', llsvp: '#7a1f4f',
+  mantle: '#f07a3a', 'upper-mantle': '#ffa04a', 'transition-zone': '#ff8c42', 'lower-mantle': '#e8553a', 'd-double-prime': '#b8333a', llsvp: '#7a1f4f',
   'outer-core': '#ffd23f', 'inner-core': '#fff3b0', 'innermost-inner-core': '#ffffff',
 };
 const BOUNDARY = '#cfe6ff';
@@ -114,7 +116,7 @@ export function buildEarth(level = 'alevel') {
     parts.push(make('llsvp', blobs.map((c) => I(c, [0, 0.6, 0]))));
   }
 
-  const rIc = KM(5150);
+  const rIc = KM(GEOMETRY.icb[0]);
   if (ids.has('innermost-inner-core')) {
     const rIic = KM(6071);
     const { top, bot } = halves(rIic, rIc, 1800, 600);
