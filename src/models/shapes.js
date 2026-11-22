@@ -2,7 +2,11 @@
 import * as THREE from 'three';
 import { rng } from '../utils.js';
 
-const rnd = rng(20260111);
+const SEED = 20260111;
+let next = rng(SEED);
+const rnd = () => next();
+/** Restart the random stream so a build gives the same points every time. */
+export const reseed = (seed = SEED) => (next = rng(seed));
 export const TAU = Math.PI * 2;
 export const R = (a, b) => a + (b - a) * rnd();
 export const rand = rnd;
@@ -85,7 +89,7 @@ export class Cloud {
 export const merge = (...cs) => new Cloud().merge(...cs);
 
 /** Part = one labelled component. Instance = one separately-exploding body of it. */
-export const P = (name, desc, color, instances) => ({ name, desc, color, instances });
+export const P = (id, name, desc, color, instances, kind = 'layer') => ({ id, name, desc, color, instances, kind });
 export const I = (cloud, dir = [0, 0, 0], anchor) => ({ cloud, dir, anchor: anchor || cloud.centroid() });
 
 // ---------------------------------------------------------------- primitives

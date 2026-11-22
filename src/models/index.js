@@ -8,6 +8,6 @@ export const MODELS = [
     category: 'Earth science',
     subtitle: 'Crust, mantle and core, opened up',
     view: { x: 0.35, y: 0.6, z: 0 },
-    build: buildEarth,
+    build: (level) => buildEarth(level),
   },
 ];

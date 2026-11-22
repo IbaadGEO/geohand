@@ -1,12 +1,38 @@
-import { Cloud, P, I, ellipsoid, disc, unitVec, rand } from './shapes.js';
+import { Cloud, P, I, ellipsoid, disc, ring, unitVec, rand, reseed } from './shapes.js';
+import { EARTH } from '../content/earth/index.js';
 
-// Radii as a fraction of Earth's mean radius (6,371 km), from standard depths:
-// crust base ~35 km, 410 and 660 km mantle boundaries, core-mantle boundary 2,890 km, inner core 1,221 km.
+// Real depths in km. Draft values to confirm against PREM (Dziewonski & Anderson 1981) when the content is written.
+export const GEOMETRY = {
+  crust: [0, 35], 'continental-crust': [0, 35], 'oceanic-crust': [0, 7],
+  lithosphere: [35, 100], 'lithospheric-mantle': [35, 100],
+  asthenosphere: [100, 410], mantle: [410, 2891],
+  'transition-zone': [410, 660], 'lower-mantle': [660, 2891], 'd-double-prime': [2641, 2891],
+  'outer-core': [2891, 5150], 'inner-core': [5150, 6371], 'innermost-inner-core': [6071, 6371],
+  moho: [35, 35], lab: [100, 100], d410: [410, 410], d660: [660, 660], cmb: [2891, 2891], icb: [5150, 5150],
+};
+
 const R = 1.6; // display radius
-const KM = (depth) => R * (1 - depth / 6371);
-const CRUST_IN = KM(220); // real continental crust is ~35 km; drawn ~220 km thick so it is visible
+const EARTH_KM = 6371;
+// The top 660 km is stretched so thin layers are visible; below that the scale is true. [real km, drawn km]
+const STRETCH = [[0, 0], [7, 30], [35, 150], [100, 260], [410, 430], [660, 600], [EARTH_KM, EARTH_KM]];
+export function drawnDepth(km) {
+  for (let i = 1; i < STRETCH.length; i++) {
+    const [a, da] = STRETCH[i - 1], [b, db] = STRETCH[i];
+    if (km <= b) return da + ((km - a) / (b - a)) * (db - da);
+  }
+  return EARTH_KM;
+}
+const KM = (depth) => R * (1 - drawnDepth(depth) / EARTH_KM);
 
-/** Shell between rIn and rOut, split into top and bottom halves, each with its equatorial cross-section filled in. */
+const COLORS = {
+  crust: '#d9b38c', 'continental-crust': '#d9b38c', 'oceanic-crust': '#8fa8c8',
+  lithosphere: '#c98b5a', 'lithospheric-mantle': '#c98b5a', asthenosphere: '#ffb347',
+  mantle: '#f07a3a', 'transition-zone': '#ff8c42', 'lower-mantle': '#e8553a', 'd-double-prime': '#b8333a', llsvp: '#7a1f4f',
+  'outer-core': '#ffd23f', 'inner-core': '#fff3b0', 'innermost-inner-core': '#ffffff',
+};
+const BOUNDARY = '#cfe6ff';
+
+/** Shell between rIn and rOut split into top and bottom halves, each with its equatorial cross-section filled in. */
 function halves(rIn, rOut, nShell, nFace) {
   const top = new Cloud(), bot = new Cloud();
   const s = ellipsoid(rOut, rOut, rOut, nShell).p;
@@ -16,53 +42,94 @@ function halves(rIn, rOut, nShell, nFace) {
   return { top, bot };
 }
 
-/** Label anchor on the cross-section, mid-depth, at a given azimuth so labels fan out. */
-const anchor = (rIn, rOut, deg) => {
-  const r = (rIn + rOut) / 2, a = (deg * Math.PI) / 180;
-  return [r * Math.cos(a), 0.01, r * Math.sin(a)];
+const anchorAt = (r, deg, y = 0.01) => {
+  const a = (deg * Math.PI) / 180;
+  return [r * Math.cos(a), y, r * Math.sin(a)];
 };
 
-/** Layer whose halves open vertically by `lift` when exploded. */
-function layer(name, desc, color, rIn, rOut, nShell, nFace, lift, deg) {
-  const { top, bot } = halves(rIn, rOut, nShell, nFace);
-  return P(name, desc, color, [I(top, [0, lift, 0], anchor(rIn, rOut, deg)), I(bot, [0, -lift, 0])]);
+/** Solid ball (filled volume) of radius r. */
+function ball(r, n) {
+  const c = new Cloud();
+  for (let i = 0; i < n; i++) {
+    const [x, y, z] = unitVec();
+    const rr = r * (i % 3 ? 1 : Math.cbrt(rand()));
+    c.add(x * rr, y * rr, z * rr);
+  }
+  return c;
 }
 
-export function buildEarth() {
+/** Crust as 8 octant pieces that fly outward, a simplified stand-in for plates. `which` picks the octants. */
+function plates(rIn, n, which) {
+  const out = which.map(() => new Cloud());
+  for (let i = 0; i < n; i++) {
+    const [x, y, z] = unitVec();
+    const k = (x > 0 ? 1 : 0) + (y > 0 ? 2 : 0) + (z > 0 ? 4 : 0);
+    const j = which.indexOf(k);
+    if (j < 0) continue;
+    const r = rIn + (R - rIn) * (i % 5 === 0 ? rand() : 1);
+    out[j].add(x * r, y * r, z * r);
+  }
+  const dir = (k) => [k & 1 ? 1 : -1, k & 2 ? 1 : -1, k & 4 ? 1 : -1].map((c) => c * 1.33);
+  return out.map((c, j) => I(c, dir(which[j])));
+}
+
+const CONTINENTAL = [0, 3, 5]; // octants drawn as continental crust; the rest are oceanic
+const ALL = [0, 1, 2, 3, 4, 5, 6, 7];
+
+export function buildEarth(level = 'alevel') {
+  reseed();
+  const content = EARTH[level] || EARTH.alevel;
+  const ids = new Set(content.parts.map((p) => p.id));
+  const meta = Object.fromEntries(content.parts.map((p) => [p.id, p]));
+  const make = (id, instances, kind = 'layer', color = COLORS[id]) => P(id, meta[id].title, meta[id].short, color, instances, kind);
+
+  // layers ordered outside-in; each opens by a lift that shrinks with depth
+  const shells = [...ids].filter((id) => meta[id].kind === 'layer' && GEOMETRY[id] && !/crust|inner-core/.test(id));
+  shells.sort((a, b) => GEOMETRY[a][0] - GEOMETRY[b][0]);
   const parts = [];
 
-  // Crust: 8 pieces (one per octant) that fly straight outward, a simplified stand-in for tectonic plates
-  const plates = Array.from({ length: 8 }, () => new Cloud());
-  for (let i = 0; i < 9000; i++) {
-    const [x, y, z] = unitVec();
-    const r = CRUST_IN + (R - CRUST_IN) * (i % 5 === 0 ? rand() : 1); // mostly surface, some depth
-    plates[(x > 0 ? 1 : 0) + (y > 0 ? 2 : 0) + (z > 0 ? 4 : 0)].add(x * r, y * r, z * r);
+  if (ids.has('crust')) parts.push(make('crust', plates(KM(35), 9000, ALL)));
+  if (ids.has('continental-crust')) parts.push(make('continental-crust', plates(KM(35), 9000, CONTINENTAL)));
+  if (ids.has('oceanic-crust')) parts.push(make('oceanic-crust', plates(KM(7), 9000, ALL.filter((k) => !CONTINENTAL.includes(k)))));
+
+  shells.forEach((id, n) => {
+    let [top, base] = GEOMETRY[id];
+    if (id === 'lower-mantle' && ids.has('d-double-prime')) base = GEOMETRY['d-double-prime'][0];
+    const rOut = KM(top), rIn = KM(base), vol = rOut ** 3 - rIn ** 3;
+    const { top: t, bot: b } = halves(rIn, rOut, Math.round(1500 + vol * 900), Math.round(300 + (rOut ** 2 - rIn ** 2) * 220));
+    const lift = 1.35 - (n / Math.max(1, shells.length - 1)) * 1.0;
+    parts.push(make(id, [I(t, [0, lift, 0], anchorAt((rIn + rOut) / 2, 20 + n * 47)), I(b, [0, -lift, 0])]));
+  });
+
+  if (ids.has('llsvp')) {
+    // two antipodal blobs at the base of the mantle (African and Pacific provinces), on the cross-section
+    const r = KM(2750), blobs = [new Cloud(), new Cloud()];
+    [0, 180].forEach((deg, j) => {
+      const [cx, , cz] = anchorAt(r, deg, 0);
+      for (const [x, y, z] of Array.from({ length: 700 }, unitVec)) {
+        const s = Math.cbrt(rand());
+        blobs[j].add(cx + x * 0.16 * s, Math.abs(y) * 0.12 * s, cz + z * 0.1 * s);
+      }
+    });
+    parts.push(make('llsvp', blobs.map((c) => I(c, [0, 0.6, 0]))));
   }
-  // each piece moves out along its octant's diagonal
-  const plateDir = (k) => [k & 1 ? 1 : -1, k & 2 ? 1 : -1, k & 4 ? 1 : -1].map((c) => c * 1.33);
-  parts.push(
-    P(
-      'Crust',
-      'Rocky outer skin: 5-10 km thick under oceans, 30-70 km under continents. It is broken into tectonic plates (shown here as 8 simple pieces) and drawn thicker than real so you can see it.',
-      '#d9b38c',
-      plates.map((c, k) => I(c, plateDir(k))),
-    ),
-  );
 
-  parts.push(layer('Upper mantle', 'From the base of the crust down to 410 km. Its rigid top joins the crust as the lithosphere; below it, the softer asthenosphere flows slowly and lets the plates move.', '#ffb347', KM(410), CRUST_IN, 5000, 700, 1.35, 20));
-  parts.push(layer('Transition zone', '410-660 km deep. Pressure squeezes mantle minerals into denser crystal forms, which may hold large amounts of water locked inside the rock.', '#ff8c42', KM(660), KM(410), 4200, 600, 1.05, 160));
-  parts.push(layer('Lower mantle', '660-2,890 km deep and over half of Earth\'s volume. Hot, solid rock that creeps very slowly, helping drive plate motion.', '#e8553a', KM(2890), KM(660), 6500, 1100, 0.75, -30));
-  parts.push(layer('Outer core', '2,890-5,150 km deep. Liquid iron and nickel whose swirling flow generates Earth\'s magnetic field.', '#ffd23f', KM(5150), KM(2890), 4200, 800, 0.38, 200));
-
-  // Inner core: a solid ball, so fill the volume rather than just the surface
-  const inner = new Cloud();
   const rIc = KM(5150);
-  for (let i = 0; i < 2600; i++) {
-    const [x, y, z] = unitVec();
-    const r = rIc * (i % 3 ? 1 : Math.cbrt(rand()));
-    inner.add(x * r, y * r, z * r);
+  if (ids.has('innermost-inner-core')) {
+    const rIic = KM(6071);
+    const { top, bot } = halves(rIic, rIc, 1800, 600);
+    parts.push(make('inner-core', [I(top, [0, 0.22, 0], anchorAt((rIc + rIic) / 2, 250)), I(bot, [0, -0.22, 0])]));
+    parts.push(make('innermost-inner-core', [I(ball(rIic, 500), [0, 0, 0], [0, rIic * 0.6, 0])]));
+  } else if (ids.has('inner-core')) {
+    parts.push(make('inner-core', [I(ball(rIc, 2600), [0, 0, 0], [0, rIc * 0.6, 0])]));
   }
-  parts.push(P('Inner core', 'From 5,150 km down to the centre at 6,371 km. Solid iron and nickel at roughly 5,000-6,000 °C, kept solid by enormous pressure.', '#fff3b0', [I(inner, [0, 0, 0], [0, rIc * 0.6, 0])]));
 
+  // boundaries: a sparse surface plus a bright ring on the cross-section; they stay put when the Earth opens
+  for (const id of ids) {
+    if (meta[id].kind !== 'boundary') continue;
+    const r = KM(GEOMETRY[id][0]);
+    const c = ellipsoid(r, r, r, Math.round(250 + r * r * 220)).merge(ring(r, 0, Math.round(200 + r * 180)));
+    parts.push(make(id, [I(c, [0, 0, 0], anchorAt(r, 300 + parts.length * 9))], 'boundary', BOUNDARY));
+  }
   return parts;
 }

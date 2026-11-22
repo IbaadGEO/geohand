@@ -204,7 +204,7 @@ export class HoloScene {
           if (Math.random() < 160 / Math.max(160, n)) samples.push(x, y, z, inst.dir[0], inst.dir[1], inst.dir[2]);
         }
       });
-      meta.push({ name: p.name, desc: p.desc, color: p.color, anchors, samples: new Float32Array(samples) });
+      meta.push({ id: p.id, kind: p.kind, name: p.name, desc: p.desc, color: p.color, anchors, samples: new Float32Array(samples) });
     });
 
     const geo = new THREE.BufferGeometry();
