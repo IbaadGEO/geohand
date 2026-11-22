@@ -59,33 +59,15 @@ try {
   throw e;
 }
 
-const ui = { skeleton: true, labels: true, feed: false };
+const ui = { skeleton: true, labels: false, feed: false }; // labels: show every part's label, not just hovered/selected
 let trackingState = 'Off';
 
-// model chips grouped by category
-const chips = $('chips');
-for (const cat of [...new Set(MODELS.map((m) => m.category))]) {
-  const grp = document.createElement('div');
-  grp.className = 'grp';
-  const gl = document.createElement('span');
-  gl.className = 'gl';
-  gl.textContent = cat;
-  grp.appendChild(gl);
-  MODELS.forEach((m, i) => {
-    if (m.category !== cat) return;
-    const b = document.createElement('button');
-    b.textContent = m.name;
-    b.dataset.i = i;
-    b.onclick = () => scene.setModel(i);
-    grp.appendChild(b);
-  });
-  chips.appendChild(grp);
-}
 
 // gesture state that holds part indices; cleared whenever the parts list is rebuilt (level switch)
 let grab = null;
 let lastHover = { i: -1, t: 0 };
 let dwell = { i: -1, t: 0 };
+let mouseHover = -1; // part under the mouse cursor (labels it)
 const panel = mountPanel($('info'));
 mountSearch(panel.searchSlot, {
   find: (q) => searchBank(q, EARTH, level),
@@ -103,10 +85,10 @@ scene.onModel = (i, def, g) => {
   $('m-sub').textContent = def.subtitle;
   $('m-cat').textContent = def.category;
   $('m-count').textContent = `${g.meta.length} parts`;
-  chips.querySelectorAll('button').forEach((b) => b.classList.toggle('active', +b.dataset.i === i));
   grab = null; // part indices from the old parts list no longer mean anything
   lastHover = { i: -1, t: 0 };
   dwell = { i: -1, t: 0 };
+  mouseHover = -1;
   const keep = pendingSel ? scene.parts.findIndex((p) => p.id === pendingSel) : -1;
   pendingSel = null;
   scene.setSel(keep);
@@ -206,7 +188,6 @@ $('b-reset').onclick = () => {
   scene.resetView();
   showPart(-1);
 };
-$('b-next').onclick = () => scene.next();
 
 function toggle(id, key, after) {
   $(id).onclick = () => {
@@ -347,7 +328,7 @@ function control(t, dt) {
   if (!h) {
     endGrab();
     scene.holdVel = draggingMouse;
-    if (!draggingMouse) scene.setHover(-1);
+    if (!draggingMouse) scene.setHover(mouseHover);
     prevPalm.clear();
     setActive('');
     return;
@@ -423,7 +404,7 @@ function control(t, dt) {
 let draggingMouse = false;
 let mouseStart = null;
 let mouseLast = null;
-const onUi = (e) => e.target.closest && e.target.closest('#panel,#chips,#toolbar,#start');
+const onUi = (e) => e.target.closest && e.target.closest('#panel,#toolbar,#start');
 
 addEventListener('pointerdown', (e) => {
   if (e.button !== 0 || onUi(e)) return;
@@ -431,7 +412,10 @@ addEventListener('pointerdown', (e) => {
   mouseStart = mouseLast = { x: e.clientX, y: e.clientY };
 });
 addEventListener('pointermove', (e) => {
-  if (!draggingMouse) return;
+  if (!draggingMouse) {
+    mouseHover = onUi(e) ? -1 : scene.pick(e.clientX, e.clientY, 80, mouseHover);
+    return;
+  }
   scene.holdVel = true;
   scene.rotateBy((e.clientX - mouseLast.x) * 0.006, (e.clientY - mouseLast.y) * 0.004, 1 / 60);
   mouseLast = { x: e.clientX, y: e.clientY };
@@ -579,13 +563,17 @@ function drawZoom(a, b) {
 function drawLabels() {
   const e = clamp((scene.shownExplode - 0.1) / 0.3, 0, 1);
   if (e <= 0.01 || scene.uniforms.uScatter.value > 0.3) return;
-  const pts = scene.labelPoints();
+  // only the part being pointed at and the selected one, unless 'show all labels' is on
+  const all = scene.labelPoints();
+  const pts = all.filter((p) => ui.labels || p.i === scene.hover || p.i === scene.sel);
+  if (!pts.length) return;
   const c = scene.centerScreen();
   const panelR = W > 900 ? 310 : 0;
   const left = [], right = [];
   for (const p of pts) (p.x < c.x ? left : right).push(p);
-  const maxX = Math.max(...pts.map((p) => p.x), c.x);
-  const minX = Math.min(...pts.map((p) => p.x), c.x);
+  // label columns sit outside the whole model, even when only one label shows
+  const maxX = Math.max(...all.map((p) => p.x), c.x);
+  const minX = Math.min(...all.map((p) => p.x), c.x);
   const colR = clamp(maxX + 80, panelR + 360, W - 170);
   const colL = clamp(minX - 80, panelR + 20, W - 400);
   ctx.save();
@@ -626,7 +614,7 @@ function drawLabels() {
 function drawOverlay() {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.clearRect(0, 0, W, H);
-  if (ui.labels) drawLabels();
+  drawLabels();
   const live = perc.hands.filter((h) => !h.held);
   if (ui.skeleton) for (const h of live) drawHand(h);
   for (const h of live) drawRing(h);

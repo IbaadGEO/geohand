@@ -153,6 +153,15 @@ For the "ask a question" route:
   - "Common questions" for the current level
   - the search box
 
+### First screen (owner's request, 2026-11-22)
+
+Nobody should be faced with a wall of labels and controls before they've used the tool.
+- **Panel at the start:** the level picker, the Explore/Lesson switch, and "What do you want to learn about? Point at a layer, or click one."
+- **Everything else** (sliders, tracking status, the gesture list, buttons) sits in a collapsed **Controls** section.
+- **Labels:** only the part being pointed at and the selected part are labelled. "Show all labels" in the toolbar turns the rest back on.
+- **Part info** appears only once a part is chosen. Clicking empty space returns to the question.
+- **No model bar** and no "Next model" button while there is only one model.
+
 ### Search
 
 - **Where it runs:** client-side over the current level's bank first, then other levels, labelled by level.

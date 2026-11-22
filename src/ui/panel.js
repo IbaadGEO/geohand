@@ -29,7 +29,7 @@ export function mountPanel(root) {
     if (part === current) return;
     current = part;
     if (!part) {
-      root.replaceChildren(el('p', 'info-empty', 'Point at a part or a boundary, or click one.'), searchSlot);
+      root.replaceChildren(el('p', 'info-prompt', 'What do you want to learn about?'), el('p', 'info-empty', 'Point at a layer, or click one.'));
       return;
     }
     // number references in order of first use

@@ -182,3 +182,12 @@ details.gest[open] summary h4::after { content: ' ▾'; }
 .ask-note { color: var(--muted); font-size: 10.5px; }
 .ask-status { color: var(--gold); }
 .ask-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* first screen stays quiet: one question, everything else under Controls */
+.info-prompt { color: var(--text); font-size: 14px; font-weight: 600; }
+details.controls { display: flex; flex-direction: column; gap: 12px; }
+details.controls > summary { cursor: pointer; color: var(--muted); font-size: 12px; list-style: none; }
+details.controls > summary::-webkit-details-marker { display: none; }
+details.controls > summary::after { content: ' ▸'; }
+details.controls[open] > summary::after { content: ' ▾'; }
+details.controls[open] > * + * { margin-top: 12px; }
