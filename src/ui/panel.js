@@ -95,3 +95,40 @@ export function mountPanel(root) {
   show(null);
   return { show, searchSlot };
 }
+
+/**
+ * Search box in `slot`. find(query) returns searchBank results; levelLabel(id) names a level;
+ * onAsk(query) is offered when nothing matches (omit to hide it).
+ */
+export function mountSearch(slot, { find, levelLabel, currentLevel, onAsk }) {
+  const input = el('input', 'search-in');
+  input.type = 'search';
+  input.placeholder = 'Search the questions…';
+  input.setAttribute('aria-label', 'Search the questions');
+  input.maxLength = 500;
+  const list = el('div', 'search-out');
+  slot.append(el('h4', '', "Don't get something?"), input, list);
+
+  input.addEventListener('input', () => {
+    const query = input.value;
+    const hits = find(query);
+    const rows = hits.map((h) => {
+      const d = el('details', 'q');
+      const s = el('summary', '', h.q);
+      if (h.level !== currentLevel()) s.append(el('span', 'tag ghost', levelLabel(h.level)));
+      d.append(s, el('p', '', h.a));
+      return d;
+    });
+    if (!hits.length && query.trim().length >= 5) {
+      rows.push(el('p', 'info-empty', 'No answer yet.'));
+      if (onAsk) {
+        const b = el('button', 'ask-btn', 'Send this question');
+        b.type = 'button';
+        b.onclick = () => onAsk(query.trim());
+        rows.push(b);
+      }
+    }
+    list.replaceChildren(...rows);
+  });
+  return { input, list };
+}

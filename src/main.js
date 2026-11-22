@@ -8,7 +8,8 @@ import { LEVELS } from './content/levels.js';
 import { loadLevel, saveLevel, mapPart } from './levels.js';
 import { EARTH } from './content/earth/index.js';
 import { REFS } from './content/references.js';
-import { mountPanel } from './ui/panel.js';
+import { mountPanel, mountSearch } from './ui/panel.js';
+import { searchBank } from './ui/search.js';
 
 const $ = (id) => document.getElementById(id);
 const video = $('video');
@@ -77,6 +78,11 @@ for (const cat of [...new Set(MODELS.map((m) => m.category))]) {
 }
 
 const panel = mountPanel($('info'));
+mountSearch(panel.searchSlot, {
+  find: (q) => searchBank(q, EARTH, level),
+  levelLabel: (id) => LEVELS.find((l) => l.id === id).label,
+  currentLevel: () => level,
+});
 scene.onModel = (i, def, g) => {
   $('m-name').textContent = def.name;
   $('m-sub').textContent = def.subtitle;
@@ -391,6 +397,7 @@ addEventListener('wheel', (e) => {
   scene.zoomBy(Math.exp(-e.deltaY * 0.0012));
 }, { passive: true });
 addEventListener('keydown', (e) => {
+  if (e.target.closest?.('input[type=search], textarea')) return; // typing a question, not a shortcut
   if (e.target.tagName === 'INPUT' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
   if (e.key === ' ') {
     e.preventDefault();
