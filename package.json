@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "postinstall": "node scripts/setup.mjs",
-    "test": "node scripts/gesture-selftest.mjs && node scripts/content-check.mjs && node --test",
+    "test": "node scripts/gesture-selftest.mjs && node scripts/content-check.mjs && node scripts/updates.mjs --check && node --test",
     "test:release": "node scripts/content-check.mjs --release",
     "inbox": "node --env-file=.env scripts/inbox.mjs",
     "updates": "node scripts/updates.mjs"
