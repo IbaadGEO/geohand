@@ -24,7 +24,8 @@ export function drawnDepth(km) {
   }
   return EARTH_KM;
 }
-const KM = (depth) => R * (1 - drawnDepth(depth) / EARTH_KM);
+/** Drawn radius at a real depth in km. */
+export const KM = (depth) => R * (1 - drawnDepth(depth) / EARTH_KM);
 
 const COLORS = {
   crust: '#d9b38c', 'continental-crust': '#d9b38c', 'oceanic-crust': '#8fa8c8',
@@ -93,6 +94,17 @@ function underContinents(c, rIn, rFrom, rTo) {
 }
 const ALL = [0, 1, 2, 3, 4, 5, 6, 7];
 
+// PREM row boundaries (depth km): a face samples both sides of each, so property jumps stay sharp
+const PREM_STEPS = [24.4, 15, 220, 400, 600, 670, 771, 2741, 2891, 5149.5];
+/** Solid cross-section face of a layer from topKm to baseKm, at height y: [[radius, depth km], ...] from outside in.
+ *  a0..a1 limits it to a sector; propOnly faces show only in the property views (the crust's flies apart as plates). */
+function face(topKm, baseKm, y, { a0 = 0, a1 = Math.PI * 2, propOnly = false } = {}) {
+  const d = new Set();
+  for (let k = 0; k <= 24; k++) d.add(topKm + ((baseKm - topKm) * k) / 24);
+  for (const s of PREM_STEPS) if (s > topKm && s < baseKm) [s - 0.01, s + 0.01].forEach((v) => d.add(v));
+  return { y, a0, a1, propOnly, rings: [...d].sort((a, b) => a - b).map((km) => [KM(km), km]) };
+}
+
 export function buildEarth(level = 'alevel') {
   reseed();
   const content = EARTH[level] || EARTH.alevel;
@@ -106,9 +118,12 @@ export function buildEarth(level = 'alevel') {
   const parts = [];
   const lifts = {};
 
-  if (ids.has('crust')) parts.push(make('crust', plates(KM(35), 9000, ALL)));
-  if (ids.has('continental-crust')) parts.push(make('continental-crust', plates(KM(35), 9000, CONTINENTAL)));
-  if (ids.has('oceanic-crust')) parts.push(make('oceanic-crust', plates(KM(7), 9000, ALL.filter((k) => !CONTINENTAL.includes(k)))));
+  // the crust's cut face sits just above the layer faces below it; the continental wedge is a = -90°..0° (x > 0, z < 0)
+  const withFace = (inst, f) => [{ ...inst[0], face: f }, ...inst.slice(1)];
+  const CY = 0.006, Q = Math.PI / 2;
+  if (ids.has('crust')) parts.push(make('crust', withFace(plates(KM(35), 9000, ALL), face(0, 35, CY, { propOnly: true }))));
+  if (ids.has('continental-crust')) parts.push(make('continental-crust', withFace(plates(KM(35), 9000, CONTINENTAL), face(0, 35, CY, { a0: -Q, a1: 0, propOnly: true }))));
+  if (ids.has('oceanic-crust')) parts.push(make('oceanic-crust', withFace(plates(KM(7), 9000, ALL.filter((k) => !CONTINENTAL.includes(k))), face(0, 7, CY, { a0: 0, a1: 3 * Q, propOnly: true }))));
 
   shells.forEach((id, n) => {
     let [top, base] = GEOMETRY[id];
@@ -121,7 +136,10 @@ export function buildEarth(level = 'alevel') {
     if (oceanTop) [t, b].forEach((c) => underContinents(c, rIn, rOut, KM(GEOMETRY['continental-crust'][1])));
     const lift = 1.35 - (n / Math.max(1, shells.length - 1)) * 1.0;
     lifts[id] = lift;
-    parts.push(make(id, [I(t, [0, lift, 0], anchorAt((rIn + rOut) / 2, 20 + n * 47)), I(b, [0, -lift, 0])]));
+    parts.push(make(id, [
+      { ...I(t, [0, lift, 0], anchorAt((rIn + rOut) / 2, 20 + n * 47)), face: face(top, base, 0.004) },
+      { ...I(b, [0, -lift, 0]), face: face(top, base, -0.004) },
+    ]));
   });
 
   if (ids.has('llsvp')) {
@@ -144,10 +162,13 @@ export function buildEarth(level = 'alevel') {
   if (ids.has('innermost-inner-core')) {
     const rIic = KM(6071);
     const { top, bot } = halves(rIic, rIc, 1800, 600);
-    parts.push(make('inner-core', [I(top, [0, 0.22, 0], anchorAt((rIc + rIic) / 2, 250)), I(bot, [0, -0.22, 0])]));
-    parts.push(make('innermost-inner-core', [I(ball(rIic, 500), [0, 0, 0], [0, rIic * 0.6, 0])]));
+    parts.push(make('inner-core', [
+      { ...I(top, [0, 0.22, 0], anchorAt((rIc + rIic) / 2, 250)), face: face(GEOMETRY.icb[0], 6071, 0.004) },
+      { ...I(bot, [0, -0.22, 0]), face: face(GEOMETRY.icb[0], 6071, -0.004) },
+    ]));
+    parts.push(make('innermost-inner-core', [{ ...I(ball(rIic, 500), [0, 0, 0], [0, rIic * 0.6, 0]), face: face(6071, 6371, 0) }]));
   } else if (ids.has('inner-core')) {
-    parts.push(make('inner-core', [I(ball(rIc, 2600), [0, 0, 0], [0, rIc * 0.6, 0])]));
+    parts.push(make('inner-core', [{ ...I(ball(rIc, 2600), [0, 0, 0], [0, rIc * 0.6, 0]), face: face(GEOMETRY.icb[0], 6371, 0) }]));
   }
 
   // boundaries: a sparse surface plus a bright ring on the cross-section; they stay put when the Earth opens

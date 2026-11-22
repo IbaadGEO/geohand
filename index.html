@@ -50,6 +50,7 @@
       <label for="layer-picker">Find a layer or boundary</label>
       <select id="layer-picker"></select>
       <button type="button" id="part-pull" hidden>Pull part aside</button>
+      <button type="button" id="part-learn" class="learn-start" hidden>Learn this layer</button>
       <button type="button" id="part-study" hidden>Start lesson here</button>
       <details class="question-bank">
         <summary>Ask a question</summary>
@@ -57,6 +58,7 @@
       </details>
     </div>
 
+    <section class="learn" id="learn" aria-live="polite" hidden></section>
     <section class="info" id="info" aria-live="polite"></section>
 
     <details class="controls">
@@ -90,10 +92,15 @@
     <button id="t-full" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </div>
 
+  <div id="viewbar">
+    <div id="views" role="group" aria-label="Colour the cut-away by"></div>
+    <div id="legend" aria-live="polite" hidden></div>
+  </div>
   <div id="toast"></div>
   <section id="tour" aria-label="Tour" aria-live="polite" hidden>
     <div class="tour-head"><b id="tour-title"></b><span id="tour-count"></span></div>
     <p id="tour-text"></p>
+    <div id="tour-check" class="tour-check" hidden></div>
     <div class="tour-bar"><i id="tour-progress"></i></div>
     <div class="tour-btns">
       <button type="button" id="tour-back">Back</button>

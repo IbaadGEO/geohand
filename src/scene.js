@@ -12,6 +12,9 @@ attribute vec3 aColor;
 attribute float aPart;
 attribute vec3 aRand;
 attribute float aSeed;
+attribute float aMotion;
+uniform float uMotion;
+uniform float uProp;
 uniform float uExplode;
 uniform float uTime;
 uniform float uSize;
@@ -23,9 +26,16 @@ uniform float uIsolate;
 uniform vec2 uPull;
 varying vec3 vColor;
 varying float vA;
+vec3 rotY(vec3 v, float a) { float c = cos(a), s = sin(a); return vec3(c * v.x + s * v.z, v.y, -s * v.x + c * v.z); }
 void main() {
-  vec3 p = position + aDir * uExplode;
-  p += 0.010 * vec3(sin(uTime * 1.3 + aSeed * 40.0), cos(uTime * 1.1 + aSeed * 31.0), sin(uTime * 0.9 + aSeed * 23.0));
+  // motion shows physical state (src/content/earth/states.js); speeds are schematic, not to scale
+  vec3 q = position;
+  float m = uMotion > 0.5 ? aMotion : 1.0;
+  if (m > 1.5 && m < 2.5) q = rotY(q, 0.05 * sin(uTime * 0.35 + aSeed * 6.283)); // creep: slow drift back and forth
+  else if (m > 3.5 && m < 4.5) q = rotY(q, uTime * (0.32 + 0.22 * sin(q.y * 7.0 + aSeed * 2.0))); // liquid: flowing swirl
+  vec3 p = q + aDir * uExplode;
+  // a faint shimmer on layers without a still-solid state; solids stay still
+  if (m < 0.5 || m > 1.5) p += 0.006 * vec3(sin(uTime * 1.3 + aSeed * 40.0), cos(uTime * 1.1 + aSeed * 31.0), sin(uTime * 0.9 + aSeed * 23.0));
   p += aRand * uScatter * 4.0;
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   float hi = abs(aPart - uHi) < 0.5 ? 1.0 : 0.0;
@@ -33,13 +43,80 @@ void main() {
   float tw = 0.82 + 0.18 * sin(uTime * 2.0 + aSeed * 60.0);
   float boost = max(hi, sel);
   gl_PointSize = uSize * uPR * (0.8 + 0.5 * fract(aSeed * 7.13)) * (1.0 + 0.7 * boost) * (${CAM_Z.toFixed(1)} / -mv.z);
-  vColor = mix(aColor * tw, vec3(1.0), 0.45 * boost);
+  // boundaries: a slow pulse travels round the ring
+  float pulse = m > 4.5 ? 0.55 + 0.9 * pow(0.5 + 0.5 * cos(atan(q.z, q.x) * 2.0 - uTime * 1.4), 6.0) : 1.0;
+  vColor = mix(aColor * tw * pulse, vec3(1.0), 0.45 * boost);
   float visiblePart = uIsolate < 0.0 || abs(aPart - uIsolate) < 0.5 ? 1.0 : 0.0;
   // with a layer highlighted, the others fade back so it reads clearly
   float dim = uSel >= 0.0 && sel < 0.5 ? 0.3 : 1.0;
-  vA = (0.9 - 0.9 * uScatter) * (1.0 + 0.2 * boost) * visiblePart * dim;
+  // in a property view the coloured faces carry the data, so the dots step back
+  // property views cut the Earth at the equator: everything above is hidden, so the coloured face lies open
+  float cut = uProp > 0.5 && position.y + aDir.y > 0.012 ? 0.0 : 1.0;
+  vA = (0.9 - 0.9 * uScatter) * (1.0 + 0.2 * boost) * visiblePart * dim * cut * (uProp > 0.5 ? 0.3 : 1.0);
   gl_Position = projectionMatrix * mv;
   gl_Position.xy += uPull * gl_Position.w;
+}`;
+
+// Solid cross-section faces: coloured by layer (uProp 0) or by view n (attribute cn, from faceColors)
+const FACE_VERT = /* glsl */ `
+attribute vec3 c0; attribute vec3 c1; attribute vec3 c2; attribute vec3 c3; attribute vec3 c4;
+uniform float uExplode; uniform float uProp; uniform vec3 uDir; uniform vec2 uPull;
+varying vec3 vC;
+varying float vTop;
+varying vec2 vXZ;
+void main() {
+  vTop = uDir.y > 0.0 ? 1.0 : 0.0;
+  vXZ = position.xz;
+  vC = uProp < 0.5 ? c0 : uProp < 1.5 ? c1 : uProp < 2.5 ? c2 : uProp < 3.5 ? c3 : uProp < 4.5 ? c4 : c0 * 0.25; // 5: earthquake view, layers dimmed under the rays
+  vec4 mv = modelViewMatrix * vec4(position + uDir * uExplode, 1.0);
+  gl_Position = projectionMatrix * mv;
+  gl_Position.xy += uPull * gl_Position.w;
+}`;
+const FACE_FRAG = /* glsl */ `
+uniform float uProp; uniform float uScatter; uniform float uIsolate; uniform float uSel; uniform float uPart; uniform float uPropOnly;
+varying vec3 vC;
+varying float vTop;
+varying vec2 vXZ;
+uniform vec4 uFlow; // radii of the mantle top, 660 km, 1,000 km and the core-mantle boundary
+uniform float uTime; uniform float uMotion; uniform float uConvect;
+const float TAU = 6.2831853;
+float gap(float a, float b) { return abs(mod(a - b + 3.14159265, TAU) - 3.14159265); }
+float wave(float s) { return 0.7 + 0.5 * pow(0.5 + 0.5 * cos(TAU * s * 3.0), 2.0); }
+// A sinking slab on the cut: a band at longitude lonS down to radius rFloor, then lying flat along it.
+// Returns (strength, distance along the path from the top).
+vec2 slab(float lon, float r, float lonS, float rFloor) {
+  float down = smoothstep(0.075, 0.04, gap(lon, lonS)) * step(rFloor, r);
+  float along = mod(lon - lonS, TAU);
+  float lie = smoothstep(0.04, 0.02, abs(r - rFloor - 0.03)) * smoothstep(0.55, 0.4, along) * step(along, 1.0);
+  return vec2(max(down, lie), down >= lie ? uFlow.x - r : uFlow.x - rFloor + along * r);
+}
+// A plume: a broad column rising from the core-mantle boundary, fading out at about 1,000 km depth.
+vec2 plume(float lon, float r, float lonP) {
+  return vec2(smoothstep(0.16, 0.09, gap(lon, lonP)) * (1.0 - smoothstep(uFlow.z - 0.04, uFlow.z + 0.04, r)), r - uFlow.w);
+}
+void main() {
+  if (uPropOnly > 0.5 && uProp < 0.5) discard;
+  if (uIsolate >= 0.0 && abs(uPart - uIsolate) > 0.5) discard;
+  if (uProp > 0.5 && vTop > 0.5) discard; // the upper half's faces go with the cut
+  float dim = uProp < 0.5 && uSel >= 0.0 && abs(uPart - uSel) > 0.5 ? 0.3 : 1.0; // property views show every face fully
+  vec3 c = vC;
+  float a = uProp < 0.5 ? 0.42 : 0.95;
+  if (uConvect > 0.5 && uProp < 0.5) {
+    // mantle, schematic: cold slabs sinking (Fukao & Obayashi 2013) and hot plumes rising (French & Romanowicz 2015).
+    // Brightness travels down the slabs and up the plumes; speeds are not to scale.
+    float r = length(vXZ), lon = atan(vXZ.y, vXZ.x), ft = uTime * uMotion * 0.05;
+    vec2 k, sl = slab(lon, r, 0.4, uFlow.y);                        // stagnant above the 660
+    k = slab(lon, r, 3.3, uFlow.y); if (k.x > sl.x) sl = k;          // stagnant above the 660
+    k = slab(lon, r, 1.9, uFlow.z); if (k.x > sl.x) sl = k;          // trapped at 660-1,000 km
+    k = slab(lon, r, 4.9, uFlow.w + 0.03); if (k.x > sl.x) sl = k;   // sinks into the deep lower mantle
+    vec2 pl = plume(lon, r, 1.2);
+    k = plume(lon, r, 2.7); if (k.x > pl.x) pl = k;
+    k = plume(lon, r, 4.2); if (k.x > pl.x) pl = k;
+    c = mix(c, vec3(0.42, 0.66, 1.0) * wave(sl.y - ft), sl.x);
+    c = mix(c, vec3(1.0, 0.9, 0.55) * wave(pl.y - ft), pl.x);
+    a = mix(a, 0.95, max(sl.x, pl.x));
+  }
+  gl_FragColor = vec4(c, a * (1.0 - uScatter) * dim);
 }`;
 
 const FRAG = /* glsl */ `
@@ -71,8 +148,12 @@ function hexRgb(hex) {
 }
 
 export class HoloScene {
-  constructor(canvas, models, buildArg) {
+  /** motionOf(part) -> motion code for its dots (0 = default shimmer).
+   *  faceColors(part, depthKm) -> ['#rrggbb' | null, ...]: the face colour in views 1..4 (null = the layer's colour). */
+  constructor(canvas, models, buildArg, motionOf = () => 0, faceColors = () => ({})) {
     this.models = models;
+    this.motionOf = motionOf;
+    this.faceColors = faceColors;
     this.buildArg = buildArg; // passed to every model's build(), e.g. the level
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
     this.renderer.setClearColor(0x000000, 0);
@@ -92,6 +173,10 @@ export class HoloScene {
       uSel: { value: -1 },
       uIsolate: { value: -1 },
       uPull: { value: new THREE.Vector2() },
+      // reduced-motion settings switch the state animation off
+      uMotion: { value: matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 0 : 1 },
+      uFlow: { value: new THREE.Vector4() }, // set by the model (main.js)
+      uProp: { value: 0 }, // 0 layers, 1..4 the property views (ui/propertyView.js)
     };
     this.material = new THREE.ShaderMaterial({
       vertexShader: VERT,
@@ -99,7 +184,7 @@ export class HoloScene {
       uniforms: this.uniforms,
       transparent: true,
       depthWrite: false,
-      depthTest: false,
+      depthTest: true, // dots behind a solid face are hidden
       blending: THREE.AdditiveBlending,
     });
 
@@ -183,11 +268,13 @@ export class HoloScene {
     const part = new Float32Array(total);
     const rnd = new Float32Array(total * 3);
     const seed = new Float32Array(total);
+    const motion = new Float32Array(total);
     let maxR = 0;
     let k = 0;
     const meta = [];
     parts.forEach((p, pi) => {
       const rgb = hexRgb(p.color);
+      const mo = this.motionOf(p);
       const anchors = [];
       const samples = [];
       p.instances.forEach((inst) => {
@@ -205,6 +292,7 @@ export class HoloScene {
           const s = Math.sqrt(1 - uu * uu);
           rnd.set([s * Math.cos(tt) * rr, uu * rr, s * Math.sin(tt) * rr], k * 3);
           seed[k] = Math.random();
+          motion[k] = mo;
           maxR = Math.max(maxR, Math.hypot(x + inst.dir[0], y + inst.dir[1], z + inst.dir[2]));
           if (inst.pickable !== false && Math.random() < 160 / Math.max(160, n)) samples.push(x, y, z, inst.dir[0], inst.dir[1], inst.dir[2]);
         }
@@ -219,15 +307,59 @@ export class HoloScene {
     geo.setAttribute('aPart', new THREE.BufferAttribute(part, 1));
     geo.setAttribute('aRand', new THREE.BufferAttribute(rnd, 3));
     geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+    geo.setAttribute('aMotion', new THREE.BufferAttribute(motion, 1));
     geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 50);
-    const entry = { geo, meta, fit: FIT / Math.max(0.5, maxR), count: total };
+    const faces = [];
+    parts.forEach((p, pi) => p.instances.forEach((inst) => inst.face && faces.push(this._face(p, pi, inst, c))));
+    const entry = { geo, meta, faces, fit: FIT / Math.max(0.5, maxR), count: total };
     this.cache.set(i, entry);
     return entry;
+  }
+
+  /** A flat annulus mesh through the layer's samples, one colour set per view, moving with its instance. */
+  _face(p, pi, inst, c) {
+    const { rings, y, a0 = 0, a1 = Math.PI * 2, propOnly = false } = inst.face;
+    const SEG = Math.max(8, Math.round((128 * (a1 - a0)) / (Math.PI * 2)));
+    const pos = [], cols = [[], [], [], [], []], idx = [];
+    const layer = hexRgb(p.color);
+    for (const [r, km] of rings) {
+      const fc = [null, ...this.faceColors(p, km)].map((h) => (h ? hexRgb(h) : layer));
+      for (let k = 0; k <= SEG; k++) {
+        const a = a0 + ((a1 - a0) * k) / SEG;
+        pos.push(r * Math.cos(a) - c[0], y - c[1], r * Math.sin(a) - c[2]);
+        cols.forEach((list, v) => list.push(...fc[v]));
+      }
+    }
+    for (let j = 0; j < rings.length - 1; j++)
+      for (let k = 0; k < SEG; k++) {
+        const a = j * (SEG + 1) + k, b = a + SEG + 1;
+        idx.push(a, b, a + 1, a + 1, b, b + 1);
+      }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    cols.forEach((v, k) => geo.setAttribute(`c${k}`, new THREE.Float32BufferAttribute(v, 3)));
+    geo.setIndex(idx);
+    const u = this.uniforms;
+    const mat = new THREE.ShaderMaterial({
+      vertexShader: FACE_VERT,
+      fragmentShader: FACE_FRAG,
+      uniforms: { uExplode: u.uExplode, uProp: u.uProp, uPull: u.uPull, uScatter: u.uScatter, uIsolate: u.uIsolate, uSel: u.uSel, uDir: { value: new THREE.Vector3(...inst.dir) }, uPart: { value: pi }, uPropOnly: { value: propOnly ? 1 : 0 }, uTime: u.uTime, uMotion: u.uMotion, uFlow: u.uFlow, uConvect: { value: this.motionOf(p) === 3 ? 1 : 0 } },
+      transparent: true,
+      side: THREE.DoubleSide,
+      depthWrite: true,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.frustumCulled = false;
+    mesh.renderOrder = -1; // faces first, so the dots in front blend over them
+    return mesh;
   }
 
   _load(i) {
     const g = this._geometry(i);
     if (this.points) this.group.remove(this.points);
+    if (this.faces) this.group.remove(...this.faces);
+    this.faces = g.faces;
+    if (g.faces.length) this.group.add(...g.faces);
     this.points = new THREE.Points(g.geo, this.material);
     this.points.frustumCulled = false;
     this.group.add(this.points);

@@ -1,11 +1,16 @@
 import './styles.css';
 import { HoloScene } from './scene.js';
 import { MODELS } from './models/index.js';
-import { GEOMETRY } from './models/earth.js';
+import { GEOMETRY, KM } from './models/earth.js';
 import { HandTracker } from './handTracking.js';
 import { GestureEngine, HAND_CONNECTIONS } from './gestureEngine.js';
 import { Hold, HOLD_S } from './hold.js';
-import { buildTour } from './tour.js';
+import { buildTour, CHECK_WAIT } from './tour.js';
+import { loopFor, LOOPS } from './content/earth/learn.js';
+import { runLoop, loadProgress } from './ui/learnLoop.js';
+import { stateOf } from './content/earth/states.js';
+import { faceColors, mountViewSwitch, VIEWS } from './ui/propertyView.js';
+import { buildQuake } from './ui/quakeView.js';
 import { clamp } from './utils.js';
 import { LEVELS } from './content/levels.js';
 import { loadLevel, saveLevel, mapPart } from './levels.js';
@@ -54,9 +59,12 @@ function toast(msg) {
 let level = loadLevel() || 'alevel';
 let mode = 'explore'; // or 'lesson'
 let pendingSel = null; // part id to select once a level rebuild finishes
-let scene;
+let scene, quake;
 try {
-  scene = new HoloScene($('scene'), MODELS, level);
+  scene = new HoloScene($('scene'), MODELS, level, (p) => stateOf(p.id, p.kind)?.motion || 0, faceColors);
+  scene.uniforms.uFlow.value.set(KM(220), KM(660), KM(1000), KM(2891));
+  quake = buildQuake(scene.uniforms);
+  scene.group.add(quake.object);
 } catch (e) {
   console.error(e);
   showBanner('WebGL is not available. Use a current Chrome, Edge or Firefox with hardware acceleration on.');
@@ -209,6 +217,7 @@ layerPicker.onchange = () => {
 function setLevel(id) {
   if (id === level) return;
   stopTour(); // its steps belong to the old level
+  closeLearn();
   const selId = scene.sel >= 0 ? scene.parts[scene.sel]?.id : null;
   pendingSel = mapPart(selId, level, id);
   level = id;
@@ -221,6 +230,29 @@ function setLevel(id) {
   toast(LEVELS.find((l) => l.id === id).label);
 }
 
+// ------------------------------------------------------------------ learning loop for a layer
+const learnHost = $('learn');
+function closeLearn() {
+  if (learnHost.hidden) return;
+  learnHost.hidden = true;
+  learnHost.replaceChildren();
+  $('info').hidden = false;
+  showPart(scene.sel);
+}
+$('part-learn').onclick = () => {
+  const i = scene.sel;
+  const content = EARTH[level].parts.find((c) => c.id === scene.parts[i]?.id);
+  const loop = content && loopFor(level, content.id);
+  if (!loop) return;
+  stopTour();
+  highlight(i);
+  $('info').hidden = true;
+  runLoop(learnHost, { level, part: content, loop, onSeeAgain: () => { highlight(i); toast(`${content.title} highlighted`); },
+    onView: (id) => { views.select(VIEWS.findIndex((v) => v.id === id)); highlight(i); }, onClose: closeLearn });
+  $('part-learn').hidden = true;
+  learnHost.scrollIntoView({ block: 'start', behavior: 'smooth' });
+};
+
 function showPart(i) {
   const p = i >= 0 ? scene.parts[i] : null;
   layerPicker.value = p?.id || '';
@@ -229,6 +261,10 @@ function showPart(i) {
   button.hidden = mode === 'lesson' || (!p && scene.isolatedPart < 0);
   button.textContent = scene.isolatedPart >= 0 ? 'Restore all parts' : 'Pull part aside';
   $('part-study').hidden = mode !== 'explore' || level !== 'alevel' || !p;
+  const learn = $('part-learn');
+  learn.hidden = mode !== 'explore' || !p || !loopFor(level, p.id) || !$('learn').hidden;
+  const done = p && loadProgress()[level]?.[p.id];
+  learn.textContent = done ? `Learn again (last time ${done.score} of ${done.total})` : 'Learn this layer: 2 minutes';
 }
 
 $('part-study').onclick = () => {
@@ -276,7 +312,7 @@ function highlight(i) {
   scene.setSel(i);
   scene.setHover(-1);
   mouseHover = -1;
-  scene.explodeTarget = i < 0 ? 0 : Math.max(scene.explodeTarget, 0.65);
+  scene.explodeTarget = i < 0 || scene.uniforms.uProp.value > 0 ? 0 : Math.max(scene.explodeTarget, 0.65);
   showPart(i);
   $('panel').scrollTop = 0;
 }
@@ -291,7 +327,9 @@ function startTour() {
   scene.resetView();
   scene.autoSpin = true;
   $('b-spin').classList.add('on');
-  tour = { steps: buildTour(layerOrder(), LEVELS.find((l) => l.id === level).label), i: 0, t: 0, paused: false };
+  closeLearn();
+  const checks = Object.fromEntries(Object.entries(LOOPS[level] || {}).map(([id, l]) => [id, l.check]));
+  tour = { steps: buildTour(layerOrder(), LEVELS.find((l) => l.id === level).label, checks), i: 0, t: 0, paused: false };
   tourBar.hidden = false;
   pauseTour(false);
   showTourStep();
@@ -300,10 +338,35 @@ function showTourStep() {
   const s = tour.steps[tour.i];
   highlight(s.id ? scene.parts.findIndex((p) => p.id === s.id) : -1);
   $('tour-title').textContent = s.title;
-  renderRich($('tour-text'), s.text);
+  tour.revealed = !s.check;
+  renderRich($('tour-text'), s.check ? s.check.q : s.text);
+  const opts = $('tour-check');
+  opts.replaceChildren();
+  opts.hidden = !s.check;
+  s.check?.options.forEach((o, k) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    renderRich(b, o);
+    b.onclick = () => revealCheck(k);
+    opts.append(b);
+  });
   $('tour-count').textContent = `${tour.i + 1} of ${tour.steps.length}`;
   $('tour-back').disabled = tour.i === 0;
   tour.t = 0;
+}
+/** Show a tour question's answer: the learner's pick (k), or none when the wait runs out. */
+function revealCheck(k = -1) {
+  const s = tour?.steps[tour.i];
+  if (!s?.check || tour.revealed) return;
+  tour.revealed = true;
+  tour.t = Math.max(tour.t, CHECK_WAIT);
+  [...$('tour-check').children].forEach((b, i) => {
+    b.disabled = true;
+    b.classList.toggle('right', i === s.check.answer);
+    b.classList.toggle('wrong', i === k && k !== s.check.answer);
+  });
+  const lead = k < 0 ? '' : k === s.check.answer ? 'Correct. ' : 'Not quite. ';
+  renderRich($('tour-text'), `${lead}${s.check.explain} (${s.check.where})`);
 }
 function tourMove(d) {
   if (!tour) return;
@@ -325,6 +388,7 @@ function tourTick(dt) {
   if (!tour) return;
   if (!tour.paused && scene.pending < 0) tour.t += dt;
   const s = tour.steps[tour.i];
+  if (s.check && !tour.revealed && tour.t >= CHECK_WAIT) revealCheck();
   $('tour-progress').style.width = `${Math.min(100, (100 * tour.t) / s.dur)}%`;
   if (tour.t >= s.dur) tourMove(1);
 }
@@ -363,16 +427,30 @@ $('b-spin').onclick = () => {
 /** Back to the original model from any state: whole Earth, assembled, starting view and zoom, nothing highlighted. */
 function resetAll() {
   stopTour();
+  closeLearn();
   setWalkthrough(false);
   if (mode === 'lesson') setMode('explore');
   scene.resetView();
   scene.explodeTarget = 0;
   viewTarget = null;
+  views.select(0);
   mouseHover = -1;
   scene.setHover(-1);
   showPart(-1);
   toast('Model reset');
 }
+// colour the cut-away by layer or by a property at each depth; property views open the Earth and tilt it to show the faces
+const views = mountViewSwitch($('views'), $('legend'), (i) => {
+  scene.uniforms.uProp.value = i;
+  const isQuake = VIEWS[i].id === 'quake';
+  quake.show(isQuake);
+  if (i > 0) {
+    // one flat cut at the equator: the layers close up and the view tilts to look onto the face
+    scene.explodeTarget = 0;
+    scene.isolate();
+    viewTarget = isQuake ? { x: 1.25, y: 0, z: 0 } : { x: 0.85, y: scene.rot.y, z: 0 }; // the earthquake sits at the top
+  }
+});
 $('b-reset').onclick = resetAll;
 $('t-reset').onclick = resetAll;
 
@@ -825,6 +903,7 @@ function frame(now) {
   $('b-explode').textContent = scene.explodeTarget > 0.5 ? 'Assemble' : 'Explode';
 
   tourTick(dt);
+  quake.tick(dt, scene.uniforms.uMotion.value === 0);
   scene.update(dt, t);
   drawOverlay();
   requestAnimationFrame(frame);

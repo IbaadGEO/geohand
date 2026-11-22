@@ -1,5 +1,6 @@
 // Info panel for the selected part or boundary. Top level is DOM-free so formatRef can be tested in node.
 import { renderRich } from './richText.js';
+import { stateOf } from '../content/earth/states.js';
 
 /** APA-style reference line, as in docs/sources.md. Titles may carry rich markup (e.g. MgSiO~3~). */
 export function formatRef(r) {
@@ -51,6 +52,13 @@ export function mountPanel(root) {
     if (part.kind === 'boundary') head.append(el('span', 'tag ghost', 'boundary'));
 
     const parts = [head];
+    // what the moving dots on the model mean for this part
+    const state = stateOf(part.id, part.kind);
+    if (state) {
+      const st = el('p', 'state', `${state.label}${cite(state.refs)}`);
+      st.append(el('span', 'where', `${state.where}. ${state.shown || 'The dots’ motion shows this'}; speeds are not to scale.`));
+      parts.push(st);
+    }
     if (!part.draft) {
       const more = el('details', 'more');
       more.append(el('summary', '', 'More detail'), el('p', '', part.long));
