@@ -2,9 +2,9 @@ import { Cloud, P, I, ellipsoid, disc, ring, unitVec, rand, reseed } from './sha
 import { EARTH } from '../content/earth/index.js';
 
 // Real depths in km. PREM = Dziewonski & Anderson (1981) Table I; ak135 = Kennett et al. (1995) Table 3.
-// shortcut: oceanic crust (7 km) has no source in hand yet (White et al. 1992); innermost inner core and LLSVPs await theirs.
+// Crust: White et al. (1992) oceanic 7.1 km; continental drawn at ak135's 35 km (CRUST 5.1 averages 38 km). Innermost inner core and LLSVPs await their papers.
 export const GEOMETRY = {
-  crust: [0, 35], 'continental-crust': [0, 35], 'oceanic-crust': [0, 7], // ak135 Moho 35 km
+  crust: [0, 35], 'continental-crust': [0, 35], 'oceanic-crust': [0, 7], // ak135 Moho 35 km; White et al. 7.1 km
   lithosphere: [35, 80], 'lithospheric-mantle': [35, 80], // PREM lid base 80 km
   asthenosphere: [80, 220], // PREM low-velocity zone
   'upper-mantle': [220, 410], mantle: [220, 2891], // A-level mantle drawn from the asthenosphere down

@@ -43,3 +43,8 @@ test('parts with no source in hand are not shown', () => {
   for (const lv of ['alevel', 'undergrad', 'postgrad'])
     for (const id of ['llsvp', 'innermost-inner-core']) assert.ok(!EARTH[lv].parts.some((p) => p.id === id), `${lv}/${id}`);
 });
+test('every crust part and the Moho show cited numbers at every level', () => {
+  for (const lv of ['alevel', 'undergrad', 'postgrad'])
+    for (const p of EARTH[lv].parts.filter((p) => /crust|moho/.test(p.id))) assert.ok(NUMBERS[lv][p.id].length > 0, `${lv}/${p.id}`);
+});
+test('oceanic crust drawn at White et al. thickness', () => assert.deepEqual(GEOMETRY['oceanic-crust'], [0, 7]));

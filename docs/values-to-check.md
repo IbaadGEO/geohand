@@ -1,4 +1,4 @@
-# Values to check: papers 1, 2 and 4
+# Values to check
 
 **Checked 2026-11-22** against the text of the owner's PDFs. All lines match; notes on each paper below.
 
@@ -39,8 +39,37 @@ Also noted: ak135 repeats 210 km with a tiny jump (v~S~ 4.518 → 4.523) and rep
 
 The "about half of all heat loss" note for young ocean floor is worked out (23.1 ÷ 46.7 = 49%), not quoted.
 
+## 5. Christensen & Mooney (1995), abstract, p. 9761
+
+- [ ] Weighted average continental crust 41.1 km; extended crust 30.5 km; orogens 46.3 km
+- [ ] Average crustal P-wave speed 6.45 km/s; Pn 8.09 km/s
+- [ ] Mean crustal density 2,830 kg/m³; average SiO~2~ 61.8%
+
+## 6. White, McKenzie & O'Nions (1992)
+
+- [ ] Abstract, p. 19,683: igneous oceanic crust 7.1 ± 0.8 km, bounds 5.0–8.5 km; rare earth element inversions 8.3 ± 1.5 km; near plumes 10.3 ± 1.7 km; aseismic ridges 20 ± 1 km
+- [ ] Table 8, p. 19,698 ("Mean Oceanic Crustal Structure (This Paper)"): Layer 2 2.5–6.6 km/s, 2.11 ± 0.55 km; Layer 3 6.6–7.6 km/s, 4.97 ± 0.90 km; total 7.08 ± 0.78 km
+
+## 7. CRUST 5.1: Mooney, Laske & Masters (1998)
+
+- [ ] Plate 1 caption, p. 733: continental crust averages 38 km, from 20.5 km (extended crust) to 70 km (Tibetan Plateau)
+- [ ] Figure 3a, p. 730: averages shield 40.77, platform 38.96, orogen 42.66, extended 30.54 km. **Look at the figure:** the text extraction loses the layout, so check that 40.77 sits under Shield and 38.96 under Platform
+- [ ] Section 6, p. 734: oceanic crust 6–7 km; model uses 6.5 km; layer P-wave speeds 5.0, 6.6, 7.1 km/s
+- [ ] Section 8, p. 735: mean Moho depths 21.8 km (global), 38.0 km (continents), 12.6 km (oceans, with 4.0 km of water)
+- [ ] p. 744: continental crust typically 30–45 km, global average 38 km
+
+## 8. Rudnick & Gao (2003)
+
+- [ ] Section 3.01.3.1, pp. 20–21: for a ≈40 km crust, middle crust 12–23 km, lower crust from 23 km to the Moho
+- [ ] Table 11, p. 53: SiO~2~ 66.6 / 63.5 / 53.4 / 60.6 (upper / middle / lower / total); MgO 2.48 / 3.59 / 7.24; K~2~O 2.80 / 2.30 / 0.61
+
+### Notes
+
+- CRUST 5.1 (p. 734) quotes White et al. as 7.2 km; White et al.'s own abstract gives 7.1 ± 0.8 km (Table 8: 7.08). GeoHand uses White et al.'s figure.
+- The Christensen & Mooney header in the PDF text reads "NO. B7", but the publisher's download line says B6, which matches the DOI record. The reference keeps B6.
+- #9 (Fischer et al. 2010, lithosphere–asthenosphere boundary) was not in this batch.
+
 ## What these papers don't cover yet
 
-- **Oceanic crust thickness:** needs White et al. (1992), #6. It is drawn at 7 km, unsourced, and shows no numbers.
 - **Large low-velocity provinces and the innermost inner core:** need #19 and #23. They are left out of the postgraduate model for now.
-- **Temperatures, compositions and how each layer formed:** need the crust, mantle and core papers (#5–25).
+- **Temperatures, compositions and how each layer formed:** crust composition is now in (#8); mantle and core still need #9–25. The base of the lithosphere also needs #9.
