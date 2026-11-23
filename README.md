@@ -99,6 +99,10 @@ The **Earthquake** view calculates P- and S-wave paths from PREM wave speeds and
 3. Choose **Use your hands** and allow camera access, or choose **Use the mouse**.
 4. Follow the introductory controls, or skip them and begin exploring.
 
+<img src="docs/media/hands.webp" width="820" alt="Hand tracking in use: two open hands pull the Earth apart, pointing picks the Moho and the core–mantle boundary, two fists zoom in, and pointing at Put Earth back together closes it, with the hand skeletons drawn over the model and the matching control lit in the side panel">
+
+<sub>Recorded with a webcam in Chrome, with the camera background turned off (camera button, top right) so only the tracked hand points show. Camera frames stay on the device and are not uploaded or stored.</sub>
+
 | Action | Mouse / keyboard | Hand tracking |
 |---|---|---|
 | Rotate the Earth | Drag the background | Open hand and move |
