@@ -16,6 +16,7 @@ const { LEVELS } = await imp('src/content/levels.js');
 const { VIEWS } = await imp('src/ui/propertyView.js');
 const { QUAKE_FACTS } = await imp('src/content/earth/rays.js');
 const { GLOSSARY } = await imp('src/content/earth/glossary.js');
+const { MISSION } = await imp('src/content/earth/mission.js');
 
 const L = [];
 const w = (...s) => L.push(...s);
@@ -50,6 +51,15 @@ w('### Earthquake facts used by the earthquake view', '', '```', JSON.stringify(
 // levels and glossary
 w('## Levels (start screen)', '', ...LEVELS.map((l) => `- **${l.label}:** ${l.who}`), '');
 w('## Words used here (glossary, Normal level)', '', 'Shown under a part, beside the text that uses the word.', '', ...GLOSSARY.map((g) => `- **${g.term}:** ${g.text}${g.refs.length ? ` [${g.refs.join(', ')}]` : ''}`), '');
+
+// mission
+const M = MISSION.steps;
+w('## Earthquake mission', '', `**${MISSION.title}**`, '',
+  `1. Predict: ${M.predict.text}`, ...M.predict.options.map(([, l]) => `   - ${l}`),
+  `2. Open: ${M.open.hands} / ${M.open.mouse}`,
+  `3. Find: ${M.find.hands} / ${M.find.mouse}`, `   - Found: ${M.find.found}`, `   - Show me: ${M.find.shown}`,
+  `4. Evidence (Earthquake view): ${M.evidence.text}`,
+  `5. Explain: ${M.explain.q}`, ...M.explain.options.map((o, i) => `   - ${i === M.explain.answer ? '✔ ' : ''}${o}`), `   - Explanation: ${M.explain.explain} (${M.explain.where})`, '');
 
 // 3. states
 w('## 3. How each part behaves (state labels)', '');

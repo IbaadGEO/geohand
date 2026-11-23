@@ -12,7 +12,8 @@ const STEPS = [
   { id: 'FIST', say: '✊ Make a fist, open, fist again (nothing should happen)', s: 6, calm: true },
   { id: 'TWO', say: '🙌 Two open hands: start close, pull them wide apart', s: 6, ok: ['TWO'], calm: true, end: (g) => g.explode > 0.5 },
   { id: 'ZOOM', say: '🤜🤛 Two fists: start close, move them apart', s: 6, ok: ['ZOOM'], calm: true, end: (g) => g.scale > 1.2 },
-  { id: 'RESET', say: '✊✊ Two fists, hold still till the ring fills', s: 6, want: { RESET: 1 }, end: (g) => g.isolated < 0 && g.sel < 0 && g.scale === 1 },
+  { id: 'MIXED', say: '✋✊ One open hand, one fist, move them apart (nothing should move)', s: 6, calm: true },
+  { id: 'RESET', say: '☝️ Point at “Put Earth back together” and hold', s: 6, want: { RESET: 1 }, end: (g) => g.isolated < 0 && g.sel < 0 && g.scale === 1 },
 ];
 const READY = 5; // countdown before the first step (s)
 const SETTLE = 1; // ignore the first second of each step while the hand changes pose

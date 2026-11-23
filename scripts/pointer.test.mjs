@@ -23,3 +23,14 @@ test('pointer dwell restarts when the target changes and re-arms after leaving',
   run(d, null, 0.1);
   assert.equal(run(d, b, DWELL_S + 0.05), b, 'fires again after leaving');
 });
+
+test('a brief tracking dropout pauses the dwell; a longer one cancels it', () => {
+  const d = new Dwell(), a = {};
+  run(d, a, DWELL_S - 0.2);
+  run(d, null, 0.2); // hand lost for a moment
+  assert.equal(run(d, a, 0.25), a, 'carried on from where it was');
+  const e = new Dwell(), b = {};
+  run(e, b, DWELL_S - 0.2);
+  run(e, null, 0.6); // gone for longer: start again
+  assert.equal(run(e, b, 0.25), null);
+});

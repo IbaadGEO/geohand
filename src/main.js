@@ -27,6 +27,7 @@ import { mountPanel, mountSearch, shortRef } from './ui/panel.js';
 import { searchBank } from './ui/search.js';
 import { openAsk } from './ui/ask.js';
 import { renderRich } from './ui/richText.js';
+import { MISSION, MISSION_STEPS, predictionNote } from './content/earth/mission.js';
 import { createIntro, labelsOpen } from './ui/intro.js';
 import { Lesson } from './lesson.js';
 import { LESSONS } from './content/earth/lessons.js';
@@ -252,6 +253,7 @@ layerPicker.onchange = () => {
 function setLevel(id) {
   if (id === level) return;
   stopTour(); // its steps belong to the old level
+  endMission();
   closeLearn();
   const selId = scene.sel >= 0 ? scene.parts[scene.sel]?.id : null;
   pendingSel = mapPart(selId, level, id);
@@ -261,6 +263,7 @@ function setLevel(id) {
   lesson = new Lesson(LESSONS[id]);
   lesson.jumpToPart(pendingSel);
   scene.reload(scene.index, id);
+  partTargets = []; // pointing targets are per part index; the new level has other parts
   markLevel();
   syncViews();
   toast(LEVELS.find((l) => l.id === id).label);
@@ -386,7 +389,7 @@ function fillCard(i) {
 }
 function updateCard() {
   const i = scene.sel;
-  const show = i >= 0 && i !== cardClosed && mode === 'explore' && !tour && !drill && !intro && scene.isolatedPart < 0;
+  const show = i >= 0 && i !== cardClosed && mode === 'explore' && !tour && !drill && !intro && !mission && scene.isolatedPart < 0;
   card.hidden = !show;
   if (!show) return;
   if (cardKey !== `${level}:${i}`) fillCard(i);
@@ -477,6 +480,7 @@ const tourBar = $('tour');
 
 function startTour() {
   if (intro) endIntro();
+  endMission();
   setWalkthrough(false);
   if (mode === 'lesson') setMode('explore');
   scene.resetView();
@@ -631,6 +635,10 @@ function syncViews() {
 }
 syncViews();
 $('b-reset').onclick = resetAll;
+$('reset-earth').onclick = () => {
+  fireLog.push({ g: 'RESET', t: performance.now() / 1000 });
+  resetAll();
+};
 $('t-reset').onclick = resetAll;
 
 function toggle(id, key, after) {
@@ -734,8 +742,6 @@ let twoSince = -1;
 let twoActive = false;
 let primaryId = null;
 const TWO_HOLD = 0.25;
-const TWO_FIST_S = 1; // two fists held this long (and still) reset the model
-let twoFist = null; // { d: palm distance when the fists started, s: seconds held, done }
 const prevPalm = new Map();
 const hold = new Hold();
 const fireLog = []; // fired commands, read by the ?debug test
@@ -750,13 +756,11 @@ function setActive(key) {
 // the panel rows say what each held shape will do now
 const gestText = { PEACE: $('gest-peace') };
 const gestRings = { PEACE: $('ring-peace') };
-const resetRing = $('ring-reset');
 function updateLegend() {
   const last = scene.sel >= 0 && layerOrder().at(-1).id === scene.parts[scene.sel]?.id;
   const peace = mode === 'lesson' ? 'Continue to the next step' : last ? 'Return to the full Earth model' : 'Next layer';
   if (gestText.PEACE.textContent !== peace) gestText.PEACE.textContent = peace;
   for (const [g, el] of Object.entries(gestRings)) el.style.setProperty('--p', hold.shape === g ? hold.progress.toFixed(3) : '0');
-  resetRing.style.setProperty('--p', twoFist ? Math.min(1, twoFist.s / TWO_FIST_S).toFixed(3) : '0');
 }
 
 const pointer = mountPointer();
@@ -764,11 +768,12 @@ const pointer = mountPointer();
 let partTargets = [], pointedPart = false;
 function atModel(x, y) {
   if (mode !== 'explore' || tour || (drill && !drillPick) || scene.isolatedPart >= 0) return null;
-  const i = scene.pick(x, y, 80);
+  // sticky: the candidate part stays until the fingertip is clearly nearer another, so small wobbles don't restart the hold
+  const i = scene.pick(x, y, 80, pointedPart ? scene.hover : -1);
   scene.setHover(i);
   pointedPart = true;
   if (i < 0) return null;
-  return (partTargets[i] ||= { click: () => pickPart(i) });
+  return (partTargets[i] ||= { click: () => pickPart(i), name: scene.parts[i].name });
 }
 function control(t, dt, freshFrame) {
   const live = perc.hands.filter((h) => !h.held);
@@ -798,30 +803,23 @@ function control(t, dt, freshFrame) {
     scene.holdVel = true;
     scene.idle = 0;
     prevPalm.clear();
-    // after a reset, zoom stays off until the hands part, so fists still held can't drift the zoom (live run 2026-11-22)
-    if (twoFist?.done) return setActive('RESET');
     const a = perc.hands[0].palm, b = perc.hands[1].palm;
     const dist = Math.hypot((a.x - b.x) * W, (a.y - b.y) * H);
-    // open hands pull the Earth apart (together closes it); two fists zoom. Changing shape restarts the reference, so nothing jumps.
-    const fists = perc.hands[0].gesture === 'FIST' && perc.hands[1].gesture === 'FIST';
-    const kind = fists ? 'zoom' : 'pull';
-    if (!zoomRef || zoomRef.kind !== kind) zoomRef = { kind, d0: Math.max(60, dist), s0: scene.scaleTarget, e0: scene.explodeTarget };
-    if (fists) scene.scaleTarget = clamp((zoomRef.s0 * dist) / zoomRef.d0, 0.5, 2.6);
-    else scene.explodeTarget = clamp(zoomRef.e0 + (dist - zoomRef.d0) / (0.3 * W), 0, 1);
-    // two fists held still: reset. Moving them apart or together restarts the hold, so zooming with fists is safe.
-    if (!fists) twoFist = null;
-    else if (!twoFist || Math.abs(dist - twoFist.d) > 0.06 * W) twoFist = { d: dist, s: 0, done: false };
-    else if (!twoFist.done && (twoFist.s += dt) >= TWO_FIST_S) {
-      twoFist.done = true;
-      fireLog.push({ g: 'RESET', t });
-      resetAll();
+    // two open hands pull the Earth apart (together closes it); two fists zoom. Any other pair, such as one open and one
+    // fist, holds the model where it is, and changing shape restarts the reference, so nothing jumps.
+    const g0 = perc.hands[0].gesture, g1 = perc.hands[1].gesture;
+    const kind = g0 === 'FIST' && g1 === 'FIST' ? 'zoom' : g0 === 'OPEN' && g1 === 'OPEN' ? 'pull' : null;
+    if (!kind) {
       zoomRef = null;
+      return setActive('');
     }
-    setActive(fists ? (twoFist?.s > 0.25 ? 'RESET' : 'ZOOM') : 'TWO');
+    if (!zoomRef || zoomRef.kind !== kind) zoomRef = { kind, d0: Math.max(60, dist), s0: scene.scaleTarget, e0: scene.explodeTarget };
+    if (kind === 'zoom') scene.scaleTarget = clamp((zoomRef.s0 * dist) / zoomRef.d0, 0.5, 2.6);
+    else scene.explodeTarget = clamp(zoomRef.e0 + (dist - zoomRef.d0) / (0.3 * W), 0, 1);
+    setActive(kind === 'zoom' ? 'ZOOM' : 'TWO');
     return;
   }
   zoomRef = null;
-  twoFist = null;
 
   // stay with the hand already in control; a newly detected hand doesn't take over
   const h = live.find((x) => x.id === primaryId) || live[0];
@@ -873,7 +871,7 @@ mountStuck($('stuck'), $('stuck-menu'), {
     if (tour) return { names: tour.steps.map((s) => s.title), at: tour.i, back: () => tourMove(-1), replay: showTourStep, jump: (k) => { tour.i = k; showTourStep(); } };
     return null;
   },
-  idle: [['Reset the model', resetAll], ['Watch the tour', startTour], ['Replay the intro', () => { resetAll(); startIntro(true); }]],
+  idle: [['Reset the model', resetAll], ['Earthquake mission', () => startMission()], ['Watch the tour', startTour], ['Replay the intro', () => { resetAll(); startIntro(true); }]],
   ask() {
     const bank = document.querySelector('.question-bank');
     bank.open = true;
@@ -883,7 +881,7 @@ mountStuck($('stuck'), $('stuck-menu'), {
 });
 
 // ------------------------------------------------------------------ mouse + keyboard
-const onUi = (e) => e.target.closest && e.target.closest('#panel,#toolbar,#viewbar,#start,#tour,#stuck,#stuck-menu,#part-card,#intro');
+const onUi = (e) => e.target.closest && e.target.closest('#panel,#toolbar,#viewbar,#start,#tour,#stuck,#stuck-menu,#part-card,#intro,#reset-earth,#mission');
 
 addEventListener('pointerdown', (e) => {
   if (e.button !== 0 || !e.isPrimary || onUi(e)) return;
@@ -1035,8 +1033,11 @@ function drawZoom(a, b) {
   ctx.font = '600 13px "Manrope Variable", system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.shadowBlur = 6;
-  const label = twoFist ? (twoFist.done ? 'reset' : `hold to reset ${Math.round((100 * twoFist.s) / TWO_FIST_S)}%`)
-    : zoomRef?.kind === 'pull' ? `opened ${Math.round(clamp(scene.explodeTarget, 0, 1) * 100)}%` : `zoom ${scene.scale.toFixed(2)}x`;
+  // before anything moves, say what the hands are ready to do
+  const still = zoomRef && Math.abs(Math.hypot(x1 - x2, y1 - y2) - zoomRef.d0) < 12;
+  const label = !zoomRef ? 'Open both hands to pull apart, or make two fists to zoom'
+    : zoomRef.kind === 'pull' ? (still ? 'Both hands open · pull apart to open' : `opened ${Math.round(clamp(scene.explodeTarget, 0, 1) * 100)}%`)
+    : still ? 'Two fists · move apart to zoom' : `zoom ${scene.scale.toFixed(2)}x`;
   ctx.fillText(label, (x1 + x2) / 2, (y1 + y2) / 2 - 12);
   ctx.restore();
 }
@@ -1155,7 +1156,10 @@ function introTick(t) {
   const dRot = lastRot && scene.holdVel ? Math.abs(r.x - lastRot.x) + Math.abs(r.y - lastRot.y) : 0;
   lastRot = { x: r.x, y: r.y };
   intro.tick({ dRot, explode: scene.shownExplode, sel: scene.sel, t });
-  if (intro.step === 'done') return endIntro();
+  if (intro.step === 'done') {
+    endIntro();
+    return startMission(); // the motions learnt, the first mission gives them a purpose
+  }
   $('intro-progress').hidden = intro.step !== 'turn';
   $('intro-bar').style.width = `${intro.turned * 100}%`;
   const handsOn = camOn && trackingState !== 'Mouse only';
@@ -1217,12 +1221,132 @@ function frame(now) {
   tourTick(dt);
   introTick(t);
   updateCard();
+  // the mission's open step moves on once the Earth is pulled apart
+  if (mission && MISSION_STEPS[mission.i] === 'open' && scene.shownExplode >= 0.85) missionNext();
+  // with hands, a large reset target appears whenever the model is not in its starting state
+  $('reset-earth').hidden = !camOn || Boolean(tour) || (scene.explodeTarget < 0.05 && Math.abs(scene.scaleTarget - 1) < 0.05 && scene.isolatedPart < 0);
   quake.tick(dt, scene.uniforms.uMotion.value === 0);
   scene.update(dt, t);
   drawOverlay();
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+
+// ------------------------------------------------------------------ first mission: how an earthquake shows that part of Earth is liquid
+// Predict, open the Earth, find the core–mantle boundary, see the waves, then explain. The same steps work by hand or mouse.
+let mission = null; // { i: step index, predicted: layer id }
+const MS = MISSION.steps;
+const partIndex = (id) => scene.parts.findIndex((p) => p.id === id);
+function startMission() {
+  stopTour();
+  closeLearn();
+  if (intro) endIntro();
+  if (mode === 'lesson') setMode('explore');
+  restoreParts();
+  views.select(0);
+  scene.explodeTarget = 0;
+  scene.setSel(-1);
+  showPart(-1);
+  mission = { i: 0, predicted: null };
+  $('mission').hidden = false;
+  showMission();
+}
+function endMission() {
+  if (!mission) return;
+  mission = null;
+  drillPick = null;
+  $('mission').hidden = true;
+}
+function missionNext() {
+  mission.i++;
+  showMission();
+}
+function showMission() {
+  const step = MISSION_STEPS[mission.i];
+  const opts = $('mission-options'), fb = $('mission-fb'), next = $('mission-next'), help = $('mission-help');
+  const say = (t) => renderRich($('mission-text'), t);
+  const choice = (label, fn) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    renderRich(b, label);
+    b.onclick = fn;
+    opts.append(b);
+    return b;
+  };
+  const handsOn = camOn && trackingState !== 'Mouse only';
+  opts.replaceChildren();
+  fb.textContent = '';
+  next.hidden = help.hidden = true;
+  drillPick = null;
+  $('mission-title').textContent = MISSION.title;
+  $('mission-count').textContent = step === 'done' ? 'Done' : `Step ${mission.i + 1} of ${MISSION_STEPS.length - 1}`;
+  if (step === 'predict') {
+    say(MS.predict.text);
+    for (const [id, label] of MS.predict.options) choice(label, () => { mission.predicted = id; missionNext(); });
+  } else if (step === 'open') {
+    say(handsOn ? MS.open.hands : MS.open.mouse);
+    help.hidden = false;
+    help.textContent = 'Pull it apart';
+    help.onclick = () => (scene.explodeTarget = 1);
+  } else if (step === 'find') {
+    say(handsOn ? MS.find.hands : MS.find.mouse);
+    const target = partIndex(MISSION.target);
+    const found = (shown) => {
+      drillPick = null;
+      fb.textContent = '';
+      const below = partIndex(MISSION.below);
+      scene.setSel(below); // the boundary found, the outer core under it comes forward and the rest dims
+      scene.isolate(below);
+      scene.pullAside();
+      showPart(below);
+      say(shown ? MS.find.shown : MS.find.found);
+      help.hidden = true;
+      next.hidden = false;
+      next.textContent = 'See the evidence';
+    };
+    drillPick = (j) => (j === target ? found(false) : (fb.textContent = `That is the ${scene.parts[j].name.toLowerCase()}. Try again.`));
+    help.hidden = false;
+    help.textContent = 'Show me';
+    help.onclick = () => found(true);
+  } else if (step === 'evidence') {
+    restoreParts();
+    views.select(VIEWS.findIndex((v) => v.id === 'quake'));
+    say(MS.evidence.text);
+    next.hidden = false;
+    next.textContent = 'I have seen it';
+  } else if (step === 'explain') {
+    const ex = MS.explain;
+    say(ex.q);
+    const buttons = ex.options.map((o, k) => choice(o, () => {
+      buttons.forEach((b, n) => {
+        b.disabled = true;
+        b.classList.toggle('right', n === ex.answer);
+        b.classList.toggle('wrong', n === k && k !== ex.answer);
+      });
+      renderRich(fb, `${k === ex.answer ? 'Correct. ' : 'Not quite. '}${ex.explain} (${ex.where}) ${predictionNote(mission.predicted, Object.fromEntries(MS.predict.options))}`);
+      next.hidden = false;
+      next.textContent = 'Finish';
+    }));
+  } else {
+    say('Mission complete: the waves showed you that the outer core is liquid. Carry on with the outer core, or explore on your own.');
+    choice('Learn more about the outer core', () => {
+      endMission();
+      views.select(0);
+      pickPart(partIndex(MISSION.below));
+      $('part-learn').click();
+    });
+    choice('Explore on my own', () => {
+      endMission();
+      resetAll();
+    });
+  }
+  next.onclick = missionNext;
+}
+$('mission-close').onclick = () => {
+  endMission();
+  resetAll();
+};
+$('mission-play').onclick = () => startMission();
 
 // ?debug in the URL adds a guided gesture test with a results table
 if (new URLSearchParams(location.search).has('debug')) {

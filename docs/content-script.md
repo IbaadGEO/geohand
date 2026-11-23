@@ -12,6 +12,8 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - Level
 - ▶ Watch the tour
 - A short overview of the whole Earth, played for you
+- 🌋 Earthquake mission
+- Find out how we know part of Earth is liquid
 - Mode
 - Explore
 - Lesson
@@ -26,13 +28,13 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - Rotate the Earth
 - Make a peace sign and hold it still
 - Next layer
-- Point at a button and hold
-- Select it when the ring fills
-- Pull both open hands apart
+- Point at a part or button and hold
+- Its name shows at your fingertip; it is picked when the ring fills
+- Open both hands, then pull them apart
 - Open the Earth; bring them together to close it
 - Move two fists apart or together
 - Zoom in or out
-- Make two fists and hold them still
+- Point at “Put Earth back together”
 - Reset the model
 - Choose a layer or boundary
 - Move this part aside
@@ -60,8 +62,11 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - Getting started
 - Pull it apart
 - Skip the intro
+- Mission
+- Close the mission
 - This part
 - Close
+- Put Earth back together
 - Explore Earth’s interior with your hands or the mouse. With hands, camera processing stays in your browser; no camera footage is uploaded.
 - Select your level
 - Use your hands
@@ -209,6 +214,26 @@ Shown under a part, beside the text that uses the word.
 - **S waves:** Earthquake waves that shake rock from side to side. Their speed drops to zero in liquid, so they cannot cross it. [prem1981]
 - **Seismic:** To do with earthquake waves.
 
+## Earthquake mission
+
+**Mission: how can an earthquake show that part of Earth is liquid?**
+
+1. Predict: Earthquakes send out two kinds of wave. Shear (S) waves cannot travel through liquid. Which layer do you think stops them?
+   - The crust
+   - The mantle
+   - The outer core
+   - The inner core
+2. Open: Open the Earth to look inside: open both hands, then pull them apart. / Open the Earth to look inside: press Pull it apart, or the space bar.
+3. Find: Find the boundary between rock and metal, the core–mantle boundary. Point at it and hold. / Find the boundary between rock and metal, the core–mantle boundary. Click it.
+   - Found: Found it: the core–mantle boundary, 2,891 km down. Below it is the outer core, now pulled aside.
+   - Show me: Here it is: the core–mantle boundary, 2,891 km down. Below it is the outer core, now pulled aside.
+4. Evidence (Earthquake view): Now the evidence. Waves from an earthquake at the top: the amber P waves cross the outer core, bending as they slow down. The blue direct S waves all stop at its top.
+5. Explain: What does that tell us about the outer core?
+   - ✔ It is liquid: S waves cannot pass through it
+   - It is hotter than the mantle
+   - It is denser than the mantle
+   - Explanation: It is liquid. PREM gives the outer core an S-wave speed of 0, so direct S waves cannot cross it, while P waves can. Density does jump at this boundary, from 5.57 to 9.90 g/cm^3^, but that is not what stops S waves. (PREM, Table I, p. 308)
+
 ## 3. How each part behaves (state labels)
 
 - **plate:** Solid. Moves with its tectonic plate (Garnero et al. (2016), p. 481)
@@ -255,8 +280,12 @@ Messages, buttons and prompts written directly in the code (one line each, as in
 - Continue to the next step
 - Return to the full Earth model
 - Reset the model
+- Earthquake mission
 - Watch the tour
 - Replay the intro
+- Open both hands to pull apart, or make two fists to zoom
+- Both hands open · pull apart to open
+- Two fists · move apart to zoom
 - This is Earth
 - Open your hand and move it to turn the Earth.
 - Drag the Earth to turn it.
@@ -268,6 +297,13 @@ Messages, buttons and prompts written directly in the code (one line each, as in
 - ${intro.turned * 100}%
 - ${intro.index + 1} of 3
 - Put back together
+- Step ${mission.i + 1} of ${MISSION_STEPS.length - 1}
+- Pull it apart
+- See the evidence
+- I have seen it
+- Mission complete: the waves showed you that the outer core is liquid. Carry on with the outer core, or explore on your own.
+- Learn more about the outer core
+- Explore on my own
 
 ### src/tour.js
 

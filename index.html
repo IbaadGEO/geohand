@@ -19,6 +19,7 @@
 
     <section class="levels" id="levels" aria-label="Level"></section>
     <button type="button" id="tour-play">▶ Watch the tour <span>A short overview of the whole Earth, played for you</span></button>
+    <button type="button" id="mission-play">🌋 Earthquake mission <span>Find out how we know part of Earth is liquid</span></button>
 
     <section class="mode">
       <div class="levels" role="group" aria-label="Mode">
@@ -41,10 +42,10 @@
       <ul id="gest">
         <li data-g="MOVE"><i>✋</i><p><b>Open your hand and move it</b><span>Rotate the Earth</span></p></li>
         <li data-g="PEACE"><i>✌️</i><p><b>Make a peace sign and hold it still</b><span id="gest-peace">Next layer</span></p><em class="ring" id="ring-peace"></em></li>
-        <li data-g="POINT"><i>☝️</i><p><b>Point at a button and hold</b><span>Select it when the ring fills</span></p></li>
-        <li data-g="TWO"><i>🙌</i><p><b>Pull both open hands apart</b><span>Open the Earth; bring them together to close it</span></p></li>
+        <li data-g="POINT"><i>☝️</i><p><b>Point at a part or button and hold</b><span>Its name shows at your fingertip; it is picked when the ring fills</span></p></li>
+        <li data-g="TWO"><i>🙌</i><p><b>Open both hands, then pull them apart</b><span>Open the Earth; bring them together to close it</span></p></li>
         <li data-g="ZOOM"><i>🤜🤛</i><p><b>Move two fists apart or together</b><span>Zoom in or out</span></p></li>
-        <li data-g="RESET"><i>✊✊</i><p><b>Make two fists and hold them still</b><span>Reset the model</span></p><em class="ring" id="ring-reset"></em></li>
+        <li data-g="RESET"><i>☝️</i><p><b>Point at “Put Earth back together”</b><span>Reset the model</span></p></li>
       </ul>
     </section>
 
@@ -120,6 +121,17 @@
       <button type="button" id="intro-skip">Skip the intro</button>
     </div>
   </section>
+  <section id="mission" aria-label="Mission" aria-live="polite" hidden>
+    <div class="tour-head"><b id="mission-title"></b><span id="mission-count"></span></div>
+    <p id="mission-text"></p>
+    <div id="mission-options" class="tour-check"></div>
+    <p id="mission-fb"></p>
+    <div class="tour-btns">
+      <button type="button" id="mission-help" hidden></button>
+      <button type="button" id="mission-next" hidden></button>
+      <button type="button" id="mission-close">Close the mission</button>
+    </div>
+  </section>
   <section id="part-card" aria-label="This part" aria-live="polite" hidden>
     <button type="button" id="pc-close" aria-label="Close">✕</button>
     <b id="pc-title"></b>
@@ -128,6 +140,7 @@
     <button type="button" id="pc-walk">Start the lesson here<small></small></button>
     <button type="button" id="pc-view" hidden>See it<small></small></button>
   </section>
+  <button type="button" id="reset-earth" class="only-hands" hidden>Put Earth back together</button>
   <div id="banner"></div>
 
   <div id="start">
