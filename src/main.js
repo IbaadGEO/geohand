@@ -25,7 +25,7 @@ import { EARTH } from './content/earth/index.js';
 import { REFS } from './content/references.js';
 import { mountPanel, mountSearch, shortRef } from './ui/panel.js';
 import { searchBank } from './ui/search.js';
-import { openAsk } from './ui/ask.js';
+import { openAsk, browserName } from './ui/ask.js';
 import { renderRich } from './ui/richText.js';
 import { MISSION, MISSION_STEPS, predictionNote } from './content/earth/mission.js';
 import { createIntro, labelsOpen } from './ui/intro.js';
@@ -914,6 +914,17 @@ mountStuck($('stuck'), $('stuck-menu'), {
     bank.scrollIntoView({ block: 'nearest' });
     bank.querySelector('input, textarea')?.focus();
   },
+  report: (host) =>
+    openAsk(host, '', () => ({
+      level,
+      model: 'earth',
+      part: scene.sel >= 0 ? scene.parts[scene.sel].id : 'general',
+      input: camOn ? 'hands' : 'mouse',
+      view: VIEWS[viewNow].id,
+      activity: drill ? 'drill' : mission ? 'mission' : tour ? 'tour' : intro ? 'intro' : mode,
+      browser: browserName(navigator.userAgent),
+      screen: `${screen.width}x${screen.height}`,
+    }), 'bug'),
 });
 
 // ------------------------------------------------------------------ mouse + keyboard
@@ -1390,7 +1401,8 @@ $('mission-close').onclick = () => {
 $('mission-play').onclick = () => startMission();
 
 // ?debug in the URL adds a guided gesture test with a results table
-if (new URLSearchParams(location.search).has('debug')) {
+// dev builds only: the production build leaves the test out
+if (import.meta.env.DEV && new URLSearchParams(location.search).has('debug')) {
   window.geohand = { scene, atModel }; // for inspecting picks from the console
   import('./debugTest.js').then((m) =>
     m.mount(() => ({

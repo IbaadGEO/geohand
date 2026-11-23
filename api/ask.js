@@ -1,10 +1,10 @@
-// POST /api/ask: stores a visitor's question in a private inbox. Stores only
-// { id, question, level, model, part, receivedAt }; the IP is used only, hashed, for the rate limit.
+// POST /api/ask: stores a visitor's question in a private inbox, or a bug report (kind: 'bug') in a private list.
+// Stores only the validated fields, an id and the time; the IP is used only, hashed, for the rate limit.
 import { validateAsk } from './_lib/validate.js';
 import { rateKey, checkRate } from './_lib/rateLimit.js';
 import { EARTH } from '../src/content/earth/index.js';
 
-const MAX_BYTES = 2048;
+const MAX_BYTES = 6144; // a 1,000-character report in 4-byte characters, plus its context
 // 'general' = asked with nothing selected
 const PART_IDS = { earth: new Set(['general', ...Object.values(EARTH).flatMap((l) => l.parts.map((p) => p.id))]) };
 const PREVIEW = /^https:\/\/geohand-[a-z0-9-]+-ibaadsprojects\.vercel\.app$/;
@@ -35,7 +35,8 @@ export async function handleAsk(request, { store, env, now = Date.now() }) {
     if (!v.ok) return nope(v.status);
     const ip = (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
     if (!(await checkRate(store, rateKey(ip, env.RATE_SALT, now), now))) return nope(429);
-    await store.lpush('inbox', JSON.stringify({ id: crypto.randomUUID(), ...v.value, receivedAt: new Date(now).toISOString() }));
+    const { kind, ...value } = v.value;
+    await store.lpush(kind === 'bug' ? 'bugs' : 'inbox', JSON.stringify({ id: crypto.randomUUID(), ...value, receivedAt: new Date(now).toISOString() }));
     return json(200, { ok: true });
   } catch {
     return nope(500);

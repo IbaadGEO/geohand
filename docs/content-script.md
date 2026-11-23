@@ -354,6 +354,7 @@ Messages, buttons and prompts written directly in the code (one line each, as in
 - Repeat this step
 - Need help? Try one of these
 - Ask a question
+- Report a problem
 
 ### src/ui/crustActivity.js
 
@@ -389,10 +390,14 @@ Messages, buttons and prompts written directly in the code (one line each, as in
 ### src/ui/ask.js
 
 - Your question has been sent.
-- You’ve reached the question limit. Please try again later.
 - The question could not be sent. Your text is still here, so you can try again.
+- Thanks, your report has been sent.
+- The report could not be sent. Your text is still here, so you can try again.
+- You’ve reached the limit for questions and reports. Please try again later.
+- Other browser
 - Your question
-- Only your written question is sent when you select Send. Camera data is never sent, and no IP address is stored. Answered questions may appear anonymously in the README.
+- Your question is sent with the level and the part you have selected. Camera data is never sent, and no IP address is stored. Answered questions may appear anonymously in the README.
+- Sent with your report: the level, mouse or hands, the view, what was running, your browser and screen size. No camera images, screenshots or IP address.
 
 ## Normal
 

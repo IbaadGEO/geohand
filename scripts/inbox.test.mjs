@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateAsk } from '../api/_lib/validate.js';
 import { rateKey, checkRate } from '../api/_lib/rateLimit.js';
-import { sendQuestion } from '../src/ui/ask.js';
+import { sendQuestion, browserName } from '../src/ui/ask.js';
 
 const opts = {
   origin: 'https://geohand.vercel.app',
@@ -61,7 +61,7 @@ test('rate key rotates daily and hides the IP', () => {
 const reply = (status) => async () => ({ status, json: async () => ({}) });
 test('sent', async () => assert.deepEqual(await sendQuestion(good, reply(200)), { ok: true, message: 'Your question has been sent.' }));
 test('rate limited', async () =>
-  assert.deepEqual(await sendQuestion(good, reply(429)), { ok: false, message: 'You’ve reached the question limit. Please try again later.' }));
+  assert.deepEqual(await sendQuestion(good, reply(429)), { ok: false, message: 'You’ve reached the limit for questions and reports. Please try again later.' }));
 test('server error keeps the question', async () =>
   assert.deepEqual(await sendQuestion(good, reply(500)), { ok: false, message: 'The question could not be sent. Your text is still here, so you can try again.' }));
 test('offline keeps the question', async () => assert.equal((await sendQuestion(good, async () => { throw new TypeError('offline'); })).ok, false));
@@ -98,7 +98,7 @@ test('endpoint stores a valid question with only the allowed fields', async () =
 });
 test('endpoint: GET is 405', async () => assert.equal((await call(req(null, { method: 'GET' }))).status, 405));
 test('endpoint: non-JSON is 415', async () => assert.equal((await call(req(good, { type: 'text/plain' }))).status, 415));
-test('endpoint: body over 2 KB is 413', async () => assert.equal((await call(req({ ...good, pad: 'x'.repeat(3000) }))).status, 413));
+test('endpoint: body over 6 KB is 413', async () => assert.equal((await call(req({ ...good, pad: 'x'.repeat(7000) }))).status, 413));
 test('endpoint: broken JSON is 400', async () => assert.equal((await call(req('{nope'))).status, 400));
 test('endpoint: wrong origin is 403 and nothing stored', async () => {
   const store = memStore();
@@ -130,4 +130,51 @@ test('client asks the browser to send its real origin', async () => {
   let init;
   await sendQuestion(good, async (_u, i) => ((init = i), { status: 200 }));
   assert.equal(init.referrerPolicy, 'same-origin');
+});
+
+// bug reports: same endpoint, kind 'bug', stored in their own list
+const bug = { kind: 'bug', report: 'The Earth stays open after I press reset.', level: 'alevel', model: 'earth', part: 'cmb', input: 'mouse', view: 'layers', activity: 'explore', browser: 'Chrome 131 on Windows', screen: '1920x1080' };
+test('valid bug report', () => {
+  const { kind, model, ...rest } = bug;
+  assert.deepEqual(validateAsk(bug, opts), { ok: true, value: { kind: 'bug', ...rest } });
+});
+test('bug report under 10 characters rejected', () => assert.equal(validateAsk({ ...bug, report: 'broken' }, opts).ok, false));
+test('bug report up to 1000 code points allowed, 1001 rejected', () => {
+  assert.equal(validateAsk({ ...bug, report: '🐛'.repeat(1000) }, opts).ok, true);
+  assert.equal(validateAsk({ ...bug, report: '🐛'.repeat(1001) }, opts).ok, false);
+});
+test('bug report context is checked', () => {
+  assert.equal(validateAsk({ ...bug, input: 'keyboard' }, opts).ok, false);
+  assert.equal(validateAsk({ ...bug, activity: 'hacking' }, opts).ok, false);
+  assert.equal(validateAsk({ ...bug, view: '<img src=x>' }, opts).ok, false);
+  assert.equal(validateAsk({ ...bug, browser: 'x'.repeat(61) }, opts).ok, false);
+  assert.equal(validateAsk({ ...bug, screen: 'big' }, opts).ok, false);
+});
+test('unknown kind rejected', () => assert.equal(validateAsk({ ...good, kind: 'praise' }, opts).ok, false));
+test('endpoint stores a bug report in its own list, without the IP', async () => {
+  const store = memStore();
+  store.lists = {};
+  store.lpush = async (k, v) => (store.lists[k] ||= []).unshift(v);
+  assert.equal((await call(req(bug), store)).status, 200);
+  assert.equal(store.lists.inbox, undefined);
+  const saved = JSON.parse(store.lists.bugs[0]);
+  assert.deepEqual(Object.keys(saved).sort(), ['activity', 'browser', 'id', 'input', 'level', 'part', 'receivedAt', 'report', 'screen', 'view']);
+  assert.ok(!store.lists.bugs[0].includes('9.9.9.9'));
+});
+test('bug reports share the hourly limit with questions', async () => {
+  const store = memStore();
+  const codes = [];
+  for (let n = 0; n < 6; n++) codes.push((await call(req(n % 2 ? bug : good), store)).status);
+  assert.deepEqual(codes, [200, 200, 200, 200, 200, 429]);
+});
+test('report messages', async () => {
+  assert.deepEqual(await sendQuestion(bug, reply(200)), { ok: true, message: 'Thanks, your report has been sent.' });
+  assert.equal((await sendQuestion(bug, reply(500))).message, 'The report could not be sent. Your text is still here, so you can try again.');
+});
+test('browser name is coarse', () => {
+  assert.equal(browserName('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.86 Safari/537.36'), 'Chrome 131 on Windows');
+  assert.equal(browserName('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.2903.70'), 'Edge 131 on Windows');
+  assert.equal(browserName('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:133.0) Gecko/20100101 Firefox/133.0'), 'Firefox 133 on macOS');
+  assert.equal(browserName('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15'), 'Safari 18 on macOS');
+  assert.equal(browserName('curl/8.0'), 'Other browser');
 });

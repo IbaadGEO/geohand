@@ -1,12 +1,13 @@
-// The Stuck? menu: go back, replay, jump to the step you're stuck on, or ask a question.
+// The Stuck? menu: go back, replay, jump to the step you're stuck on, ask a question or report a problem.
 // Opened by its corner button (click, or point and hold), never by a gesture, so pointing to read can't open it.
 
 /**
  * button, menu: elements. current() returns what is running, or null:
  *   { names: [step names], at: index, back(), replay(), jump(k) }
  * idle: [[label, fn], ...] offered when nothing is running. ask() opens the question box.
+ * report(host) shows the report form in `host`, inside the menu.
  */
-export function mountStuck(button, menu, { current, idle, ask }) {
+export function mountStuck(button, menu, { current, idle, ask, report }) {
   const close = () => {
     menu.hidden = true;
     button.setAttribute('aria-expanded', 'false');
@@ -50,7 +51,19 @@ export function mountStuck(button, menu, { current, idle, ask }) {
       for (const [label, fn] of idle) add(menu, label, fn);
     }
     add(menu, 'Ask a question', ask);
+    add(menu, 'Report a problem', () => {
+      menu.replaceChildren();
+      head('Report a problem');
+      const host = document.createElement('div');
+      menu.append(host);
+      add(menu, 'Close', () => {}, 'ghost');
+      show();
+      report(host);
+    });
     add(menu, 'Close', () => {}, 'ghost');
+    show();
+  }
+  function show() {
     menu.hidden = false;
     button.setAttribute('aria-expanded', 'true');
   }
