@@ -30,7 +30,9 @@ This is an independent learning project, not a commissioned scientific study. Fu
 
 ### Choose a level
 
-<img src="docs/media/levels.jpg" alt="GeoHand at Normal, Intermediate and Advanced levels, with additional layers, boundaries and views at higher levels">
+<img src="docs/media/levels.webp" width="820" alt="Switching from Normal to Intermediate to Advanced: the opened Earth gains layers and boundaries, the view bar gains views, and a part only that level has is picked each time: the outer core, the mantle transition zone, then post-perovskite">
+
+<sub>Normal, then Intermediate, then Advanced. Each level adds layers, boundaries and views; the part picked each time (outer core, mantle transition zone, post-perovskite) appears from that level on.</sub>
 
 The content is organised into three levels. Each adds detail to the model and explanations, rather than requiring users to start with the most technical material.
 
@@ -40,15 +42,22 @@ The content is organised into three levels. Each adds detail to the model and ex
 | **Intermediate** | Additional structures, measurements and supporting evidence | 16 | 98 |
 | **Advanced** | More detailed seismic models, interpretations and unresolved questions | 21 | 125 |
 
-<img src="docs/media/welcome.png" width="300" align="right" alt="GeoHand welcome screen with the three-question level finder">
+<table>
+<tr>
+<td width="330"><img src="docs/media/finder.webp" width="320" alt="The level finder answering three questions: which layer is liquid, how deep the core starts and whether the inner core turns with the planet, each followed by its explanation and source, ending with Suggested: Advanced"></td>
+<td>
+
+**Not sure which level?**
 
 Users can choose a level directly or answer three short questions about the outer core, the depth of the core and inner-core rotation. The app suggests Normal for 0–1 correct answers, Intermediate for 2 and Advanced for 3. Each answer includes an explanation and source. The selected level can be changed at any time; the answers are not stored or sent.
 
-<br clear="right"/>
+</td>
+</tr>
+</table>
 
 ### Explore the Earth's structure
 
-<img src="docs/media/app.jpg" alt="GeoHand interface with a selected Earth layer, its scientific explanation, sources and available activities">
+<img src="docs/media/explore.webp" width="820" alt="The Earth pulled apart and turned, then the upper mantle, the 660 km discontinuity and the outer core picked in turn, each with its cited description and a card of next steps, before the outer core is moved aside on its own">
 
 The model can be pulled apart to show individual layers and boundaries. Selecting a part opens a description of its depth, composition, physical properties and the evidence used to study it. From there, users can start a short lesson, continue the guided walkthrough or switch to a relevant visualisation.
 
@@ -56,17 +65,26 @@ Technical terms such as PREM, pyrolite and S waves are explained in simpler lang
 
 ### Compare different representations
 
-<img src="docs/media/views.jpg" alt="Cut-away views of the Earth coloured by composition, behaviour, density and S-wave speed">
+<img src="docs/media/views.webp" width="760" alt="The same cut-away Earth recoloured view by view while it turns: composition, behaviour, density, S-wave speed, temperature, crust thickness, lithosphere depth and SEMUCB-WM1 tomography, each with its cited key">
 
 The same cross-section can be viewed by **composition**, **physical behaviour**, **density** and **S-wave speed**. These views use published Earth models to illustrate why geological and seismic boundaries do not always describe the same thing.
 
 The **Earthquake** view calculates P- and S-wave paths from PREM wave speeds and illustrates the resulting shadow zones. The paths are computed in the browser rather than manually drawn. Intermediate and Advanced levels also include crustal thickness from **CRUST1.0**, mantle temperature from **Katsura (2022)** and lithosphere depth derived from seafloor age using **Seton et al. (2020)** and **Fischer et al. (2010)**. Advanced adds a tomography section from **SEMUCB-WM1** (French and Romanowicz, 2014; EarthScope EMC, doi:10.17611/dp/emc.2023.semucbwm1.1), displayed with the authors' permission.
 
-<img src="docs/media/earthquake.jpg" alt="Seismic ray paths through the Earth showing P-wave refraction and the S-wave shadow zone at the liquid outer core">
+<img src="docs/media/quake.webp" width="700" alt="The Earthquake view playing: P and S waves spread from an earthquake at the top, the P waves bend as they cross the liquid outer core, the S waves stop at its top, and the shadow zones appear on the far side">
+
+<sub>The Earthquake view at double speed. Every path is calculated in the browser from PREM wave speeds.</sub>
 
 ### Guided lessons and activities
 
-<img src="docs/media/mission.jpg" alt="Earthquake mission asking users to identify the layer that prevents S waves from passing through">
+<img src="docs/media/mission.webp" width="820" alt="The Earthquake mission: predicting that the outer core stops S waves, opening the Earth, finding the core–mantle boundary, watching the waves and explaining what they show">
+
+<table>
+<tr>
+<td width="50%"><img src="docs/media/drillin.webp" alt="Learn about this part for the outer core: a check question, where the layer sits, how it works, a task on the model, the evidence and a short test"><br><b>Learn a layer.</b> A check question, where it sits, how it works, a task on the model, the evidence and a short test.</td>
+<td width="50%"><img src="docs/media/lesson.webp" alt="The Normal lesson stepping from the crust down towards the core, the model turning and opening to each stop"><br><b>Guided lesson.</b> One stop at a time from the surface to the centre, with the model moving to each layer.</td>
+</tr>
+</table>
 
 - **Learn a layer:** A short activity begins with a question, introduces the selected structure, shows the relevant evidence and ends with a short quiz.
 - **Guided lesson:** Work from the surface towards the centre, with activities including a comparison of oceanic and continental crust.
@@ -165,7 +183,16 @@ You can inspect requests using your browser's developer tools (**F12**, then **N
 
 ### Questions and bug reports
 
+<table>
+<tr>
+<td width="330"><img src="docs/media/report.webp" width="320" alt="Opening the Stuck? menu, choosing Report a problem, typing a description and sending it, with the thank-you message"></td>
+<td>
+
 The **Ask a question** option in the information panel and **Report a problem** in the help menu send submissions to a private inbox. Questions that receive a referenced answer can be added to the application and recorded under [Live updates](#live-updates).
+
+</td>
+</tr>
+</table>
 
 ## Run locally
 
