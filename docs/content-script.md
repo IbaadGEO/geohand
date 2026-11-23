@@ -31,7 +31,7 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - Point at a part or button and hold
 - Its name shows at your fingertip; it is picked when the ring fills
 - Open both hands, then pull them apart
-- Open the Earth; bring them together to close it. Pointing at a closed Earth and holding opens it too.
+- Open the Earth; “Put Earth back together” closes it. Pointing at a closed Earth and holding opens it too.
 - Move two fists apart or together
 - Zoom in or out
 - Point at “Put Earth back together”
@@ -280,6 +280,7 @@ Messages, buttons and prompts written directly in the code (one line each, as in
 - Continue to the next step
 - Return to the full Earth model
 - Hold to open the Earth
+- Move to a layer to pick it
 - Reset the model
 - Earthquake mission
 - Watch the tour

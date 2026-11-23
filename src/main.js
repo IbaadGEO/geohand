@@ -773,6 +773,7 @@ function updateLegend() {
 const pointer = mountPointer();
 // pointing at the model hovers the part under the fingertip; holding still picks it (one stable target per part for the dwell)
 let partTargets = [], pointedPart = false;
+let openSpot = null, openedAt = null; // where the fingertip opened the Earth: no layer is picked until it moves away
 function atModel(x, y) {
   if (mode !== 'explore' || tour || (drill && !drillPick) || scene.isolatedPart >= 0) return null;
   // a closed Earth: every layer has dots within a few pixels of the fingertip, so "the nearest layer" is noise
@@ -780,8 +781,13 @@ function atModel(x, y) {
   if (scene.explodeTarget < 0.5 && scene.shownExplode < 0.5) {
     pointedPart = true;
     scene.setHover(-1);
-    return scene.pick(x, y, 80) >= 0 ? openTarget : null;
+    if (scene.pick(x, y, 80) < 0) return null;
+    openSpot = { x, y };
+    return openTarget;
   }
+  // still on the spot that opened it: the same (spent) target, so the hold does not run straight on into a pick
+  if (openedAt && Math.hypot(x - openedAt.x, y - openedAt.y) < 60) return openTarget;
+  openedAt = null;
   // sticky: the candidate part stays until the fingertip is clearly nearer another, so small wobbles don't restart the hold
   const i = scene.pick(x, y, 80, pointedPart ? scene.hover : -1);
   scene.setHover(i);
@@ -789,7 +795,12 @@ function atModel(x, y) {
   if (i < 0) return null;
   return (partTargets[i] ||= { click: () => pickPart(i), name: scene.parts[i].name });
 }
-const openTarget = { click: () => (scene.explodeTarget = 1), name: 'Hold to open the Earth' };
+const openTarget = {
+  click: () => ((scene.explodeTarget = 1), (openedAt = openSpot)),
+  get name() {
+    return scene.explodeTarget < 0.5 ? 'Hold to open the Earth' : 'Move to a layer to pick it';
+  },
+};
 function control(t, dt, freshFrame) {
   const live = perc.hands.filter((h) => !h.held);
   // one hand pointing drives the on-screen cursor (ui/pointer.js), even while a walkthrough plays
@@ -820,7 +831,7 @@ function control(t, dt, freshFrame) {
     prevPalm.clear();
     const a = perc.hands[0].palm, b = perc.hands[1].palm;
     const dist = Math.hypot((a.x - b.x) * W, (a.y - b.y) * H);
-    // two open hands pull the Earth apart (together closes it); two fists zoom. Any other pair, such as one open and one
+    // two open hands pull the Earth apart; two fists zoom. Any other pair, such as one open and one
     // fist, holds the model where it is, and changing shape restarts the reference, so nothing jumps.
     const g0 = perc.hands[0].gesture, g1 = perc.hands[1].gesture;
     const kind = g0 === 'FIST' && g1 === 'FIST' ? 'zoom' : g0 === 'OPEN' && g1 === 'OPEN' ? 'pull' : null;
@@ -835,8 +846,10 @@ function control(t, dt, freshFrame) {
     }
     if (kind === 'zoom') scene.scaleTarget = clamp((zoomRef.s0 * dist) / zoomRef.d0, 0.5, 2.6);
     // how open follows how far apart the open hands are, not how far they moved: hands that open while already apart
-    // (say, after rising as fists) still work. shortcut: fixed spans from one webcam session, revisit with more users
-    else scene.explodeTarget = clamp((dist / W - OPEN_FROM) / (OPEN_AT - OPEN_FROM), 0, 1);
+    // (say, after rising as fists) still work. Only ever opens: lowering both hands brings them together, which closed
+    // it again in every test run (2026-11-23); "Put Earth back together" closes it.
+    // shortcut: fixed spans from one webcam session, revisit with more users
+    else scene.explodeTarget = Math.max(scene.explodeTarget, clamp((dist / W - OPEN_FROM) / (OPEN_AT - OPEN_FROM), 0, 1));
     setActive(kind === 'zoom' ? 'ZOOM' : 'TWO');
     return;
   }
