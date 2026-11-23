@@ -1,6 +1,7 @@
 {
   "name": "geohand",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
   "version": "0.1.0",
   "description": "GeoHand - learn Earth's interior with hand gestures or a mouse (MediaPipe + Three.js)",
   "type": "module",

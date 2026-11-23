@@ -26,6 +26,7 @@ import { REFS } from './content/references.js';
 import { mountPanel, mountSearch, shortRef } from './ui/panel.js';
 import { searchBank } from './ui/search.js';
 import { openAsk, browserName } from './ui/ask.js';
+import { mountPlacement } from './ui/placement.js';
 import { renderRich } from './ui/richText.js';
 import { MISSION, MISSION_STEPS, predictionNote } from './content/earth/mission.js';
 import { createIntro, labelsOpen } from './ui/intro.js';
@@ -161,6 +162,11 @@ const markLevel = () => {
   $('level-who').textContent = `${LEVELS.find((l) => l.id === level).who} ${EARTH[level].parts.length} parts.`;
 };
 markLevel();
+$('btn-place').onclick = () => {
+  $('btn-place').hidden = true;
+  $('place').hidden = false;
+  mountPlacement($('place'), setLevel);
+};
 
 // ------------------------------------------------------------------ lessons
 let lesson = new Lesson(LESSONS[level]);

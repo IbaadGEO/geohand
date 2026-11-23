@@ -69,6 +69,7 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - Put Earth back together
 - Explore Earth’s interior with your hands or the mouse. With hands, camera processing stays in your browser; no camera footage is uploaded.
 - Select your level
+- Not sure which level? Answer 3 quick questions
 - Use your hands
 - needs a camera
 - Use the mouse
@@ -200,9 +201,9 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 
 ## Levels (start screen)
 
-- **Normal:** The main layers in plain words, with the key terms explained.
-- **Intermediate:** More boundaries, the numbers behind them and where they come from.
-- **Advanced:** Debated ideas, competing estimates and the exact pages to check.
+- **Normal:** Start here. The main layers, in everyday words.
+- **Intermediate:** More layers, with the numbers and where they come from.
+- **Advanced:** What scientists still argue about, with exact sources.
 
 ## Words used here (glossary, Normal level)
 

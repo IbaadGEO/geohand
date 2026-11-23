@@ -118,11 +118,24 @@ input[type="range"]::-moz-range-thumb { width: 11px; height: 11px; border-radius
 /* ------------------------------------------------ start screen */
 #start { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(6, 7, 12, 0.72); backdrop-filter: blur(10px); z-index: 10; transition: opacity 0.3s; }
 #start.gone { opacity: 0; pointer-events: none; }
-#start .card { width: min(380px, 90vw); text-align: center; padding: 28px 26px 22px; border-radius: 20px; background: rgba(16, 18, 32, 0.9); border: 1px solid var(--line); }
+#start .card { max-height: 94vh; overflow-y: auto; width: min(380px, 90vw); text-align: center; padding: 28px 26px 22px; border-radius: 20px; background: rgba(16, 18, 32, 0.9); border: 1px solid var(--line); }
 #start h1 { font-size: 24px; font-weight: 650; }
 #start p { color: #b6bbd0; margin: 8px 0 18px; line-height: 1.45; font-size: 13px; }
 #start button { display: block; width: 100%; border-radius: 12px; padding: 11px; font-size: 13.5px; margin-top: 8px; }
 #start #level-who { margin: 8px 0 6px; min-height: 2.9em; font-size: 12px; color: var(--muted); }
+#start #btn-place { display: inline; width: auto; margin: 0 0 6px; padding: 2px 4px; border: none; background: none; color: var(--gold); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+#start #btn-place[hidden], #place[hidden] { display: none; }
+#place { margin: 2px 0 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.04); text-align: left; }
+#start #place p { margin: 0 0 8px; }
+#start #place .place-count { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+#start #place .place-q, #start #place .place-result { color: var(--text); font-weight: 600; font-size: 13px; }
+#start #place .place-src { font-size: 11px; color: var(--muted); }
+#start .place-opts button { margin-top: 6px; padding: 8px 10px; text-align: left; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); color: var(--text); font-size: 12.5px; }
+#start .place-opts button.right { border-color: #2f9e44; background: rgba(47, 158, 68, 0.18); }
+#start .place-opts button.wrong { border-color: #c92a2a; background: rgba(201, 42, 42, 0.16); }
+#start .place-opts button:disabled { cursor: default; }
+#start .place-after { margin-top: 10px; }
+#start .place-next { padding: 8px; border: 1px solid rgba(242, 201, 76, 0.55); background: transparent; color: var(--gold); }
 #start .start-ways { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 #start #btn-tour small { display: block; font-size: 11px; color: var(--muted); margin-top: 1px; }
 #start .start-ways small { display: block; margin-top: 2px; font-weight: 500; font-size: 11px; color: #4a3d0a; }
