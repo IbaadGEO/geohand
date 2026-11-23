@@ -6,7 +6,7 @@
 // (step.start holds the opening and zoom when it began, or at startAt seconds in, once the hands have changed pose; step.peak is the largest zoom seen). open: the step starts with the Earth opened, so it does not depend
 // on an earlier step having worked.
 const STEPS = [
-  { id: 'ENTER', say: '🙈 Hide your hand, then bring it in ☝️ pointing at the Earth', s: 8, reset: true, calm: true },
+  { id: 'ENTER', say: '☝️ Bring your hand in, pointing at the Earth', s: 8, reset: true, calm: true },
   { id: 'MOVE', say: '✋ Open hand: move it around to turn the Earth', s: 8, calm: true, ok: ['MOVE'] },
   { id: 'RELAX', say: '🖐 Relaxed, loose hand (no pose)', s: 6, calm: true },
   { id: 'PEACE', say: '✌️ Peace, hold still till the ring fills, drop it. 3 times', s: 14, reset: true, want: { PEACE: 3 }, end: (g) => g.sel >= 0 },
@@ -76,7 +76,7 @@ export function mount(get, restore) {
 function run(get, restore, cue, done) {
   const samples = [], frames = [], events = [];
   let lastFrame = null, seen = get().fired.length;
-  STEPS.forEach((s) => delete s.endOk);
+  STEPS.forEach((s) => (delete s.endOk, delete s.notClear));
   const r4 = (v) => (v == null ? null : Math.round(v * 1e4) / 1e4);
   const t0 = performance.now() + READY * 1000;
   // before each step the hands go down, so no pose or half-done pull carries over from the step before
@@ -110,6 +110,7 @@ function run(get, restore, cue, done) {
         return requestAnimationFrame(tick);
       }
       phase = 'step';
+      step.notClear = clear < 0; // started after DOWN_MAX with a hand still in view
       since = t;
       if (step.reset || step.open) restore(step);
       step.start = null;
@@ -140,7 +141,9 @@ function report(samples, events) {
   const out = { when: new Date().toISOString(), steps: {} };
   for (const st of STEPS) {
     const rows = samples.filter((s) => s.step === st.id);
-    const from = (rows.find((s) => s.n)?.tin ?? 0) + SETTLE; // the hands now start each step down, so count from when they arrive
+    // the hands start each step down: count from when the hands the step needs are all in view
+    const need = (st.ok || []).some((g) => g === 'TWO' || g === 'ZOOM') ? 2 : 1;
+    const from = (rows.find((s) => s.n >= need)?.tin ?? 0) + SETTLE;
     const settled = rows.filter((s) => s.tin >= from);
     const secs = Math.max(1, st.s - from);
     const r = {};
@@ -160,6 +163,7 @@ function report(samples, events) {
     r.firedAt = events.filter((e) => e.step === st.id).map((e) => `${e.g}@${e.t}`);
     if (st.want) r.wanted = st.want;
     if (st.end) r.endOk = Boolean(st.endOk);
+    if (st.notClear) r.notClear = true;
     out.steps[st.id] = r;
   }
   return out;
@@ -173,6 +177,7 @@ function verdict(id, r) {
   if (st.want && (fired !== Object.values(st.want).reduce((a, b) => a + b, 0) || Object.entries(st.want).some(([g, n]) => r.fired[g] !== n))) return false;
   if (st.end && !r.endOk) return false;
   if (st.ok && r.recognisedPct < 80) return false;
+  if (r.notClear) return false; // a pose may have carried over, so the step is not a fair test
   return true;
 }
 
@@ -184,6 +189,7 @@ function table(res) {
     const fired = Object.entries(r.fired).map(([g, n]) => `${g} ×${n}`).join(', ') || 'nothing';
     notes.push(st.want ? `fired ${fired} (wanted ${Object.entries(st.want).map(([g, n]) => `${g} ×${n}`).join(', ')})` : `fired ${fired}`);
     if (st.end) notes.push(r.endOk ? 'end state ok' : 'end state wrong');
+    if (r.notClear) notes.push('started with a hand still in view');
     const other = Object.entries(r.seen).filter(([g]) => !(st.ok || []).includes(g)).sort((a, b) => b[1] - a[1]).slice(0, 2);
     if (other.length) notes.push('seen: ' + other.map(([g, p]) => `${g} ${p}%`).join(', '));
     const score = r.recognisedPct != null ? `${r.recognisedPct}%` : '';

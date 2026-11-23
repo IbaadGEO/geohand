@@ -785,8 +785,8 @@ function atModel(x, y) {
     openSpot = { x, y };
     return openTarget;
   }
-  // still on the spot that opened it: the same (spent) target, so the hold does not run straight on into a pick
-  if (openedAt && Math.hypot(x - openedAt.x, y - openedAt.y) < 60) return openTarget;
+  // still on the spot that opened it: a label with nothing to click, so the hold does not run on into a pick or refill
+  if (openedAt && Math.hypot(x - openedAt.x, y - openedAt.y) < 60) return movedTarget;
   openedAt = null;
   // sticky: the candidate part stays until the fingertip is clearly nearer another, so small wobbles don't restart the hold
   const i = scene.pick(x, y, 80, pointedPart ? scene.hover : -1);
@@ -795,12 +795,8 @@ function atModel(x, y) {
   if (i < 0) return null;
   return (partTargets[i] ||= { click: () => pickPart(i), name: scene.parts[i].name });
 }
-const openTarget = {
-  click: () => ((scene.explodeTarget = 1), (openedAt = openSpot)),
-  get name() {
-    return scene.explodeTarget < 0.5 ? 'Hold to open the Earth' : 'Move to a layer to pick it';
-  },
-};
+const openTarget = { click: () => ((scene.explodeTarget = 1), (openedAt = openSpot)), name: 'Hold to open the Earth' };
+const movedTarget = { name: 'Move to a layer to pick it' }; // no click: shown beside the fingertip, never held
 function control(t, dt, freshFrame) {
   const live = perc.hands.filter((h) => !h.held);
   // one hand pointing drives the on-screen cursor (ui/pointer.js), even while a walkthrough plays
@@ -1327,7 +1323,7 @@ function showMission() {
     say(MS.predict.text);
     for (const [id, label] of MS.predict.options) choice(label, () => { mission.predicted = id; missionNext(); });
   } else if (step === 'open') {
-    if (scene.explodeTarget >= 0.85) return missionNext();
+    if (scene.explodeTarget >= 0.85) return (mission.opened = true), missionNext();
     say(handsOn ? MS.open.hands : MS.open.mouse);
     help.hidden = false;
     help.textContent = 'Pull it apart';
@@ -1352,6 +1348,7 @@ function showMission() {
     help.hidden = false;
     help.textContent = 'Show me';
     help.onclick = () => found(true);
+    if (mission.opened) fb.textContent = 'The Earth is already open, so step 2 is done.';
   } else if (step === 'evidence') {
     restoreParts();
     missionSelect(VIEWS.findIndex((v) => v.id === 'quake'));

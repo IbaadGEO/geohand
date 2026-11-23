@@ -64,9 +64,9 @@ export function mountPointer() {
       const under = document.elementFromPoint(x, y);
       const target = under?.closest(CLICKABLE) || (atModel && !under?.closest(UI) ? atModel(x, y) : null) || null;
       aim = target ? target.name || target.id || 'button' : null;
-      const fired = dwell.update(target, dt);
+      const fired = dwell.update(target?.click ? target : null, dt); // a label-only target is shown, never held
       cursor.style.setProperty('--p', dwell.progress.toFixed(3));
-      cursor.classList.toggle('on-target', Boolean(target) && target !== dwell.spent);
+      cursor.classList.toggle('on-target', Boolean(target?.click) && target !== dwell.spent);
       tag.hidden = !target?.name;
       if (target?.name) {
         tag.textContent = target.name;

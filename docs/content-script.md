@@ -31,7 +31,7 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - Point at a part or button and hold
 - Its name shows at your fingertip; it is picked when the ring fills
 - Open both hands, then pull them apart
-- Open the Earth; “Put Earth back together” closes it. Pointing at a closed Earth and holding opens it too.
+- Open the Earth; “Put Earth back together” closes it (in the mission, “Close the mission”). Pointing at a closed Earth and holding opens it too.
 - Move two fists apart or together
 - Zoom in or out
 - Point at “Put Earth back together”
@@ -302,6 +302,7 @@ Messages, buttons and prompts written directly in the code (one line each, as in
 - Step ${mission.i + 1} of ${MISSION_STEPS.length - 1}
 - Pull it apart
 - See the evidence
+- The Earth is already open, so step 2 is done.
 - I have seen it
 - Mission complete: the waves showed you that the outer core is liquid. Carry on with the outer core, or explore on your own.
 - Learn more about the outer core
