@@ -19,4 +19,6 @@ export const REFS = {
   ishii2002: { authors: 'Ishii, M., & Dziewoński, A. M.', year: 2002, title: 'The innermost inner core of the earth: Evidence for a change in anisotropic behavior at the radius of about 300 km', container: 'Proceedings of the National Academy of Sciences', volume: 99, issue: 22, pages: '14026–14030', doi: '10.1073/pnas.172508499', checked: '2026-11-22' },
   song1996: { authors: 'Song, X., & Richards, P. G.', year: 1996, title: "Seismological evidence for differential rotation of the Earth's inner core", container: 'Nature', volume: 382, issue: 6588, pages: '221–224', doi: '10.1038/382221a0', checked: '2026-11-22' },
   yang2023: { authors: 'Yang, Y., & Song, X.', year: 2023, title: "Multidecadal variation of the Earth's inner-core rotation", container: 'Nature Geoscience', volume: 16, issue: 2, pages: '182–187', doi: '10.1038/s41561-022-01112-z', checked: '2026-11-22' },
+  // dataset, not a paper: the cited values are the grid cells themselves (scripts/crust1.test.mjs checks them against crsthk.xyz)
+  crust12013: { authors: 'Laske, G., Masters, G., Ma, Z., & Pasyanos, M.', year: 2013, title: 'Update on CRUST1.0: A 1-degree global model of Earth’s crust', container: 'Geophysical Research Abstracts', volume: 15, pages: 'EGU2013-2658', url: 'https://igppweb.ucsd.edu/~gabi/crust1.html', open: true, checked: '2026-11-23' },
 };

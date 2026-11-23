@@ -21,6 +21,7 @@ Mark the **Access** column Y or N. "Open" means the paper is free to read withou
 | 6 | White, R. S., McKenzie, D., & O'Nions, R. K. (1992). Oceanic crustal thickness from seismic measurements and rare earth element inversions. *JGR: Solid Earth*, 97(B13), 19683–19715. https://doi.org/10.1029/92jb01749 | Oceanic crust thickness | |
 | 7 | Mooney, W. D., Laske, G., & Masters, T. G. (1998). CRUST 5.1: A global crustal model at 5° × 5°. *JGR: Solid Earth*, 103(B1), 727–747. https://doi.org/10.1029/97jb02122 | Global crust model, Moho depth range | |
 | 8 | Rudnick, R. L., & Gao, S. (2003). Composition of the continental crust. *Treatise on Geochemistry*, 3, 1–64. https://doi.org/10.1016/b0-08-043751-6/03016-4 | What the crust is made of | |
+| 8a | Laske, G., Masters, G., Ma, Z., & Pasyanos, M. (2013). Update on CRUST1.0: A 1-degree global model of Earth's crust. *Geophysical Research Abstracts*, 15, EGU2013-2658. Model files: https://igppweb.ucsd.edu/~gabi/crust1.html | Crust thickness view (Intermediate and Advanced): total crustal thickness per 1° cell, excluding water, from `crsthk.xyz`, packed by `scripts/crust1.mjs`. No licence is stated on the download page; the authors ask users to cite this abstract | Open |
 | 9 | Fischer, K. M., Ford, H. A., Abt, D. L., & Rychert, C. A. (2010). The lithosphere–asthenosphere boundary. *Annual Review of Earth and Planetary Sciences*, 38, 551–575. https://doi.org/10.1146/annurev-earth-040809-152438 | The lithosphere–asthenosphere boundary: what it is, how deep, the debate | N, not used |
 
 ## Mantle

@@ -11,6 +11,7 @@ import { runLoop, loadProgress } from './ui/learnLoop.js';
 import { stateOf } from './content/earth/states.js';
 import { faceColors, mountViewSwitch, VIEWS } from './ui/propertyView.js';
 import { buildQuake } from './ui/quakeView.js';
+import { buildCrustMap } from './ui/crustMap.js';
 import { clamp } from './utils.js';
 import { LEVELS } from './content/levels.js';
 import { loadLevel, saveLevel, mapPart } from './levels.js';
@@ -61,12 +62,14 @@ function toast(msg) {
 let level = loadLevel() || 'alevel';
 let mode = 'explore'; // or 'lesson'
 let pendingSel = null; // part id to select once a level rebuild finishes
-let scene, quake;
+let scene, quake, crustMap;
 try {
   scene = new HoloScene($('scene'), MODELS, level, (p) => stateOf(p.id, p.kind)?.motion || 0, faceColors);
   scene.uniforms.uFlow.value.set(KM(220), KM(660), KM(1000), KM(2891));
   quake = buildQuake(scene.uniforms);
   scene.group.add(quake.object);
+  crustMap = buildCrustMap(VIEWS.find((v) => v.id === 'crust1'), scene.uniforms);
+  scene.group.add(crustMap.object);
 } catch (e) {
   console.error(e);
   showBanner('WebGL is unavailable. Try an up-to-date version of Chrome, Edge or Firefox with hardware acceleration enabled.');
@@ -227,6 +230,7 @@ function setLevel(id) {
   lesson.jumpToPart(pendingSel);
   scene.reload(scene.index, id);
   markLevel();
+  syncViews();
   toast(LEVELS.find((l) => l.id === id).label);
 }
 
@@ -482,15 +486,26 @@ function resetAll() {
 // colour the cut-away by layer or by a property at each depth; property views open the Earth and tilt it to show the faces
 const views = mountViewSwitch($('views'), $('legend'), (i) => {
   scene.uniforms.uProp.value = i;
-  const isQuake = VIEWS[i].id === 'quake';
+  const isQuake = VIEWS[i].id === 'quake', isCrust = VIEWS[i].id === 'crust1';
   quake.show(isQuake);
+  crustMap.show(isCrust).then((ok) => ok || toast('Crust data could not be loaded'));
   if (i > 0) {
     // one flat cut at the equator: the layers close up and the view tilts to look onto the face
     scene.explodeTarget = 0;
     scene.isolate();
-    viewTarget = isQuake ? { x: 1.25, y: 0, z: 0 } : { x: 0.85, y: scene.rot.y, z: 0 }; // the earthquake sits at the top
+    // the earthquake sits at the top; the crust map is seen from the side, like a globe
+    viewTarget = isQuake ? { x: 1.25, y: 0, z: 0 } : isCrust ? { x: 0.3, y: scene.rot.y, z: 0 } : { x: 0.85, y: scene.rot.y, z: 0 };
   }
 });
+/** Views limited to some levels (VIEWS[i].levels) are hidden elsewhere; a hidden view in use falls back to Layers. */
+function syncViews() {
+  document.querySelectorAll('#views [data-view]').forEach((b) => {
+    const v = VIEWS.find((x) => x.id === b.dataset.view);
+    b.hidden = Boolean(v.levels && !v.levels.includes(level));
+    if (b.hidden && b.getAttribute('aria-pressed') === 'true') views.select(0);
+  });
+}
+syncViews();
 $('b-reset').onclick = resetAll;
 $('t-reset').onclick = resetAll;
 

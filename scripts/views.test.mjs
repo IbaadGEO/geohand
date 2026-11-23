@@ -25,5 +25,5 @@ test('composition and behaviour disagree where the lesson says they do', () => {
 });
 
 test('views are in the order the scene reads them', () => {
-  assert.deepEqual(VIEWS.map((v) => v.id), ['layers', 'composition', 'behaviour', 'density', 'vs', 'quake']);
+  assert.deepEqual(VIEWS.map((v) => v.id), ['layers', 'composition', 'behaviour', 'density', 'vs', 'quake', 'crust1']); // 5 and up: the layers are dimmed under an overlay (scene.js)
 });

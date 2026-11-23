@@ -63,6 +63,21 @@ VIEWS.push({
     where: 'PREM, Table I, p. 308; paths calculated here from it',
   },
 });
+// Real crust thickness from the CRUST1.0 grid (src/content/earth/crust1.js), drawn on the surface by ui/crustMap.js
+VIEWS.push({
+  id: 'crust1', label: 'Crust thickness', title: 'Crust thickness (km), CRUST1.0', levels: ['undergrad', 'postgrad'],
+  min: 0, max: 75, lo: '#4a2c0c', hi: '#ffe2b0',
+  note: 'Laske, Masters, Ma & Pasyanos (2013), CRUST1.0: total crustal thickness on a 1° grid, excluding water (file crsthk.xyz). Real thickness, shown by colour; the drawn crust stays schematic.',
+  caption: 'Each dot shows the thickness of the crust beneath it. Thick continental crust stands out against thin ocean crust.',
+  more: 'Where is it thickest? Test yourself',
+  q: {
+    q: 'Where is the crust thickest?',
+    options: ['Under the Tibetan Plateau', 'Under the central Pacific', 'Under Iceland'],
+    answer: 0,
+    explain: 'Under the Tibetan Plateau: 74 km in CRUST1.0, against about 7 km under the central Pacific and about 33 km under Iceland.',
+    where: 'CRUST1.0, crsthk.xyz, 1° cells centred at 32.5°N 90.5°E, 0.5°N 150.5°W and 64.5°N 18.5°W',
+  },
+});
 const DIVIDE = ['composition', 'behaviour'];
 
 // The drawing's crust is a schematic 35 km while PREM's crust ends at 24.4 km, so crust faces read crust values
@@ -93,6 +108,7 @@ export function mountViewSwitch(host, legend, onChange) {
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = v.label;
+    b.dataset.view = v.id;
     b.setAttribute('aria-pressed', String(i === 0));
     b.onclick = () => select(i);
     host.append(b);

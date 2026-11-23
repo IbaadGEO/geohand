@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { clamp, damp } from './utils.js';
 
 const MAXP = 24; // maximum parts in the scene
-const CAM_Z = 9.5;
+export const CAM_Z = 9.5;
 const FOV = 38;
 const FIT = 2.7; // exploded radius in world units
 
