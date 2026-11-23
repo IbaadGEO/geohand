@@ -22,14 +22,14 @@ Mark the **Access** column Y or N. "Open" means the paper is free to read withou
 | 7 | Mooney, W. D., Laske, G., & Masters, T. G. (1998). CRUST 5.1: A global crustal model at 5° × 5°. *JGR: Solid Earth*, 103(B1), 727–747. https://doi.org/10.1029/97jb02122 | Global crust model, Moho depth range | |
 | 8 | Rudnick, R. L., & Gao, S. (2003). Composition of the continental crust. *Treatise on Geochemistry*, 3, 1–64. https://doi.org/10.1016/b0-08-043751-6/03016-4 | What the crust is made of | |
 | 8a | Laske, G., Masters, G., Ma, Z., & Pasyanos, M. (2013). Update on CRUST1.0: A 1-degree global model of Earth's crust. *Geophysical Research Abstracts*, 15, EGU2013-2658. Model files: https://igppweb.ucsd.edu/~gabi/crust1.html | Crust thickness view (Intermediate and Advanced): total crustal thickness per 1° cell, excluding water, from `crsthk.xyz`, packed by `scripts/crust1.mjs`. No licence is stated on the download page; the authors ask users to cite this abstract | Open |
-| 9 | Fischer, K. M., Ford, H. A., Abt, D. L., & Rychert, C. A. (2010). The lithosphere–asthenosphere boundary. *Annual Review of Earth and Planetary Sciences*, 38, 551–575. https://doi.org/10.1146/annurev-earth-040809-152438 | The lithosphere–asthenosphere boundary: what it is, how deep, the debate | N, not used |
+| 9 | Fischer, K. M., Ford, H. A., Abt, D. L., & Rychert, C. A. (2010). The lithosphere–asthenosphere boundary. *Annual Review of Earth and Planetary Sciences*, 38, 551–575. https://doi.org/10.1146/annurev-earth-040809-152438 | The lithosphere–asthenosphere boundary: what it is, how deep, the debate | Y |
 
 ## Mantle
 
 | # | Reference | Used for | Access |
 |---|-----------|----------|--------|
 | 10 | McDonough, W. F., & Sun, S.-s. (1995). The composition of the Earth. *Chemical Geology*, 120(3–4), 223–253. https://doi.org/10.1016/0009-2541(94)00140-4 | Bulk mantle and core chemistry | |
-| 11 | Frost, D. J. (2008). The upper mantle and transition zone. *Elements*, 4(3), 171–176. https://doi.org/10.2113/gselements.4.3.171 | 410 and 660 km boundaries and the mineral changes behind them. Short and readable | N, not used |
+| 11 | Frost, D. J. (2008). The upper mantle and transition zone. *Elements*, 4(3), 171–176. https://doi.org/10.2113/gselements.4.3.171 | 410 and 660 km boundaries and the mineral changes behind them. Short and readable | Y |
 | 12 | Pearson, D. G., et al. (2014). Hydrous mantle transition zone indicated by ringwoodite included within diamond. *Nature*, 507(7491), 221–224. https://doi.org/10.1038/nature13080 | Water in the transition zone, a strong "how do we know" story | |
 | 13 | Fukao, Y., & Obayashi, M. (2013). Subducted slabs stagnant above, penetrating through, and trapped below the 660 km discontinuity. *JGR: Solid Earth*, 118(11), 5920–5938. https://doi.org/10.1002/2013jb010466 | What happens to sinking plates at 660 km | |
 | 14 | Grand, S. P. (2002). Mantle shear-wave tomography and the fate of subducted slabs. *Phil. Trans. R. Soc. A*, 360(1800), 2475–2491. https://doi.org/10.1098/rsta.2002.1077 | Seismic tomography explained, slabs reaching the lower mantle | N, not used |
@@ -40,7 +40,7 @@ Mark the **Access** column Y or N. "Open" means the paper is free to read withou
 | # | Reference | Used for | Access |
 |---|-----------|----------|--------|
 | 16 | Lay, T., Williams, Q., & Garnero, E. J. (1998). The core–mantle boundary layer and deep Earth dynamics. *Nature*, 392(6675), 461–468. https://doi.org/10.1038/33083 | D″ and the core–mantle boundary | |
-| 17 | Murakami, M., Hirose, K., Kawamura, K., Sata, N., & Ohishi, Y. (2004). Post-perovskite phase transition in MgSiO₃. *Science*, 304(5672), 855–858. https://doi.org/10.1126/science.1095932 | The mineral change that may explain D″ | N, not used |
+| 17 | Murakami, M., Hirose, K., Kawamura, K., Sata, N., & Ohishi, Y. (2004). Post-perovskite phase transition in MgSiO₃. *Science*, 304(5672), 855–858. https://doi.org/10.1126/science.1095932 | The mineral change that may explain D″ | Y |
 | 18 | Garnero, E. J., & McNamara, A. K. (2008). Structure and dynamics of Earth's lower mantle. *Science*, 320(5876), 626–628. https://doi.org/10.1126/science.1148028 | Short overview of the lower mantle | N, not used |
 | 19 | Garnero, E. J., McNamara, A. K., & Shim, S.-H. (2016). Continent-sized anomalous zones with low seismic velocity at the base of Earth's mantle. *Nature Geoscience*, 9(7), 481–489. https://doi.org/10.1038/ngeo2733 | The two large low-velocity provinces, sometimes called "blobs" | |
 
@@ -48,8 +48,8 @@ Mark the **Access** column Y or N. "Open" means the paper is free to read withou
 
 | # | Reference | Used for | Access |
 |---|-----------|----------|--------|
-| 20 | Hirose, K., Labrosse, S., & Hernlund, J. (2013). Composition and state of the core. *Annual Review of Earth and Planetary Sciences*, 41, 657–691. https://doi.org/10.1146/annurev-earth-050212-124007 | Core composition, light elements, temperature | N, not used |
-| 21 | Anzellini, S., Dewaele, A., Mezouar, M., Loubeyre, P., & Morard, G. (2013). Melting of iron at Earth's inner core boundary based on fast X-ray diffraction. *Science*, 340(6131), 464–466. https://doi.org/10.1126/science.1233514 | Inner-core boundary temperature (~6,000 K) | N, not used |
+| 20 | Hirose, K., Labrosse, S., & Hernlund, J. (2013). Composition and state of the core. *Annual Review of Earth and Planetary Sciences*, 41, 657–691. https://doi.org/10.1146/annurev-earth-050212-124007 | Core composition, light elements, temperature | Y |
+| 21 | Anzellini, S., Dewaele, A., Mezouar, M., Loubeyre, P., & Morard, G. (2013). Melting of iron at Earth's inner core boundary based on fast X-ray diffraction. *Science*, 340(6131), 464–466. https://doi.org/10.1126/science.1233514 | Inner-core boundary temperature (~6,000 K) | Y |
 | 22 | Deuss, A. (2014). Heterogeneity and anisotropy of Earth's inner core. *Annual Review of Earth and Planetary Sciences*, 42, 103–126. https://doi.org/10.1146/annurev-earth-060313-054658 | Inner core structure overview | Open (Utrecht repository) |
 | 23 | Ishii, M., & Dziewoński, A. M. (2002). The innermost inner core of the earth: Evidence for a change in anisotropic behavior at the radius of about 300 km. *PNAS*, 99(22), 14026–14030. https://doi.org/10.1073/pnas.172508499 | Innermost inner core | Probably open (PNAS) |
 | 24 | Song, X., & Richards, P. G. (1996). Seismological evidence for differential rotation of the Earth's inner core. *Nature*, 382(6588), 221–224. https://doi.org/10.1038/382221a0 | Inner core rotation, the original claim | |

@@ -166,6 +166,38 @@ Checked against the publisher version in the Utrecht University repository (dspa
 
 Deuss doubts the innermost inner core that Ishii & Dziewoński (2002) proposed. The postgrad panel shows both sides rather than dropping the part.
 
+## Section 6: papers added 2026-11-23
+
+Checked against the text of the owner's PDFs (text extracted locally; the papers are not stored in the project). Page numbers are the journal's.
+
+### 11. Frost (2008), Elements 4, 171–176
+- [x] p. 171: peridotite's Al-bearing phase changes with depth: plagioclase (<30 km), spinel (30–70 km), garnet (>70 km); transition zone ~410 to 660 km; its discontinuities are generally accepted to arise from mineral phase transformations
+- [x] p. 172: ~14 GPa (410 km) olivine → wadsleyite; ~17.5 GPa (520 km) wadsleyite → ringwoodite; ~24 GPa (660 km) ringwoodite → perovskite-structured (Mg,Fe)SiO₃ + ferropericlase, the beginning of the lower mantle; pyrolite has about 56% olivine (range of models 49–62%, at 1.5 GPa)
+- [x] p. 174: average 410 is actually at 418 km, implying 1,480 °C, with global topography of ±100 °C
+- [x] p. 175: the 410 is raised by over 50 km in some subduction zones, consistent with temperatures over 600 °C lower; dry olivine–wadsleyite coexistence ~0.25 GPa or 7 km; wadsleyite to ringwoodite ~25 km; ringwoodite to perovskite <4 km plus a broader garnet transformation over 30–40 km; 1 Hz reflections imply the 660 is ≤2 km thick and the 410 a 7 km gradient ending in a sharp jump; wadsleyite holds the equivalent of 3 wt% H₂O
+
+Note: Pearson et al. give up to about 2.5 wt% water for wadsleyite and ringwoodite; Frost gives 3 wt% for wadsleyite. Both are shown with their sources.
+
+### 9. Fischer et al. (2010), Annu. Rev. Earth Planet. Sci. 38, 551–575
+- [x] p. 551: oceanic lithosphere consistent with a dry, chemically depleted layer over a hydrated, fertile asthenosphere; beneath cratons, evidence for a deeper asthenosphere
+- [x] p. 553: in continental cratons, xenoliths indicate depleted mantle compositions to roughly 200 km
+- [x] p. 565: Kawakatsu et al. (2009): Philippine Sea Plate 25 Ma lithosphere ~55 km thick, 49 Ma 76 ± 1.8 km; Pacific 129 Ma 82 ± 4.4 km; modelled by a cooling plate with asymptotic thickness 104 km; at ocean islands reported depths range from 40 to 140 km, much of it not correlated with plate age
+
+### 17. Murakami et al. (2004), Science 304, 855–858
+- [x] p. 855: MgSiO₃ perovskite transforms to a new phase (stacked SiO₆-octahedral sheets) above 125 GPa and 2,500 K, ~2,700 km depth near the base of the mantle, with a density increase of 1.0–1.2%; the D″ discontinuity may be attributed to it
+- [x] p. 857: the D″ discontinuity is seen in many regions ~200–300 km above the CMB (119–125 GPa) with a velocity increase of ~3%, its ubiquity debated; effects of FeO, Fe₂O₃ and Al₂O₃ not yet evaluated
+- [x] p. 858: preferred orientation of platy post-perovskite may cause the S-wave anisotropy (V~SH~ > V~SV~) seen only below the D″ discontinuity
+
+### 20. Hirose et al. (2013), Annu. Rev. Earth Planet. Sci. 41, 657–691
+- [x] p. 658: core is 32% of Earth's mass and 16% of its volume; conditions from 136 GPa and ~4,000 K to 364 GPa and 5,000–6,000 K; density deficit relative to pure iron estimated at 5–10 wt%; candidate light elements Si, O, S, C, H
+- [x] p. 682 (Summary points): inner core likely hcp iron alloy; considering the density jump at the ICB, the core may include ~6 wt% Si, ~3 wt% O and 1–2 wt% S; ICB temperature may be 5,200–5,700 K; stratification at the bottom of the outer core is well established
+
+### 21. Anzellini et al. (2013), Science 340, 464–466
+- [x] p. 464: melting temperature of iron at the ICB (330 GPa) 6,230 ± 500 K; ICB temperature bracketed between pure-iron melting and the alloy liquidus, expected ~700 K lower
+- [x] p. 466: implies a CMB temperature of 4,050 ± 500 K, a thermal boundary layer of ~1,400 K at the base of the mantle and a high CMB heat flux (~10 TW)
+
+Note: Anzellini et al.'s 6,230 K is the melting point of pure iron; Hirose et al.'s 5,200–5,700 K is for the ICB itself, lower because the alloy melts lower. Anzellini's ~1,400 K boundary layer and Lay et al.'s 1,000 ± 500 K are both shown with their sources.
+
 ## Not used
 
-These could not be obtained, so they were removed from the app and nothing cites them: Fischer et al. 2010 (#9), Frost 2008 (#11), Grand 2002 (#14), Murakami et al. 2004 (#17), Garnero & McNamara 2008 (#18), Hirose et al. 2013 (#20), Anzellini et al. 2013 (#21; the Valencia repository copy is restricted and HAL has only a record), and the three textbooks (Lowrie & Fichtner, Turcotte & Schubert, Stacey & Davis).
+These could not be obtained, so they were removed from the app and nothing cites them: Grand 2002 (#14), Garnero & McNamara 2008 (#18), and the three textbooks (Lowrie & Fichtner, Turcotte & Schubert, Stacey & Davis).

@@ -73,7 +73,7 @@ export default {
     }, 'mantle'),
     P('transition-zone', 'layer', 'Mantle transition zone', {
       short: "Between 410 and 660 km is the mantle transition zone, dominated by wadsleyite and ringwoodite, the high-pressure forms of olivine (Pearson et al. 2014, p. 221).",
-      long: "Around 410 km depth, olivine changes into its high-pressure forms, wadsleyite and ringwoodite, which are thought to dominate down to 660 km (Pearson et al. 2014, p. 221). The zone is 410–660 km in ak135 and 400–670 km in PREM (Table I, p. 308; Table 3, pp. 122–123), and its density rises from 3.72 to 3.99 g/cm^3^. Wadsleyite and ringwoodite can hold up to about 2.5% water by weight. A ringwoodite inclusion in a diamond from Juína, Brazil, implies about 1 wt% bulk water in the part of the zone it came from (Pearson et al. 2014, pp. 221, 223).",
+      long: "Around 410 km depth, olivine changes into its high-pressure forms, wadsleyite and ringwoodite, which are thought to dominate down to 660 km (Pearson et al. 2014, p. 221). The zone is 410–660 km in ak135 and 400–670 km in PREM (Table I, p. 308; Table 3, pp. 122–123), and its density rises from 3.72 to 3.99 g/cm^3^. Wadsleyite and ringwoodite can hold up to about 2.5% water by weight. A ringwoodite inclusion in a diamond from Juína, Brazil, implies about 1 wt% bulk water in the part of the zone it came from (Pearson et al. 2014, pp. 221, 223). Frost (2008, p. 172) sets out the sequence in a pyrolite mantle: olivine becomes wadsleyite at about 14 GPa (410 km), wadsleyite becomes ringwoodite at about 17.5 GPa (520 km), and at about 24 GPa (660 km) ringwoodite breaks down into perovskite-structured (Mg,Fe)SiO~3~ and ferropericlase.",
       simplification: "Shown at the ak135 depths, 410–660 km.",
       questions: [
         q("Which minerals dominate the transition zone?", "Wadsleyite and ringwoodite, high-pressure forms of olivine (Pearson et al. 2014).", "Pearson et al., p. 221", 'pearson2014'),
@@ -82,6 +82,7 @@ export default {
         q("How do we know there is water there?", "A ringwoodite inclusion in a diamond from Juína, Brazil, carries water. It implies about 1 wt% bulk water in the transition zone it sampled (Pearson et al. 2014).", "Pearson et al., pp. 221, 223", 'pearson2014'),
         q("Why do PREM and ak135 give different depths?", "They are separate fits to seismic data: 400–670 km in PREM and 410–660 km in ak135.", "PREM, Table I, p. 308; ak135, Table 3, pp. 122–123", 'prem1981', 'ak1351995'),
         q("What happens to sinking plates at the base of the zone?", "In a survey around the Pacific, most imaged slabs were stagnant above 660 km or trapped at 660–1,000 km (Fukao & Obayashi 2013).", "Fukao & Obayashi, p. 5920", 'fukao2013'),
+        q("Why are there sharp boundaries at 410 and 660 km?", "They are generally accepted to come from mineral changes: olivine turns into wadsleyite at about 410 km, and ringwoodite breaks down into perovskite-structured (Mg,Fe)SiO~3~ and ferropericlase at about 660 km (Frost 2008).", "Frost, pp. 171–172", 'frost2008'),
       ],
     }, 'mantle'),
     P('lower-mantle', 'layer', 'Lower mantle', {
@@ -138,7 +139,7 @@ export default {
     }),
     P('lab', 'boundary', 'PREM seismic lid base (LAB proxy)', {
       short: "PREM’s seismic lid ends at 80 km, where Q~μ~ decreases from 600 to 80. This boundary is used as a proxy for the lithosphere–asthenosphere boundary in the model (PREM, pp. 300, 308).",
-      long: "Because PREM is a global average, it assigns a single depth to the base of the seismic lid: 80 km. There the shear quality factor Q~μ~ drops from 600 to 80, and below it the effective isotropic shear-wave speed keeps falling through the low-velocity zone (Dziewonski & Anderson 1981, Table I and footnote, p. 308). Dziewonski & Anderson treat the lid as the main part of the seismic lithosphere (pp. 300, 308), so this model draws the boundary between plate and asthenosphere here.",
+      long: "Because PREM is a global average, it assigns a single depth to the base of the seismic lid: 80 km. There the shear quality factor Q~μ~ drops from 600 to 80, and below it the effective isotropic shear-wave speed keeps falling through the low-velocity zone (Dziewonski & Anderson 1981, Table I and footnote, p. 308). Dziewonski & Anderson treat the lid as the main part of the seismic lithosphere (pp. 300, 308), so this model draws the boundary between plate and asthenosphere here. The real boundary varies. Under the oceans it deepens as plates age: about 55 km at 25 million years and 82 km at 129 million years in one receiver-function study, and under old continents depleted mantle reaches roughly 200 km (Fischer et al. 2010, pp. 553, 565).",
       simplification: "A single depth, 80 km, used everywhere. The real boundary varies in depth.",
       questions: [
         q("What changes at PREM’s lid base?", "The shear quality factor Q~μ~ drops from 600 to 80, so shear waves are damped more strongly below it.", "PREM, Table I, p. 308", 'prem1981'),
@@ -147,6 +148,7 @@ export default {
         q("What is above and below it?", "Above: the lid, the mantle part of the lithosphere. Below: the low-velocity zone, drawn as the asthenosphere.", "PREM, pp. 300, 308", 'prem1981'),
         q("Is the plate the same thickness everywhere?", "No. PREM gives a single depth because it is a global average.", "PREM, pp. 299–300, 308", 'prem1981'),
         q("Is the lid isotropic?", "No. PREM makes 24.4–220 km transversely isotropic and also gives effective isotropic speeds.", "PREM, Table I footnote, p. 308", 'prem1981'),
+        q("Is the real lithosphere–asthenosphere boundary at 80 km everywhere?", "No. Under the oceans it deepens with plate age, from about 55 km at 25 million years to 82 km at 129 million years in one study; under old continents depleted mantle reaches roughly 200 km (Fischer et al. 2010).", "Fischer et al., pp. 553, 565", 'fischer2010'),
       ],
     }),
     P('d410', 'boundary', '410 km discontinuity', {
@@ -160,11 +162,12 @@ export default {
         q("Is it at 400 or 410 km?", "400 km in PREM and 410 km in ak135.", "PREM, Table I, p. 308; ak135, Table 3, pp. 122–123", 'prem1981', 'ak1351995'),
         q("Which side of it holds more water?", "Below it: wadsleyite and ringwoodite can hold up to about 2.5 wt% water (Pearson et al. 2014).", "Pearson et al., p. 221", 'pearson2014'),
         q("What layer starts below it?", "The mantle transition zone, down to 660 km in ak135.", "ak135, Table 3, pp. 122–123", 'ak1351995'),
+        q("What mineral change happens at 410 km?", "Olivine turns into the denser structure wadsleyite, at about 14 GPa (Frost 2008).", "Frost, p. 172", 'frost2008'),
       ],
     }),
     P('d660', 'boundary', '660 km discontinuity', {
       short: "This boundary separates the mantle transition zone from the lower mantle, at 660 km in ak135 and 670 km in PREM. Many subducting slabs stall around it (Fukao & Obayashi 2013, p. 5920).",
-      long: "The 660 km discontinuity marks the end of the transition zone (Pearson et al. 2014, p. 221). Density jumps from 3.99 to 4.38 g/cm^3^ in PREM (Table I, p. 308). Sinking plates often stall here. In a P-wave survey around the Pacific, most imaged slabs were stagnant above it or trapped just below, at 660–1,000 km; some penetrated it and sank deeper (Fukao & Obayashi 2013, p. 5920).",
+      long: "The 660 km discontinuity marks the end of the transition zone (Pearson et al. 2014, p. 221). Density jumps from 3.99 to 4.38 g/cm^3^ in PREM (Table I, p. 308). Sinking plates often stall here. In a P-wave survey around the Pacific, most imaged slabs were stagnant above it or trapped just below, at 660–1,000 km; some penetrated it and sank deeper (Fukao & Obayashi 2013, p. 5920). Here ringwoodite breaks down into perovskite-structured (Mg,Fe)SiO~3~ and ferropericlase, at about 24 GPa (Frost 2008, p. 172).",
       simplification: "Shown as a sharp surface at 660 km.",
       questions: [
         q("How big is the density jump at the 660?", "From 3.99 to 4.38 g/cm^3^ in PREM.", "PREM, Table I, p. 308", 'prem1981'),
@@ -173,6 +176,7 @@ export default {
         q("Is it at 660 or 670 km?", "660 km in ak135 and 670 km in PREM.", "PREM, Table I, p. 308; ak135, Table 3, pp. 122–123", 'prem1981', 'ak1351995'),
         q("What layers does it separate?", "The transition zone above, from 410 km, and the lower mantle below (Pearson et al. 2014).", "Pearson et al., p. 221", 'pearson2014'),
         q("How were stalled slabs found?", "By P-wave tomography using more than 10 million travel times (Fukao & Obayashi 2013).", "Fukao & Obayashi, p. 5920", 'fukao2013'),
+        q("What mineral change happens at 660 km?", "Ringwoodite breaks down into perovskite-structured (Mg,Fe)SiO~3~ and ferropericlase, at about 24 GPa. This marks the beginning of the lower mantle (Frost 2008).", "Frost, p. 172", 'frost2008'),
       ],
     }),
     P('cmb', 'boundary', 'Core–mantle boundary', {
@@ -186,6 +190,7 @@ export default {
         q("How much heat crosses the boundary?", "An estimated 5–13 TW, which is highly uncertain (Davies & Davies 2010).", "Davies & Davies, §4.8, p. 22", 'davies2010'),
         q("What lies on top of it?", "Two continent-sized low-velocity zones, beneath the Pacific and beneath the Atlantic and western and southern Africa, covering about 30% of its area (Garnero et al. 2016).", "Garnero et al., p. 481", 'garnero2016'),
         q("How deep is it?", "2,891 km in PREM and 2,891.5 km in ak135.", "PREM, Table I, p. 308; ak135, Table 3, pp. 122–123", 'prem1981', 'ak1351995'),
+        q("How hot is the core–mantle boundary?", "About 4,050 ± 500 K, estimated from the melting of iron (Anzellini et al. 2013).", "Anzellini et al., p. 466", 'anzellini2013'),
       ],
     }),
     P('icb', 'boundary', 'Inner-core boundary', {
@@ -199,6 +204,7 @@ export default {
         q("How deep is it?", "5,149.5 km in PREM and 5,153.5 km in ak135.", "PREM, Table I, p. 308; ak135, Table 3, pp. 122–123", 'prem1981', 'ak1351995'),
         q("How much does P-wave speed jump?", "From 10.36 to 11.03 km/s in PREM.", "PREM, Table I, p. 308", 'prem1981'),
         q("How far is it from the centre?", "About 1,220 km, the radius of the inner core (Song & Richards 1996).", "Song & Richards, p. 221", 'song1996'),
+        q("How hot is the inner-core boundary?", "Perhaps 5,200–5,700 K (Hirose et al. 2013). Pure iron would melt at about 6,230 ± 500 K at that pressure; the core alloy melts lower (Anzellini et al. 2013).", "Hirose et al., p. 682; Anzellini et al., p. 464", 'hirose2013', 'anzellini2013'),
       ],
     }),
   ],

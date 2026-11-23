@@ -19,6 +19,12 @@ const YS = (where = 'Abstract, p. 182') => ({ refs: ['yang2023'], where }); // Y
 const ID = (where = 'Abstract, p. 14026') => ({ refs: ['ishii2002'], where }); // Ishii & Dziewoński (2002)
 const DE = (where = 'Abstract, p. 103') => ({ refs: ['deuss2014'], where }); // Deuss (2014), review
 
+const FT = (where) => ({ refs: ['frost2008'], where }); // Frost (2008)
+const FI = (where) => ({ refs: ['fischer2010'], where }); // Fischer et al. (2010)
+const MU = (where) => ({ refs: ['murakami2004'], where }); // Murakami et al. (2004)
+const HI = (where) => ({ refs: ['hirose2013'], where }); // Hirose, Labrosse & Hernlund (2013)
+const AN = (where) => ({ refs: ['anzellini2013'], where }); // Anzellini et al. (2013)
+
 const n = (label, value, src) => ({ label, value, ...src });
 
 const heat = {
@@ -51,8 +57,8 @@ export const NUMBERS = {
       n('Pyrolite model bulk chemistry (wt% as oxides)', 'about 45% silica (SiO~2~) and 38% magnesium oxide (MgO) by weight', MS()),
       n('Plumes', 'broad columns of slow seismic waves rooted near the base of the mantle beneath Hawaii, Iceland and Samoa, interpreted as plumes of hot rock', FR('Abstract, p. 95')),
     ],
-    'outer-core': [n('Made of', 'iron and nickel, with about 10% of lighter elements such as oxygen, sulfur or silicon', MS('Abstract, p. 223')), n('Depth', 'about 2,890–5,150 km', PREM()), n('Shear (S) wave speed', '0: S waves cannot pass, so it is liquid', PREM()), n('Density', '9.9–12.2 g/cm^3^', PREM())],
-    'inner-core': [n('Depth', 'about 5,150 km to the centre (6,371 km)', PREM()), n('Shear (S) wave speed', 'about 3.5 km/s just inside the inner-core boundary: S waves pass, so it is solid', PREM()), n('Density at the centre', 'about 13 g/cm^3^', PREM()), n('Spin', 'Song & Richards inferred faster rotation relative to the mantle. Yang & Song inferred that relative rotation nearly stopped around 2009 and may have reversed slightly in the years they studied.', { refs: ['song1996', 'yang2023'], where: 'Song & Richards p. 221; Yang & Song pp. 182, 184–185' })],
+    'outer-core': [n('Made of', 'iron and nickel, with about 10% of lighter elements such as oxygen, sulfur or silicon', MS('Abstract, p. 223')), n('Depth', 'about 2,890–5,150 km', PREM()), n('Shear (S) wave speed', '0: S waves cannot pass, so it is liquid', PREM()), n('Density', '9.9–12.2 g/cm^3^', PREM()), n('Temperature at the top', 'about 4,000 K', HI('p. 658'))],
+    'inner-core': [n('Depth', 'about 5,150 km to the centre (6,371 km)', PREM()), n('Shear (S) wave speed', 'about 3.5 km/s just inside the inner-core boundary: S waves pass, so it is solid', PREM()), n('Density at the centre', 'about 13 g/cm^3^', PREM()), n('Spin', 'Song & Richards inferred faster rotation relative to the mantle. Yang & Song inferred that relative rotation nearly stopped around 2009 and may have reversed slightly in the years they studied.', { refs: ['song1996', 'yang2023'], where: 'Song & Richards p. 221; Yang & Song pp. 182, 184–185' }), n('Temperature at the centre', 'about 5,000–6,000 K', HI('p. 658'))],
     moho: [n('Depth', 'about 7 km below the top of normal oceanic igneous crust; mean 38 km below sea level under continents (CRUST 5.1)', { refs: ['white1992', 'mooney1998'], where: 'White et al. pp. 19,683, 19,694; CRUST 5.1 §8, p. 735' })],
     cmb: [n('Depth', 'about 2,890 km', BOTH), n('Density jump', '5.6 → 9.9 g/cm^3^', PREM())],
   },
@@ -85,8 +91,7 @@ export const NUMBERS = {
       n('Depth', '410–660 km (ak135); 400–670 km (PREM)', BOTH),
       n('Density', '3.72–3.99 g/cm^3^', PREM()),
       n('Main minerals', 'wadsleyite and ringwoodite, high-pressure forms of olivine thought to dominate the zone', PE()),
-      n('Water', 'wadsleyite and ringwoodite can hold up to about 2.5% water by weight; the Brazilian ringwoodite inclusion implies about 1 wt% bulk water in the transition-zone mantle sampled locally', PE('pp. 221, 223')),
-    ],
+      n('Water', 'wadsleyite and ringwoodite can hold up to about 2.5% water by weight; the Brazilian ringwoodite inclusion implies about 1 wt% bulk water in the transition-zone mantle sampled locally', PE('pp. 221, 223')), n('Mineral changes (pyrolite)', 'olivine → wadsleyite at ~14 GPa (410 km); wadsleyite → ringwoodite at ~17.5 GPa (520 km); ringwoodite → perovskite-structured (Mg,Fe)SiO~3~ + ferropericlase at ~24 GPa (660 km)', FT('p. 172'))],
     'lower-mantle': [
       n('Depth', '660 km (ak135) to 2,891 km (PREM)', BOTH),
       n('Density (PREM, 670–2,891 km)', '4.38–5.57 g/cm^3^', PREM()),
@@ -94,7 +99,7 @@ export const NUMBERS = {
       n('Sinking slabs', 'in a survey around the Pacific, most imaged slabs were stagnant above the 660 or trapped at 660–1,000 km', FO()),
       n('Plumes', 'broad slow-wave conduits rise from near the core–mantle boundary to about 1,000 km depth; the one under Hawaii is about 800–1,000 km wide', FR('pp. 95–96')),
     ],
-    'outer-core': [n('Make-up', 'iron–nickel alloy with 10 ± 5% of a light element (O, S or Si)', MS('Abstract, p. 223')), n('Whole core (outer and inner), share of Earth’s mass', 'about 32.5%', MS('Section 6, p. 244')), n('Depth', '2,891–5,149.5 km', PREM()), n('S-wave speed', '0 km/s (liquid)', PREM()), n('P-wave speed', '8.06–10.36 km/s', PREM()), n('Density', '9.90–12.17 g/cm^3^', PREM())],
+    'outer-core': [n('Make-up', 'iron–nickel alloy with 10 ± 5% of a light element (O, S or Si)', MS('Abstract, p. 223')), n('Whole core (outer and inner), share of Earth’s mass', 'about 32.5%', MS('Section 6, p. 244')), n('Depth', '2,891–5,149.5 km', PREM()), n('S-wave speed', '0 km/s (liquid)', PREM()), n('P-wave speed', '8.06–10.36 km/s', PREM()), n('Density', '9.90–12.17 g/cm^3^', PREM()), n('Temperature', 'about 4,000 K at the top (136 GPa)', HI('p. 658'))],
     'inner-core': [
       n('Depth', '5,149.5–6,371 km', PREM()),
       n('S-wave speed', '3.50–3.67 km/s (solid)', PREM()),
@@ -108,17 +113,16 @@ export const NUMBERS = {
       n('P-wave speed just below it (Pn)', '8.09 km/s on average under continents', CM()),
       n('P-wave speed jump in PREM', '6.80 → 8.11 km/s', PREM()),
     ],
-    lab: [n('PREM seismic lid base used in the drawing', '80 km', PREM())],
-    d410: [n('Depth', '410 km (ak135); 400 km (PREM)', BOTH), n('Density jump', '3.54 → 3.72 g/cm^3^', PREM())],
-    d660: [n('Depth', '660 km (ak135); 670 km (PREM)', BOTH), n('Density jump', '3.99 → 4.38 g/cm^3^', PREM()), n('Sinking slabs', 'in a survey around the Pacific, most imaged slabs were stagnant above it or trapped just below it, at 660–1,000 km', FO())],
+    lab: [n('PREM seismic lid base used in the drawing', '80 km', PREM()), n('Real depth under oceans', 'deepens with plate age: about 55 km at 25 Ma and 76 km at 49 Ma (Philippine Sea Plate), 82 km at 129 Ma (Pacific)', FI('p. 565')), n('Under old continents (cratons)', 'depleted mantle reaches roughly 200 km', FI('p. 553'))],
+    d410: [n('Depth', '410 km (ak135); 400 km (PREM)', BOTH), n('Density jump', '3.54 → 3.72 g/cm^3^', PREM()), n('Mineral change', 'olivine → wadsleyite, at about 14 GPa', FT('p. 172'))],
+    d660: [n('Depth', '660 km (ak135); 670 km (PREM)', BOTH), n('Density jump', '3.99 → 4.38 g/cm^3^', PREM()), n('Sinking slabs', 'in a survey around the Pacific, most imaged slabs were stagnant above it or trapped just below it, at 660–1,000 km', FO()), n('Mineral change', 'ringwoodite → perovskite-structured (Mg,Fe)SiO~3~ + ferropericlase, at about 24 GPa: the start of the lower mantle', FT('p. 172'))],
     cmb: [
       n('Depth', '2,891 km (PREM); 2,891.5 km (ak135)', BOTH),
       n('Density jump', '5.57 → 9.90 g/cm^3^', PREM()),
       n('S-wave speed', '7.26 → 0 km/s', PREM()),
       n('Estimated temperature contrast across the thermal boundary layer at the base of the mantle', 'about 1,000 ± 500 K', LA('p. 461')),
-      n('Above it', 'two continent-sized low-velocity zones cover about 30% of its area', GA('p. 481')),
-    ],
-    icb: [n('Depth', '5,149.5 km (PREM); 5,153.5 km (ak135)', BOTH), n('S-wave speed', '0 → 3.50 km/s', PREM()), n('Density jump', '12.17 → 12.76 g/cm^3^', PREM())],
+      n('Above it', 'two continent-sized low-velocity zones cover about 30% of its area', GA('p. 481')), n('Temperature at the boundary', 'about 4,050 ± 500 K', AN('p. 466'))],
+    icb: [n('Depth', '5,149.5 km (PREM); 5,153.5 km (ak135)', BOTH), n('S-wave speed', '0 → 3.50 km/s', PREM()), n('Density jump', '12.17 → 12.76 g/cm^3^', PREM()), n('Temperature', 'perhaps 5,200–5,700 K', HI('Summary points, p. 682'))],
   },
   postgrad: {
     'continental-crust': [
@@ -152,8 +156,7 @@ export const NUMBERS = {
       n('Depth', '400–670 km (PREM); 410–660 km (ak135)', BOTH),
       n('PREM internal boundary', '600 km (radius 5,771 km)', PREM()),
       n('Ringwoodite in Juína diamond JUc29', 'FTIR gives a minimum of 1.4–1.5 wt% H~2~O, with large uncertainty; to the authors’ knowledge, the first terrestrial find of a high-pressure olivine polymorph', PE('Abstract, p. 221; p. 222')),
-      n('Water in the zone sampled', 'about 1.0 wt%, against a capacity of about 2.5 wt% in wadsleyite and ringwoodite', PE('pp. 221, 223')),
-    ],
+      n('Water in the zone sampled', 'about 1.0 wt%, against a capacity of about 2.5 wt% in wadsleyite and ringwoodite', PE('pp. 221, 223')), n('Transformations and widths', 'olivine → wadsleyite (~14 GPa, 410 km, ~7 km wide when dry); wadsleyite → ringwoodite (~17.5 GPa, 520 km, ~25 km); ringwoodite → perovskite + ferropericlase (~24 GPa, 660 km, <4 km), plus garnet → perovskite over 30–40 km', FT('pp. 172, 175')), n('Water in wadsleyite', 'can hold the equivalent of 3 wt% H~2~O', FT('p. 175'))],
     'lower-mantle': [
       n('PREM ρ at 670 km / 2,741 km', '4.381 / 5.491 g/cm^3^', PREM()),
       n('PREM v~S~ at 670 km / 2,741 km', '5.945 / 7.266 km/s', PREM()),
@@ -165,8 +168,7 @@ export const NUMBERS = {
       n('PREM basal region', '2,741–2,891 km (radius 3,480–3,630 km), its own velocity polynomial', PREM()),
       n('Plume roots', 'patches 500–800 km across of strongly reduced v~S~; under Hawaii, Iceland and Samoa they coincide in location with known ultralow-velocity zones', FR('Abstract, p. 95; p. 96')),
       n('Seismic definition', 'lowermost ~200 km; intermittent 1.5–3% P and S jumps 150–300 km above the CMB; laterally varying S-wave anisotropy', LA('p. 461')),
-      n('Ultralow-velocity zones', '5–40 km thick, P and S speeds >10% low; beneath the central Pacific, Alaska, Iceland and Africa', LA('p. 462')),
-    ],
+      n('Ultralow-velocity zones', '5–40 km thick, P and S speeds >10% low; beneath the central Pacific, Alaska, Iceland and Africa', LA('p. 462')), n('Post-perovskite', 'MgSiO~3~ perovskite transforms above 125 GPa and 2,500 K (~2,700 km), becoming 1.0–1.2% denser', MU('Abstract, p. 855')), n('Link to the D″ discontinuity', 'seen ~200–300 km above the CMB (119–125 GPa) with a ~3% velocity increase; the transition occurs at matching depths and may explain it', MU('p. 857')), n('Anisotropy', 'platy post-perovskite aligned by flow may cause V~SH~ > V~SV~, seen only below the discontinuity', MU('p. 858'))],
     llsvp: [
       n('What they are', 'two nearly antipodal provinces of low v~S~: one beneath the Pacific, one beneath the Atlantic and western and southern Africa', GA('p. 481')),
       n('Size', 'about 30% of the core–mantle boundary area; reduced velocities up to 1,200 km above the CMB in places', GA('p. 481')),
@@ -174,7 +176,7 @@ export const NUMBERS = {
       n('Possible nature', 'one interpretation is thermochemical piles, denser than the surrounding mantle; in geodynamic models an intrinsic density excess of up to a few per cent forms piles of similar size', GA('Abstract, p. 481; p. 485')),
       n('ULVZs', 'commonly 5–20 km thick, within and near LLSVP margins', GA('p. 482')),
     ],
-    'outer-core': [n('Light element', '5–15% (about 10 ± 5%) of O, S, Si or a mix; about 86% of Earth’s Fe is in the core', MS('Abstract, p. 223')), n('PREM ρ, v~P~ at top', '9.903 g/cm^3^, 8.065 km/s', PREM()), n('PREM ρ, v~P~ at bottom', '12.166 g/cm^3^, 10.356 km/s', PREM())],
+    'outer-core': [n('Light element', '5–15% (about 10 ± 5%) of O, S, Si or a mix; about 86% of Earth’s Fe is in the core', MS('Abstract, p. 223')), n('PREM ρ, v~P~ at top', '9.903 g/cm^3^, 8.065 km/s', PREM()), n('PREM ρ, v~P~ at bottom', '12.166 g/cm^3^, 10.356 km/s', PREM()), n('Light elements (Hirose et al.)', 'density deficit 5–10 wt% relative to pure iron; may be ~6 wt% Si, ~3 wt% O and 1–2 wt% S', HI('p. 658; Summary points, p. 682')), n('Layering', 'stratification at the bottom of the outer core is well established', HI('Summary points, p. 682'))],
     'inner-core': [
       n('PREM ρ, v~P~, v~S~ at top', '12.764 g/cm^3^, 11.028, 3.504 km/s', PREM()),
       n('PREM ρ at centre', '13.088 g/cm^3^', PREM()),
@@ -183,8 +185,7 @@ export const NUMBERS = {
       n('Anisotropy above the proposed central region', 'in the Ishii & Dziewoński model, the slowest P-wave direction is equatorial (east–west)', ID()),
       n('Anisotropy (Deuss review)', 'polar direction fast, equatorial slow; some body-wave models give 3–4% in the deeper inner core. The review describes an isotropic upper layer about 60–80 km thick', DE('Abstract, p. 103; p. 108')),
       n('Hemispheres', 'west: up to 5% anisotropy below the isotropic layer and about 1.5% slower in the top 100 km; east: less than 0.7% anisotropy and more strongly attenuating', DE('Abstract, p. 103; pp. 112–113')),
-      n('Rotation estimates over time', 'published body-wave estimates declined from 1–3° per year in 1996 to under 0.5° per year in some later studies. Other studies found no super-rotation. Assuming hemispheric differences were frozen in during growth, Waszek et al. estimated 0.1–1° per million years', DE('p. 115')),
-    ],
+      n('Rotation estimates over time', 'published body-wave estimates declined from 1–3° per year in 1996 to under 0.5° per year in some later studies. Other studies found no super-rotation. Assuming hemispheric differences were frozen in during growth, Waszek et al. estimated 0.1–1° per million years', DE('p. 115')), n('Crystal structure', 'likely an iron alloy with hexagonal close-packed (hcp) structure', HI('Summary points, p. 682'))],
     'innermost-inner-core': [
       n('Proposed radius', 'about 300 km (Ishii & Dziewoński 2002)', ID()),
       n('Anisotropy in their model', 'slowest direction about 45° from east–west, against east–west in the inner core above', ID()),
@@ -196,14 +197,13 @@ export const NUMBERS = {
       n('Reference models', '24.4 km (PREM, global average with a 3 km ocean layer); 35 km (ak135)', BOTH),
       n('Pn speed', '8.09 km/s', CM()),
     ],
-    lab: [n('PREM seismic lid base used in the drawing', '80 km: Q~μ~ falls from 600 to 80', PREM())],
-    d410: [n('Depth', '400 km (PREM); 410 km (ak135)', BOTH), n('PREM v~P~ jump', '8.905 → 9.134 km/s', PREM())],
-    d660: [n('Depth', '670 km (PREM); 660 km (ak135)', BOTH), n('PREM v~P~ jump', '10.266 → 10.751 km/s', PREM())],
+    lab: [n('PREM seismic lid base used in the drawing', '80 km: Q~μ~ falls from 600 to 80', PREM()), n('Oceanic LAB and plate age', '55 km at 25 Ma, 76 ± 1.8 km at 49 Ma, 82 ± 4.4 km at 129 Ma; fits a cooling plate with an asymptotic thickness of 104 km', FI('p. 565')), n('Under ocean islands', 'reported depths range from 40 to 140 km, much of it not correlated with plate age', FI('p. 565')), n('What makes it a boundary', 'oceanic lithosphere fits a dry, depleted layer over a hydrated, fertile asthenosphere; beneath cratons the asthenosphere is deeper', FI('Abstract, p. 551'))],
+    d410: [n('Depth', '400 km (PREM); 410 km (ak135)', BOTH), n('PREM v~P~ jump', '8.905 → 9.134 km/s', PREM()), n('Average depth and temperature', 'actually 418 km on average, implying 1,480 °C with ±100 °C of global variation', FT('p. 174')), n('Above subducting slabs', 'raised by over 50 km in some subduction zones, consistent with mantle over 600 °C colder', FT('p. 175')), n('Sharpness', 'a ~7 km gradient ending in a sharp jump (1 Hz reflections)', FT('p. 175'))],
+    d660: [n('Depth', '670 km (PREM); 660 km (ak135)', BOTH), n('PREM v~P~ jump', '10.266 → 10.751 km/s', PREM()), n('Sharpness', '≤2 km thick in 1 Hz reflections; ringwoodite breaks down over <4 km, garnet over 30–40 km', FT('p. 175'))],
     cmb: [
       n('Depth', '2,891.0 km (PREM); 2,891.5 km (ak135)', BOTH),
       n('PREM v~P~ drop', '13.717 → 8.065 km/s', PREM()),
-      n('Thermal boundary layer at the base of the mantle', 'estimated temperature contrast 1,000 ± 500 K; ambient about 3,000 K; plumes may carry 10–15% of surface heat flux', LA('p. 461')),
-    ],
-    icb: [n('Depth', '5,149.5 km (PREM); 5,153.5 km (ak135)', BOTH), n('PREM v~P~ jump', '10.356 → 11.028 km/s', PREM())],
+      n('Thermal boundary layer at the base of the mantle', 'estimated temperature contrast 1,000 ± 500 K; ambient about 3,000 K; plumes may carry 10–15% of surface heat flux', LA('p. 461')), n('Temperature (from iron melting)', 'about 4,050 ± 500 K, implying a ~1,400 K boundary layer at the base of the mantle and ~10 TW of heat flow', AN('p. 466'))],
+    icb: [n('Depth', '5,149.5 km (PREM); 5,153.5 km (ak135)', BOTH), n('PREM v~P~ jump', '10.356 → 11.028 km/s', PREM()), n('Pure iron melts at ICB pressure (330 GPa)', '6,230 ± 500 K', AN('Abstract, p. 464')), n('ICB temperature', 'perhaps 5,200–5,700 K; lower than pure iron because the alloy melts lower (expected ~700 K lower)', { refs: ['hirose2013', 'anzellini2013'], where: 'Hirose et al. Summary points, p. 682; Anzellini et al. p. 464' })],
   },
 };

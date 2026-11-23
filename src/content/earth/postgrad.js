@@ -103,7 +103,7 @@ export default {
     }, 'mantle'),
     P('d-double-prime', 'layer', 'D″ layer', {
       short: "D″ comprises the lowermost ~200 km of the mantle. Its seismic structure includes intermittent discontinuities, anisotropy and ultralow-velocity patches (Lay et al. 1998, pp. 461–462).",
-      long: "Lay et al. (1998, p. 461) describe D″ as the lowermost ~200 km. It shows intermittent 1.5–3% jumps in P and S speed 150–300 km above the core–mantle boundary, and S-wave anisotropy that varies laterally. Ultralow-velocity zones, 5–40 km thick with P and S speeds reduced by more than 10%, lie at its base beneath the central Pacific, Alaska, Iceland and Africa (p. 462). French & Romanowicz (2015, pp. 95–96) found plume roots as patches 500–800 km across of strongly reduced v~S~; under Hawaii, Iceland and Samoa these coincide in location with known ultralow-velocity zones. PREM has its own basal segment, 2,741–2,891 km, with a separate velocity polynomial; ak135 has a model break at 2,740 km with no tabulated P- or S-speed jump.",
+      long: "Lay et al. (1998, p. 461) describe D″ as the lowermost ~200 km. It shows intermittent 1.5–3% jumps in P and S speed 150–300 km above the core–mantle boundary, and S-wave anisotropy that varies laterally. Ultralow-velocity zones, 5–40 km thick with P and S speeds reduced by more than 10%, lie at its base beneath the central Pacific, Alaska, Iceland and Africa (p. 462). French & Romanowicz (2015, pp. 95–96) found plume roots as patches 500–800 km across of strongly reduced v~S~; under Hawaii, Iceland and Samoa these coincide in location with known ultralow-velocity zones. PREM has its own basal segment, 2,741–2,891 km, with a separate velocity polynomial; ak135 has a model break at 2,740 km with no tabulated P- or S-speed jump. A mineral change may explain it. Murakami et al. (2004, pp. 855, 857) found that MgSiO~3~ perovskite transforms to a denser post-perovskite phase above 125 GPa and 2,500 K, about 2,700 km deep, at depths matching the D″ discontinuity; aligned platy crystals of the new phase could cause the S-wave anisotropy seen below it (p. 858).",
       simplification: "Shown as PREM’s basal segment, 2,741–2,891 km: 150 km thick, against the ~200 km of Lay et al. (1998, p. 461).",
       questions: [
         q("How do Lay et al. define D″?", "As the lowermost ~200 km of the mantle (1998).", "Lay et al., p. 461", 'lay1998'),
@@ -112,6 +112,8 @@ export default {
         q("How are plume roots linked to ultralow-velocity zones?", "Under Hawaii, Iceland and Samoa, root patches 500–800 km across coincide in location with known ultralow-velocity zones (French & Romanowicz 2015).", "French & Romanowicz, pp. 95–96", 'french2015'),
         q("How do PREM and ak135 treat this region?", "PREM has a basal segment from 2,741 km with its own polynomial; ak135 has a model break at 2,740 km with no tabulated speed jump.", "PREM, Table I, p. 308; ak135, Table 3, pp. 122–123", 'prem1981', 'ak1351995'),
         q("What does laterally varying anisotropy suggest?", "S-wave speed depends on direction and the pattern changes from place to place (Lay et al. 1998).", "Lay et al., p. 461", 'lay1998'),
+        q("What mineral change may cause the D″ discontinuity?", "MgSiO~3~ perovskite transforms to post-perovskite above 125 GPa and 2,500 K, about 2,700 km deep, becoming 1.0–1.2% denser. This happens at depths matching the discontinuity (Murakami et al. 2004).", "Murakami et al., pp. 855, 857", 'murakami2004'),
+        q("Why might D″ be anisotropic?", "Post-perovskite may form platy crystals that line up in shear flow, which could give horizontally polarised S waves (V~SH~) higher speeds than vertically polarised ones (V~SV~) below the discontinuity (Murakami et al. 2004).", "Murakami et al., p. 858", 'murakami2004'),
       ],
     }, 'lower-mantle'),
     P('llsvp', 'layer', 'Large low-shear-velocity provinces', {
@@ -138,6 +140,7 @@ export default {
         q("What share of Earth’s iron is in the core?", "About 86% (McDonough & Sun 1995).", "McDonough & Sun, p. 223", 'mcdonough1995'),
         q("What share of Earth’s mass is the core?", "About 32.5%, outer and inner together (McDonough & Sun 1995).", "McDonough & Sun, Section 6, p. 244", 'mcdonough1995'),
         q("How well is core heat flow known?", "Poorly: an estimated 5–13 TW (Davies & Davies 2010).", "Davies & Davies, §4.8, p. 22", 'davies2010'),
+        q("Which light elements may be in the core, and how much?", "Considering the density jump at the inner-core boundary, perhaps ~6 wt% Si, ~3 wt% O and 1–2 wt% S, though the light elements are still controversial (Hirose et al. 2013).", "Hirose et al., Summary points, p. 682", 'hirose2013'),
       ],
     }),
     P('inner-core', 'layer', 'Inner core', {
@@ -182,7 +185,7 @@ export default {
     }),
     P('lab', 'boundary', 'PREM seismic lid base (LAB proxy)', {
       short: "The base of PREM’s seismic lid is at 80 km, where Q~μ~ decreases from 600 to 80. The model uses this as a proxy for the lithosphere–asthenosphere boundary (PREM, pp. 300, 308).",
-      long: "PREM is a global average with one lid base, at 80 km. There Q~μ~ falls from 600 to 80, while effective isotropic v~S~ continues to decrease through the low-velocity zone (Table I and footnote, p. 308). Dziewonski & Anderson treat the lid as the main part of the seismic lithosphere (pp. 300, 308). ak135 has no boundary at 80 km; its nearest is at 210 km (Table 3, pp. 122–123). A single global depth cannot show how the real boundary varies.",
+      long: "PREM is a global average with one lid base, at 80 km. There Q~μ~ falls from 600 to 80, while effective isotropic v~S~ continues to decrease through the low-velocity zone (Table I and footnote, p. 308). Dziewonski & Anderson treat the lid as the main part of the seismic lithosphere (pp. 300, 308). ak135 has no boundary at 80 km; its nearest is at 210 km (Table 3, pp. 122–123). A single global depth cannot show how the real boundary varies. The real boundary varies. Receiver functions show oceanic lithosphere thickening with age, from 55 km at 25 Ma to 82 ± 4.4 km at 129 Ma, fitting a cooling plate with an asymptotic thickness of 104 km, while under ocean islands reported depths of 40–140 km do not track age; beneath cratons the asthenosphere lies deeper (Fischer et al. 2010, pp. 551, 565).",
       simplification: same('lab'),
       questions: [
         q("What changes at 80 km in PREM?", "Q~μ~ falls from 600 to 80.", "PREM, Table I, p. 308", 'prem1981'),
@@ -191,6 +194,7 @@ export default {
         q("What does v~S~ do across it?", "The effective isotropic speed keeps decreasing, from 4.471 km/s at 80 km to 4.419 km/s at 220 km.", "PREM, Table I footnote, p. 308", 'prem1981'),
         q("How do Dziewonski & Anderson view the lid?", "As the main part of the seismic lithosphere.", "PREM, pp. 300, 308", 'prem1981'),
         q("Is the region either side isotropic?", "No. PREM makes 24.4–220 km transversely isotropic.", "PREM, Table I footnote, p. 308", 'prem1981'),
+        q("What contrast may make the oceanic LAB sharp, beyond temperature?", "Oceanic lithosphere is consistent with a dry, chemically depleted layer over a hydrated, fertile asthenosphere (Fischer et al. 2010).", "Fischer et al., Abstract, p. 551", 'fischer2010'),
       ],
     }),
     P('d410', 'boundary', '410 km discontinuity', {
@@ -230,6 +234,7 @@ export default {
         q("How much heat crosses the boundary?", "An estimated 5–13 TW (Davies & Davies 2010).", "Davies & Davies, §4.8, p. 22", 'davies2010'),
         q("Do PREM and ak135 agree on its depth?", "Within 0.5 km: 2,891.0 and 2,891.5 km.", "PREM, Table I, p. 308; ak135, Table 3, pp. 122–123", 'prem1981', 'ak1351995'),
         q("What share of it lies beneath LLSVPs?", "About 30% (Garnero et al. 2016).", "Garnero et al., p. 481", 'garnero2016'),
+        q("How do the two estimates of the boundary layer above the core compare?", "Lay et al. (1998) estimate 1,000 ± 500 K across it; Anzellini et al. (2013), from iron melting, imply about 1,400 K and ~10 TW of heat flow.", "Lay et al., p. 461; Anzellini et al., p. 466", 'lay1998', 'anzellini2013'),
       ],
     }),
     P('icb', 'boundary', 'Inner-core boundary', {
@@ -243,6 +248,7 @@ export default {
         q("What lies just beneath it?", "An isotropic layer about 60–80 km thick (Deuss 2014).", "Deuss, Abstract, p. 103", 'deuss2014'),
         q("What process happens at it?", "The liquid outer core freezes onto the inner core (Song & Richards 1996).", "Song & Richards, p. 221", 'song1996'),
         q("What density jump does PREM give?", "12.17 → 12.76 g/cm^3^.", "PREM, Table I, p. 308", 'prem1981'),
+        q("Why are the iron-melting and ICB temperatures different?", "Anzellini et al. (2013) measure pure iron melting at 6,230 ± 500 K at ICB pressure; the core alloy melts lower, by an expected ~700 K, and Hirose et al. (2013) put the ICB at 5,200–5,700 K.", "Anzellini et al., p. 464; Hirose et al., p. 682", 'anzellini2013', 'hirose2013'),
       ],
     }),
   ],
