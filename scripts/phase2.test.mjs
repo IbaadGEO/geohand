@@ -11,7 +11,7 @@ test('temperature follows Katsura (2022) Table 3, then the cited core values', (
   assert.equal(tempAt(1000), 2090);
   assert.equal(tempAt(2800), 2587);
   assert.equal(tempAt(2891), 4050); // Anzellini et al. (2013) p. 466
-  assert.equal(tempAt(5149.5), 5450); // middle of Hirose et al. (2013) 5,200–5,700 K
+  assert.equal(tempAt(5149.5), 5440); // Hirose et al. (2013) Table 2 preferred ICB value, p. 675
   assert.equal(tempAt(6371), 5500); // middle of 5,000–6,000 K
   assert.equal(tempAt(30), null); // the lithosphere's steep gradient is not in the table
   assert.ok(tempAt(415) > 1860 && tempAt(405) < 1800); // the jump at 410 km

@@ -82,7 +82,7 @@ VIEWS.push({
 VIEWS.push({
   id: 'temperature', label: 'Temperature', title: 'Temperature (K)', levels: ['undergrad', 'postgrad'],
   min: 1600, max: 5600, lo: '#4a1208', hi: '#fff1b8',
-  note: 'Mantle, 50–2,800 km: the adiabat of Katsura (2022), Table 3, pp. 6–7. Joined straight below it, between cited points: about 4,050 K at the core–mantle boundary (Anzellini et al. 2013, p. 466), the middle of 5,200–5,700 K at the inner-core boundary and of 5,000–6,000 K at the centre (Hirose et al. 2013, pp. 658, 682). The top 50 km is left out: the lithosphere is colder than the adiabat and is not in the table.',
+  note: 'Mantle, 50–2,800 km: the adiabat of Katsura (2022), Table 3, pp. 6–7. Joined straight below it, between cited points: about 4,050 K at the core–mantle boundary (Anzellini et al. 2013, p. 466), 5,440 K at the inner-core boundary, the preferred value within 5,200–5,700 K (Hirose et al. 2013, p. 675), and the middle of 5,000–6,000 K at the centre (Hirose et al. 2013, p. 658). The top 50 km is left out: the lithosphere is colder than the adiabat and is not in the table.',
   caption: 'Most of the mantle warms only slowly with depth, about 0.2–0.5 K per km. The big rise is at the bottom: across the hot boundary layer above the core, from about 2,600 K to about 4,050 K.',
   more: 'Where does it heat up fastest? Test yourself',
   q: {

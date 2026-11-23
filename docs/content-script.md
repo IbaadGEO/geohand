@@ -151,7 +151,7 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - **title:** Temperature (K)
 - **caption:** Most of the mantle warms only slowly with depth, about 0.2–0.5 K per km. The big rise is at the bottom: across the hot boundary layer above the core, from about 2,600 K to about 4,050 K.
 - **more:** Where does it heat up fastest? Test yourself
-- **note:** Mantle, 50–2,800 km: the adiabat of Katsura (2022), Table 3, pp. 6–7. Joined straight below it, between cited points: about 4,050 K at the core–mantle boundary (Anzellini et al. 2013, p. 466), the middle of 5,200–5,700 K at the inner-core boundary and of 5,000–6,000 K at the centre (Hirose et al. 2013, pp. 658, 682). The top 50 km is left out: the lithosphere is colder than the adiabat and is not in the table.
+- **note:** Mantle, 50–2,800 km: the adiabat of Katsura (2022), Table 3, pp. 6–7. Joined straight below it, between cited points: about 4,050 K at the core–mantle boundary (Anzellini et al. 2013, p. 466), 5,440 K at the inner-core boundary, the preferred value within 5,200–5,700 K (Hirose et al. 2013, p. 675), and the middle of 5,000–6,000 K at the centre (Hirose et al. 2013, p. 658). The top 50 km is left out: the lithosphere is colder than the adiabat and is not in the table.
 - scale: 1600 to 5600
 - **note at Advanced only:** Estimates differ. Temperature step across the boundary layer above the core: 1,000 ± 500 K (Lay et al. 1998, p. 461) against about 1,400 K (Anzellini et al. 2013, p. 466). Inner-core boundary temperature: 5,200–5,700 K (Hirose et al. 2013, p. 682). A different quantity, for comparison: pure iron melts at 6,230 ± 500 K at that pressure (Anzellini et al. 2013, p. 464); the core alloy melts lower.
 - question: In the profile shown, where does the temperature rise most sharply?
@@ -178,7 +178,7 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - **title:** S-wave speed against the average at that depth (%), along the equator
 - **caption:** The colour shows S-wave speed: red is slower than average, blue faster. Slower is often read as hotter and faster as colder, but that is an interpretation, and composition can matter too. This slice crosses both broad slow regions at the base of the mantle: one beneath the Pacific, the other beneath the South Atlantic and Africa. Near the top, the old continent of Africa shows fast and the young East Pacific seafloor shows slow.
 - **more:** What do the red patches at the bottom show? Test yourself
-- **note:** SEMUCB-WM1 (French & Romanowicz 2014), EarthScope EMC visualisation file: a slice through the equator from 80 km down, each depth compared with its global average. Colours stop at ±2%; the top few hundred km goes beyond that. The cut is real: 0° longitude points the same way as on the crust map.
+- **note:** SEMUCB-WM1 (French & Romanowicz 2014), EarthScope EMC, doi:10.17611/dp/emc.2023.semucbwm1.1, shown with the authors’ permission: a slice through the equator from 80 km down, each depth compared with its global average. Colours stop at ±2%; the top few hundred km goes beyond that. The cut is real: 0° longitude points the same way as on the crust map.
 - scale: -2 to 2
 - question: What are the two broad slow (red) regions at the base of the mantle?
   - ✔ The large low-shear-velocity provinces, beneath the Pacific and beneath the South Atlantic and Africa

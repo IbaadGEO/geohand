@@ -204,8 +204,8 @@ Note: Anzellini et al.'s 6,230 K is the melting point of pure iron; Hirose et al
 - [x] Abstract and Key Points: 1,839 (38) K at the 410; 1,646 (35) K at 50 km; 1,994 (40) K just above and 1,960 (40) K just below the 660; 2,587 (60) K at 2,800 km
 - [x] Table 3, pp. 6–7: every row from 50 to 2,800 km copied into `src/content/earth/temperature.js` (jumps at 410, 520, 660 km kept)
 - [x] p. 7: the profile ignores the thermal boundary layer at the base of the mantle, so the view joins it straight to the CMB value and says so
-- [x] Core part of the view: straight lines between Anzellini et al. 4,050 K (CMB), 5,450 K (middle of Hirose et al. 5,200–5,700 K, ICB) and 5,500 K (middle of 5,000–6,000 K, centre). Midpoints accepted (2026-11-23)
-- [ ] Hirose et al. Table 2 (p. 674) also has a "Preferred value" column (ranges reported as CMB 3,800–4,200 K, ICB 5,200–5,700 K). Read the preferred ICB value in the PDF; if it differs from 5,450 K, use it in `temperature.js` and its test
+- [x] Core part of the view: straight lines between Anzellini et al. 4,050 K (CMB), 5,440 K (Hirose et al. Table 2 preferred value, range 5,200–5,700 K, ICB) and 5,500 K (middle of 5,000–6,000 K, centre). Centre midpoint accepted (2026-11-23)
+- [x] Hirose et al. Table 2 (p. 675, "Preferred value" column): CMB 4,000 K (range 3,800–4,200), ICB 5,440 K (range 5,200–5,700). The ICB now uses 5,440 K in `temperature.js` and its test (2026-11-23). The CMB keeps Anzellini et al.'s measured 4,050 K, which sits inside Hirose's range
 
 ### 29. Seton et al. (2020) age grid
 - [x] Spot checks of the packed 1° cells: Pacific east of Japan (30.5°N 150.5°E) 155 Ma; near the Mid-Atlantic Ridge (0.5°S 13.5°W) 13 Ma; central Pacific (0.5°N 150.5°W) 77 Ma; Tibet not ocean
