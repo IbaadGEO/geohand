@@ -113,6 +113,7 @@ export const NUMBERS = {
       n('P-wave speed just below it (Pn)', '8.09 km/s on average under continents', CM()),
       n('P-wave speed jump in PREM', '6.80 → 8.11 km/s', PREM()),
     ],
+    'lab-measured': [n('Under oceans, by plate age', '55 km at 25 Ma, 76 km at 49 Ma, 82 km at 129 Ma', FI('p. 565')), n('Under old continents', 'roughly 200 km', FI('p. 553'))],
     lab: [n('PREM seismic lid base used in the drawing', '80 km', PREM()), n('Real depth under oceans', 'deepens with plate age: about 55 km at 25 Ma and 76 km at 49 Ma (Philippine Sea Plate), 82 km at 129 Ma (Pacific)', FI('p. 565')), n('Under old continents (cratons)', 'depleted mantle reaches roughly 200 km', FI('p. 553'))],
     d410: [n('Depth', '410 km (ak135); 400 km (PREM)', BOTH), n('Density jump', '3.54 → 3.72 g/cm^3^', PREM()), n('Mineral change', 'olivine → wadsleyite, at about 14 GPa', FT('p. 172'))],
     d660: [n('Depth', '660 km (ak135); 670 km (PREM)', BOTH), n('Density jump', '3.99 → 4.38 g/cm^3^', PREM()), n('Sinking slabs', 'in a survey around the Pacific, most imaged slabs were stagnant above it or trapped just below it, at 660–1,000 km', FO()), n('Mineral change', 'ringwoodite → perovskite-structured (Mg,Fe)SiO~3~ + ferropericlase, at about 24 GPa: the start of the lower mantle', FT('p. 172'))],
@@ -164,6 +165,7 @@ export const NUMBERS = {
       n('Plume conduits (SEMUCB-WM1)', 'v~S~ reduced by more than 1.5–2%; near-vertical from near the CMB to about 1,000 km depth; about 800–1,000 km wide under Hawaii', FR('pp. 95–96')),
       n('Plume temperature excess', '400–500 °C plausible for broad conduits; in the authors’ resolution test, a tail about 200 km wide would need an implausible 1,500–2,000 °C to match the imaged anomaly', FR('pp. 96–97')),
     ],
+    'post-perovskite': [n('Transition', 'MgSiO~3~ perovskite → post-perovskite above 125 GPa and 2,500 K, about 2,700 km deep', MU('Abstract, p. 855')), n('Density', '1.0–1.2% denser than perovskite', MU('Abstract, p. 855')), n('Anisotropy', 'platy crystals aligned by flow may give V~SH~ > V~SV~, seen only below the D″ discontinuity', MU('p. 858'))],
     'd-double-prime': [
       n('PREM basal region', '2,741–2,891 km (radius 3,480–3,630 km), its own velocity polynomial', PREM()),
       n('Plume roots', 'patches 500–800 km across of strongly reduced v~S~; under Hawaii, Iceland and Samoa they coincide in location with known ultralow-velocity zones', FR('Abstract, p. 95; p. 96')),
@@ -197,7 +199,9 @@ export const NUMBERS = {
       n('Reference models', '24.4 km (PREM, global average with a 3 km ocean layer); 35 km (ak135)', BOTH),
       n('Pn speed', '8.09 km/s', CM()),
     ],
+    'lab-measured': [n('Under oceans, by plate age', '55 km at 25 Ma, 76 ± 1.8 km at 49 Ma, 82 ± 4.4 km at 129 Ma; cooling-plate asymptote 104 km', FI('p. 565')), n('Under ocean islands', '40–140 km, mostly not tracking age', FI('p. 565')), n('Under cratons', 'depleted mantle to roughly 200 km', FI('p. 553'))],
     lab: [n('PREM seismic lid base used in the drawing', '80 km: Q~μ~ falls from 600 to 80', PREM()), n('Oceanic LAB and plate age', '55 km at 25 Ma, 76 ± 1.8 km at 49 Ma, 82 ± 4.4 km at 129 Ma; fits a cooling plate with an asymptotic thickness of 104 km', FI('p. 565')), n('Under ocean islands', 'reported depths range from 40 to 140 km, much of it not correlated with plate age', FI('p. 565')), n('What makes it a boundary', 'oceanic lithosphere fits a dry, depleted layer over a hydrated, fertile asthenosphere; beneath cratons the asthenosphere is deeper', FI('Abstract, p. 551'))],
+    d520: [n('Depth', 'about 520 km; absent from most reference models', FT('pp. 172, 174')), n('Mineral change', 'wadsleyite → ringwoodite, at about 17.5 GPa', FT('p. 172')), n('Width', 'transformation over about 25 km; seismically a gradient more than 10 km thick, not observed globally', FT('p. 175'))],
     d410: [n('Depth', '400 km (PREM); 410 km (ak135)', BOTH), n('PREM v~P~ jump', '8.905 → 9.134 km/s', PREM()), n('Average depth and temperature', 'actually 418 km on average, implying 1,480 °C with ±100 °C of global variation', FT('p. 174')), n('Above subducting slabs', 'raised by over 50 km in some subduction zones, consistent with mantle over 600 °C colder', FT('p. 175')), n('Sharpness', 'a ~7 km gradient ending in a sharp jump (1 Hz reflections)', FT('p. 175'))],
     d660: [n('Depth', '670 km (PREM); 660 km (ak135)', BOTH), n('PREM v~P~ jump', '10.266 → 10.751 km/s', PREM()), n('Sharpness', '≤2 km thick in 1 Hz reflections; ringwoodite breaks down over <4 km, garnet over 30–40 km', FT('p. 175'))],
     cmb: [

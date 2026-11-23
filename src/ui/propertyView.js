@@ -20,7 +20,7 @@ const COMPOSITION = [
 const BEHAVIOUR = [
   ['Lithosphere: the plates, crust plus top of the mantle', BLUE, (id) => isCrust(id) || /lithosph/.test(id)],
   ['Asthenosphere: solid, but S waves slow down', ORANGE, (id) => id === 'asthenosphere'],
-  ['Mantle below: solid, convects slowly', AQUA, (id) => /mantle|transition|d-double|llsvp/.test(id) && !/lithosph/.test(id)],
+  ['Mantle below: solid, convects slowly', AQUA, (id) => /mantle|transition|d-double|llsvp|perovskite/.test(id) && !/lithosph/.test(id)],
   ['Outer core: liquid', AMBER, (id) => id === 'outer-core'],
   ['Inner core: solid', MAGENTA, (id) => /inner-core/.test(id)],
 ];
@@ -63,7 +63,7 @@ VIEWS.push({
     where: 'PREM, Table I, p. 308; paths calculated here from it',
   },
 });
-// Real crust thickness from the CRUST1.0 grid (src/content/earth/crust1.js), drawn on the surface by ui/crustMap.js
+// Real crust thickness from the CRUST1.0 grid (src/content/earth/crust1.js), drawn on the surface by ui/dataMap.js
 VIEWS.push({
   id: 'crust1', label: 'Crust thickness', title: 'Crust thickness (km), CRUST1.0', levels: ['undergrad', 'postgrad'],
   min: 0, max: 75, lo: '#4a2c0c', hi: '#ffe2b0',
@@ -76,6 +76,49 @@ VIEWS.push({
     answer: 0,
     explain: 'Under the Tibetan Plateau: 74 km in CRUST1.0, against about 7 km under the central Pacific and about 33 km under Iceland.',
     where: 'CRUST1.0, crsthk.xyz, 1° cells centred at 32.5°N 90.5°E, 0.5°N 150.5°W and 64.5°N 18.5°W',
+  },
+});
+// Data views drawn by ui/dataMap.js (sources wired in main.js); appended after crust1 so the layers stay dimmed beneath them
+VIEWS.push({
+  id: 'temperature', label: 'Temperature', title: 'Temperature (K)', levels: ['undergrad', 'postgrad'],
+  min: 1600, max: 5600, lo: '#4a1208', hi: '#fff1b8',
+  note: 'Mantle, 50–2,800 km: the adiabat of Katsura (2022), Table 3, pp. 6–7. Joined straight below it, between cited points: about 4,050 K at the core–mantle boundary (Anzellini et al. 2013, p. 466), the middle of 5,200–5,700 K at the inner-core boundary and of 5,000–6,000 K at the centre (Hirose et al. 2013, pp. 658, 682). The top 50 km is left out: the lithosphere is colder than the adiabat and is not in the table.',
+  caption: 'Most of the mantle warms only slowly with depth, about 0.2–0.5 K per km. The big rise is at the bottom: across the hot boundary layer above the core, from about 2,600 K to about 4,050 K.',
+  more: 'Where does it heat up fastest? Test yourself',
+  q: {
+    q: 'Where does the temperature rise most sharply?',
+    options: ['In the boundary layer just above the core', 'In the transition zone', 'In the inner core'],
+    answer: 0,
+    explain: 'Just above the core: the adiabat reaches 2,587 K at 2,800 km (Katsura 2022), while the core–mantle boundary is about 4,050 K (Anzellini et al. 2013). In the mantle above, the adiabat rises only 0.2–0.5 K per km.',
+    where: 'Katsura (2022), Table 3, pp. 6–7; Anzellini et al. (2013), p. 466',
+  },
+});
+VIEWS.push({
+  id: 'labmap', label: 'LAB depth', title: 'Depth of the base of the plate under the oceans (km)', levels: ['undergrad', 'postgrad'],
+  min: 55, max: 82, lo: '#9fe7ff', hi: '#16305c',
+  note: 'Seafloor age from Seton et al. (2020), averaged to 1° cells, turned into depth with the measured ages of Fischer et al. (2010), p. 565: 55 km at 25 Ma, 76 km at 49 Ma, 82 km at 129 Ma, joined straight. Grey: floor younger than 25 Ma or older than 129 Ma, outside the measured ages. Land is left blank.',
+  caption: 'Ocean plates thicken as they age and cool, so the base of the plate is shallow near the mid-ocean ridges and deepest on the oldest floor, in the western Pacific.',
+  more: 'Where is the plate thickest? Test yourself',
+  q: {
+    q: 'Where is the ocean plate thickest?',
+    options: ['On the oldest floor, in the western Pacific', 'Along the mid-ocean ridges', 'Around Iceland'],
+    answer: 0,
+    explain: 'On the oldest floor: in the grid, the Pacific east of Japan is over 120 million years old, where Fischer et al. (2010) measure about 82 km. Near the ridges the floor is young and the plate thin.',
+    where: 'Seton et al. (2020) age grid, 1° cell at 30.5°N 150.5°E; Fischer et al. (2010), p. 565',
+  },
+});
+VIEWS.push({
+  id: 'tomo', label: 'Tomography', title: 'S-wave speed against the average at that depth (%), along the equator', levels: ['postgrad'],
+  min: -2, max: 2, lo: '#d6452f', mid: '#d8d2c8', hi: '#2f6fd6', ends: ['−2% slower', '+2% faster'],
+  note: 'SEMUCB-WM1 (French & Romanowicz 2014), EarthScope EMC visualisation file: a slice through the equator from 80 km down, each depth compared with its global average. Colours stop at ±2%; the top few hundred km goes beyond that. The cut is real: 0° longitude points the same way as on the crust map.',
+  caption: 'Red is slower than average, usually hotter; blue is faster, usually colder. This slice crosses both broad slow regions at the base of the mantle, under the Pacific and under Africa. Near the top, the old continent of Africa shows fast and the young East Pacific seafloor shows slow.',
+  more: 'What do the red patches at the bottom show? Test yourself',
+  q: {
+    q: 'What are the two broad slow (red) regions at the base of the mantle?',
+    options: ['The large low-shear-velocity provinces under the Pacific and Africa', 'Sinking ocean plates', 'The liquid outer core'],
+    answer: 0,
+    explain: 'They match the two nearly antipodal low-velocity provinces beneath the Pacific and Africa (Garnero et al. 2016). In this slice, S waves are over 1.5% slower than average at 2,841 km beneath 150°W and 15°E.',
+    where: 'SEMUCB-WM1 equator slice; Garnero et al. (2016), p. 481',
   },
 });
 const DIVIDE = ['composition', 'behaviour'];
@@ -136,10 +179,9 @@ export function mountViewSwitch(host, legend, onChange) {
         add(sw, 'span', '', label);
       }
       else {
-        add(legend, 'i', 'bar').style.background = `linear-gradient(to right, ${v.lo}, ${v.hi})`;
+        add(legend, 'i', 'bar').style.background = `linear-gradient(to right, ${[v.lo, v.mid, v.hi].filter(Boolean).join(', ')})`;
         const ends = add(legend, 'span', 'ends');
-        add(ends, 'span', '', String(v.min));
-        add(ends, 'span', '', String(v.max));
+        for (const e of v.ends || [v.min, v.max]) add(ends, 'span', '', String(e));
       }
       add(legend, 'small', '', v.note);
       if (v.caption) compare(v, comparing);

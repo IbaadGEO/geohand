@@ -11,7 +11,12 @@ import { runLoop, loadProgress } from './ui/learnLoop.js';
 import { stateOf } from './content/earth/states.js';
 import { faceColors, mountViewSwitch, VIEWS } from './ui/propertyView.js';
 import { buildQuake } from './ui/quakeView.js';
-import { buildCrustMap } from './ui/crustMap.js';
+import { buildDataMap, scale } from './ui/dataMap.js';
+import { CRUST1, thicknessAt } from './content/earth/crust1.js';
+import { tempAt } from './content/earth/temperature.js';
+import { SEAFLOOR, ageAt } from './content/earth/seafloor.js';
+import { SEMUCB, dvsAt } from './content/earth/semucb.js';
+import { LAB_AGES, labDepth } from './content/earth/lab.js';
 import { clamp } from './utils.js';
 import { LEVELS } from './content/levels.js';
 import { loadLevel, saveLevel, mapPart } from './levels.js';
@@ -62,14 +67,37 @@ function toast(msg) {
 let level = loadLevel() || 'alevel';
 let mode = 'explore'; // or 'lesson'
 let pendingSel = null; // part id to select once a level rebuild finishes
-let scene, quake, crustMap;
+let scene, quake;
+const overlays = {}; // data views drawn as dots, by view id
 try {
   scene = new HoloScene($('scene'), MODELS, level, (p) => stateOf(p.id, p.kind)?.motion || 0, faceColors);
   scene.uniforms.uFlow.value.set(KM(220), KM(660), KM(1000), KM(2891));
   quake = buildQuake(scene.uniforms);
   scene.group.add(quake.object);
-  crustMap = buildCrustMap(VIEWS.find((v) => v.id === 'crust1'), scene.uniforms);
-  scene.group.add(crustMap.object);
+  const GREY = '#5b6270';
+  const SOURCES = {
+    crust1: { kind: 'globe', n: 24000, file: CRUST1.file, bytes: CRUST1.cells,
+      colorAt: (d, lat, lon, c, v) => !!scale(v, thicknessAt(d, lat, lon), c) },
+    labmap: { kind: 'globe', n: 24000, file: SEAFLOOR.file, bytes: SEAFLOOR.cells,
+      colorAt: (d, lat, lon, c, v) => {
+        const age = ageAt(d, lat, lon);
+        if (age == null) return false;
+        if (age < LAB_AGES[0] || age > LAB_AGES[1]) return !!c.set(GREY); // outside the measured ages
+        return !!scale(v, labDepth(age), c);
+      } },
+    temperature: { kind: 'cut', n: 26000, top: 50, base: 6371, colorAt: (d, km, lon, c, v) => !!scale(v, tempAt(km), c) },
+    tomo: { kind: 'cut', n: 26000, top: 80, base: 2891, file: SEMUCB.file, bytes: SEMUCB.depths.length * 360, array: Int8Array,
+      colorAt: (d, km, lon, c, v) => {
+        const x = dvsAt(d, km, lon);
+        if (x == null) return false;
+        const t = Math.max(-1, Math.min(1, x / v.max)); // diverging: lo (slow) through mid to hi (fast)
+        return !!c.set(v.mid).lerp(c.clone().set(t < 0 ? v.lo : v.hi), Math.abs(t));
+      } },
+  };
+  for (const [id, src] of Object.entries(SOURCES)) {
+    overlays[id] = buildDataMap(VIEWS.find((v) => v.id === id), scene.uniforms, src);
+    scene.group.add(overlays[id].object);
+  }
 } catch (e) {
   console.error(e);
   showBanner('WebGL is unavailable. Try an up-to-date version of Chrome, Edge or Firefox with hardware acceleration enabled.');
@@ -486,15 +514,15 @@ function resetAll() {
 // colour the cut-away by layer or by a property at each depth; property views open the Earth and tilt it to show the faces
 const views = mountViewSwitch($('views'), $('legend'), (i) => {
   scene.uniforms.uProp.value = i;
-  const isQuake = VIEWS[i].id === 'quake', isCrust = VIEWS[i].id === 'crust1';
+  const id = VIEWS[i].id, isQuake = id === 'quake', isGlobe = id === 'crust1' || id === 'labmap';
   quake.show(isQuake);
-  crustMap.show(isCrust).then((ok) => ok || toast('Crust data could not be loaded'));
+  for (const [k, o] of Object.entries(overlays)) o.show(k === id).then((ok) => ok || toast(`${VIEWS[i].label} data could not be loaded`));
   if (i > 0) {
     // one flat cut at the equator: the layers close up and the view tilts to look onto the face
     scene.explodeTarget = 0;
     scene.isolate();
-    // the earthquake sits at the top; the crust map is seen from the side, like a globe
-    viewTarget = isQuake ? { x: 1.25, y: 0, z: 0 } : isCrust ? { x: 0.3, y: scene.rot.y, z: 0 } : { x: 0.85, y: scene.rot.y, z: 0 };
+    // the earthquake sits at the top; the surface maps are seen from the side, like a globe
+    viewTarget = isQuake ? { x: 1.25, y: 0, z: 0 } : isGlobe ? { x: 0.3, y: scene.rot.y, z: 0 } : { x: 0.85, y: scene.rot.y, z: 0 };
   }
 });
 /** Views limited to some levels (VIEWS[i].levels) are hidden elsewhere; a hidden view in use falls back to Layers. */

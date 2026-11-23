@@ -87,3 +87,42 @@ test('no gap under oceanic crust: lithospheric mantle and Moho follow the crust 
   const moho = pts('moho').filter((p) => Math.abs(p[1]) < 0.02 && Math.abs(p[0]) > 0.05 && Math.abs(p[2]) > 0.05);
   assert.ok(moho.every((p) => Math.abs(r(p) - (cont(p) ? KM(35) : KM(7))) < tol), 'Moho ring at 7 km under oceans, 35 km under continents');
 });
+
+import { KM } from '../src/models/earth.js';
+import { LAB_CRATON_KM } from '../src/content/earth/lab.js';
+for (const lv of ['undergrad', 'postgrad']) {
+  test(`${lv}: the LAB ring follows plate age under oceans and ~200 km under the continent (Fischer et al. 2010)`, () => {
+    const parts = buildEarth(lv), ring = parts.find((p) => p.id === 'lab-measured').instances[0].cloud;
+    const prem = parts.find((p) => p.id === 'lab').instances[0].cloud; // PREM lid base stays at 80 km
+    for (let i = 0; i < prem.n * 3; i += 3) assert.ok(Math.abs(Math.hypot(prem.p[i], prem.p[i + 2]) - KM(80)) < 1e-6);
+    const p = ring.p, cont = [], ocean = [];
+    for (let i = 0; i < ring.n * 3; i += 3) {
+      const r = Math.hypot(p[i], p[i + 2]);
+      const wedge = p[i] > 1e-6 && p[i + 2] < -1e-6;
+      (wedge ? cont : ocean).push(r);
+    }
+    assert.ok(cont.length > 20 && ocean.length > 20);
+    for (const r of cont) assert.ok(Math.abs(r - KM(LAB_CRATON_KM)) < 0.002, `continental point at ${r}`);
+    // ocean points sit between 82 and 55 km, plus the radial joins at the two margins, which reach down to 200 km
+    for (const r of ocean) assert.ok(r <= KM(55) + 0.002 && r >= KM(LAB_CRATON_KM) - 0.002, `ocean point at ${r}`);
+    assert.ok(ocean.some((r) => Math.abs(r - KM(55)) < 0.003) && ocean.some((r) => Math.abs(r - KM(82)) < 0.003));
+  });
+}
+
+test('520 km boundary: drawn at Advanced only, at the Frost (2008) depth', () => {
+  assert.deepEqual(GEOMETRY.d520, [520, 520]);
+  assert.ok(buildEarth('postgrad').some((p) => p.id === 'd520' && p.kind === 'boundary'));
+  assert.ok(!buildEarth('undergrad').some((p) => p.id === 'd520'));
+});
+test('post-perovskite: Advanced only, between 2,700 km (Murakami et al. 2004) and the CMB', () => {
+  const pp = buildEarth('postgrad').find((p) => p.id === 'post-perovskite');
+  assert.ok(pp);
+  for (const inst of pp.instances) {
+    const q = inst.cloud.p;
+    for (let i = 0; i < inst.cloud.n * 3; i += 3) {
+      const r = Math.hypot(q[i], q[i + 2]); // radius on the cut; the dots sit just above it
+      assert.ok(r >= KM(2891) - 1e-6 && r <= KM(2700) + 1e-6, `point at ${r}`);
+    }
+  }
+  assert.ok(!buildEarth('undergrad').some((p) => p.id === 'post-perovskite'));
+});

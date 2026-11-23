@@ -198,6 +198,22 @@ Note: Pearson et al. give up to about 2.5 wt% water for wadsleyite and ringwoodi
 
 Note: Anzellini et al.'s 6,230 K is the melting point of pure iron; Hirose et al.'s 5,200–5,700 K is for the ICB itself, lower because the alloy melts lower. Anzellini's ~1,400 K boundary layer and Lay et al.'s 1,000 ± 500 K are both shown with their sources.
 
+## Section 7: data views added 2026-11-23
+
+### 28. Katsura (2022), JGR Solid Earth 127, e2021JB023562
+- [x] Abstract and Key Points: 1,839 (38) K at the 410; 1,646 (35) K at 50 km; 1,994 (40) K just above and 1,960 (40) K just below the 660; 2,587 (60) K at 2,800 km
+- [x] Table 3, pp. 6–7: every row from 50 to 2,800 km copied into `src/content/earth/temperature.js` (jumps at 410, 520, 660 km kept)
+- [x] p. 7: the profile ignores the thermal boundary layer at the base of the mantle, so the view joins it straight to the CMB value and says so
+- [ ] Core part of the view: straight lines between Anzellini et al. 4,050 K (CMB), 5,450 K (middle of Hirose et al. 5,200–5,700 K, ICB) and 5,500 K (middle of 5,000–6,000 K, centre). Owner to confirm the midpoints are acceptable
+
+### 29. Seton et al. (2020) age grid
+- [x] Spot checks of the packed 1° cells: Pacific east of Japan (30.5°N 150.5°E) 155 Ma; near the Mid-Atlantic Ridge (0.5°S 13.5°W) 13 Ma; central Pacific (0.5°N 150.5°W) 77 Ma; Tibet not ocean
+- [ ] Author list beyond Seton and Müller to fill in from the paper
+
+### 30. SEMUCB-WM1 (French & Romanowicz 2014)
+- [x] Equator slice: S waves over 1.5% slower than average at 2,841 km beneath 150°W (Pacific) and 15°E (Africa); fast (+6.4%) at 80 km under 15°E; slow (−6.8%) at 80 km under 100°W (East Pacific)
+- [ ] Licence: none stated; ask the authors or EarthScope before the repo goes public
+
 ## Not used
 
 These could not be obtained, so they were removed from the app and nothing cites them: Grand 2002 (#14), Garnero & McNamara 2008 (#18), and the three textbooks (Lowrie & Fichtner, Turcotte & Schubert, Stacey & Davis).

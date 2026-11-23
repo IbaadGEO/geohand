@@ -55,6 +55,14 @@ Mark the **Access** column Y or N. "Open" means the paper is free to read withou
 | 24 | Song, X., & Richards, P. G. (1996). Seismological evidence for differential rotation of the Earth's inner core. *Nature*, 382(6588), 221–224. https://doi.org/10.1038/382221a0 | Inner core rotation, the original claim | |
 | 25 | Yang, Y., & Song, X. (2023). Multidecadal variation of the Earth's inner-core rotation. *Nature Geoscience*, 16(2), 182–187. https://doi.org/10.1038/s41561-022-01112-z | Inner core rotation, the recent result | |
 
+## Data views (Intermediate and Advanced)
+
+| # | Reference | Used for | Access |
+|---|-----------|----------|--------|
+| 28 | Katsura, T. (2022). A revised adiabatic temperature profile for the mantle. *Journal of Geophysical Research: Solid Earth*, 127, e2021JB023562. https://doi.org/10.1029/2021JB023562 | Temperature view: Table 3, pp. 6–7, adiabat from 50 to 2,800 km. Below it the view joins straight to Anzellini et al. (21) at the CMB and Hirose et al. (20) at the ICB and centre. Licence: CC BY 4.0 | Open |
+| 29 | Seton, M., Müller, R. D., et al. (2020). A global data set of present-day oceanic crustal age and seafloor spreading parameters. *Geochemistry, Geophysics, Geosystems*, 21, e2020GC009214. https://doi.org/10.1029/2020GC009214. Grid: `age.2020.1.GTS2012.6m.nc`, https://www.earthbyte.org/webdav/ftp/earthbyte/agegrid/2020/Grids/ | LAB depth view: seafloor age averaged to 1° cells by `scripts/pack_phase2.py`, turned into depth with Fischer et al. (9), p. 565. Licence: CC BY 4.0 (EarthByte page) | Open |
+| 30 | French, S. W., & Romanowicz, B. A. (2014). Whole-mantle radially anisotropic shear velocity structure from spectral-element waveform tomography. *Geophysical Journal International*, 199(3), 1303–1327. https://doi.org/10.1093/gji/ggu334. Model SEMUCB-WM1, EarthScope EMC file `semucb-2014-ucb-vs-viz-only.r0.1-n4c.nc`, doi:10.17611/dp/emc.2023.semucbwm1.1 | Tomography view (Advanced): equator slice from 80 km down, Vs anomaly against each depth's global mean, packed by `scripts/pack_phase2.py`. No licence is stated in the file or on the model page; the EMC file is labelled "viz-only" | Model file open |
+
 ## Reference books (nice to have)
 
 | # | Reference | Used for | Access |

@@ -116,6 +116,16 @@ export default {
         q("Why might D″ be anisotropic?", "Post-perovskite may form platy crystals that line up in shear flow, which could give horizontally polarised S waves (V~SH~) higher speeds than vertically polarised ones (V~SV~) below the discontinuity (Murakami et al. 2004).", "Murakami et al., p. 858", 'murakami2004'),
       ],
     }, 'lower-mantle'),
+    P('post-perovskite', 'layer', 'Post-perovskite', {
+      short: "Near the base of the mantle, MgSiO~3~ perovskite may change into a denser phase, post-perovskite, above 125 GPa and 2,500 K, about 2,700 km deep (Murakami et al. 2004, p. 855).",
+      long: "Murakami et al. (2004) found that MgSiO~3~ perovskite transforms to a post-perovskite phase above 125 GPa and 2,500 K, conditions reached about 2,700 km deep, and that the new phase is 1.0–1.2% denser (Abstract, p. 855). The D″ discontinuity is seen about 200–300 km above the core–mantle boundary, at 119–125 GPa, with a speed increase of about 3%; the transition occurs at matching depths and may explain it (p. 857). Post-perovskite may form platy crystals. Lined up by flow, they could make horizontally polarised S waves (V~SH~) faster than vertically polarised ones (V~SV~), and that anisotropy is seen only below the discontinuity (p. 858).",
+      simplification: "The band starts at the depth from Murakami et al. (2004, p. 855). Drawing it evenly all the way round, and the short streaks for lined-up crystals, are schematic.",
+      questions: [
+        q("When does perovskite become post-perovskite?", "Above 125 GPa and 2,500 K, about 2,700 km deep (Murakami et al. 2004).", "Murakami et al., Abstract, p. 855", 'murakami2004'),
+        q("How much denser is post-perovskite?", "1.0–1.2% denser than perovskite (Murakami et al. 2004).", "Murakami et al., Abstract, p. 855", 'murakami2004'),
+        q("What do the streaks stand for?", "Platy post-perovskite crystals lined up by flow, which may make V~SH~ faster than V~SV~ below the D″ discontinuity (Murakami et al. 2004). Their size and spacing are schematic.", "Murakami et al., p. 858", 'murakami2004'),
+      ],
+    }, 'lower-mantle'),
     P('llsvp', 'layer', 'Large low-shear-velocity provinces', {
       short: "Two nearly antipodal regions of low v~S~ cover about 30% of the core–mantle boundary. One proposed explanation is that they are dense thermochemical piles (Garnero et al. 2016, p. 481).",
       long: "Seismic imaging identifies two large provinces of reduced shear-wave speed at the base of the mantle, one beneath the Pacific and one beneath the Atlantic and western and southern Africa, nearly antipodal and covering about 30% of the core–mantle boundary area. In places velocities are reduced up to 1,200 km above it. The Pacific province is roughly round; the African one is elongated north–south and stretched eastward in the south (Garnero et al. 2016, p. 481). One interpretation is thermochemical piles, denser than the surrounding mantle; in geodynamic models an intrinsic density excess of up to a few per cent forms piles of similar size (Abstract, p. 481; p. 485). Ultralow-velocity zones, commonly 5–20 km thick, occur within and near their margins (p. 482).",
@@ -197,6 +207,16 @@ export default {
         q("What contrast may make the oceanic LAB sharp, beyond temperature?", "Oceanic lithosphere is consistent with a dry, chemically depleted layer over a hydrated, fertile asthenosphere (Fischer et al. 2010).", "Fischer et al., Abstract, p. 551", 'fischer2010'),
       ],
     }),
+    P('lab-measured', 'boundary', 'Measured LAB (by plate age)', {
+      short: "The measured lithosphere–asthenosphere boundary: under the oceans it deepens with plate age, fitting a cooling plate; beneath cratons the asthenosphere lies deeper (Fischer et al. 2010, pp. 551, 565).",
+      long: "Receiver functions show oceanic lithosphere thickening with age, from 55 km at 25 Ma to 76 ± 1.8 km at 49 Ma and 82 ± 4.4 km at 129 Ma, fitting a cooling plate with an asymptotic thickness of 104 km. Under ocean islands, reported depths of 40–140 km mostly do not track age (Fischer et al. 2010, p. 565). Oceanic lithosphere is consistent with a dry, depleted layer over a hydrated, fertile asthenosphere; beneath cratons the asthenosphere is deeper (Abstract, p. 551), with depleted mantle reaching roughly 200 km (p. 553).",
+      simplification: same('lab-measured'),
+      questions: [
+        q("What does the line follow under the oceans?", "Receiver-function depths by plate age: 55 km at 25 Ma, 76 ± 1.8 km at 49 Ma, 82 ± 4.4 km at 129 Ma (Fischer et al. 2010).", "Fischer et al., p. 565", 'fischer2010'),
+        q("Why does the line stop at 82 km and not reach 104 km?", "104 km is the asymptote of the fitted cooling-plate model, not a measured depth; the drawing only uses measured ages, 25–129 Ma (Fischer et al. 2010).", "Fischer et al., p. 565", 'fischer2010'),
+        q("Does it follow plate age under ocean islands?", "Mostly not: reported depths there range from 40 to 140 km (Fischer et al. 2010).", "Fischer et al., p. 565", 'fischer2010'),
+      ],
+    }),
     P('d410', 'boundary', '410 km discontinuity', {
       short: "This boundary occurs at 400 km in PREM and 410 km in ak135, where olivine changes to wadsleyite. Across it, PREM’s v~P~ increases from 8.905 to 9.134 km/s.",
       long: "Olivine dominates to about 400 km; below, its high-pressure forms wadsleyite and ringwoodite dominate the transition zone (Pearson et al. 2014, p. 221). PREM puts the discontinuity at 400 km, with v~P~ jumping from 8.905 to 9.134 km/s and density from 3.54 to 3.72 g/cm^3^ (Table I, p. 308); ak135 puts it at 410 km (Table 3, pp. 122–123).",
@@ -210,6 +230,16 @@ export default {
         q("What drawing choice is made?", "A sharp surface at the ak135 depth of 410 km.", "ak135, Table 3, pp. 122–123", 'ak1351995'),
       ],
     }),
+    P('d520', 'boundary', '520 km discontinuity', {
+      short: "A weaker boundary inside the transition zone, where wadsleyite becomes ringwoodite at about 17.5 GPa (Frost 2008, p. 172). Most reference models leave it out.",
+      long: "In a pyrolite mantle, wadsleyite turns into ringwoodite at about 17.5 GPa, roughly 520 km deep (Frost 2008, p. 172). Unlike the 410 and 660, this discontinuity is missing from most reference models (p. 174); PREM has none at 520 km (Table I, p. 308). It is not seen everywhere. It shows up in lower-frequency seismic waves but not in high-frequency (1 Hz) ones, which fits a speed gradient more than 10 km thick; the transformation itself spreads over about 25 km (p. 175).",
+      simplification: "Drawn as a sharp surface at 520 km all the way round. The real boundary is a gradient about 25 km wide and is not observed globally (Frost 2008, p. 175).",
+      questions: [
+        q("What mineral change happens at 520 km?", "Wadsleyite turns into ringwoodite, at about 17.5 GPa (Frost 2008).", "Frost, p. 172", 'frost2008'),
+        q("Why do most reference models leave it out?", "It is weaker than the 410 and 660 and is not observed globally (Frost 2008).", "Frost, pp. 174–175", 'frost2008'),
+        q("Why do high-frequency waves miss it?", "They only respond to sharp jumps. The 520 appears at lower frequencies, consistent with a gradient more than 10 km thick; the transformation spreads over about 25 km (Frost 2008).", "Frost, p. 175", 'frost2008'),
+      ],
+    }, 'transition-zone'),
     P('d660', 'boundary', '660 km discontinuity', {
       short: "The boundary lies at 670 km in PREM and 660 km in ak135. PREM’s v~P~ rises from 10.266 to 10.751 km/s, and most imaged Pacific slabs stall nearby (Fukao & Obayashi 2013).",
       long: "PREM puts the boundary at 670 km, with v~P~ jumping from 10.266 to 10.751 km/s and density from 3.99 to 4.38 g/cm^3^ (Table I, p. 308); ak135 puts it at 660 km (Table 3, pp. 122–123). It ends the transition zone (Pearson et al. 2014, p. 221). In Fukao & Obayashi’s circum-Pacific tomography, most slabs were stagnant above it (stage I) or trapped at 660–1,000 km (stage III); they identified one definite case of descent into the deep lower mantle (2013, pp. 5920, 5932).",
