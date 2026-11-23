@@ -1,8 +1,8 @@
 // Sends a visitor question to the site's own inbox. The caller keeps the text unless ok is true.
 const MESSAGES = {
-  ok: 'Thanks, your question was sent.',
-  limited: "You've sent a lot of questions. Please try again later.",
-  failed: "Couldn't send right now. Your question is still here, try again.",
+  ok: 'Your question has been sent.',
+  limited: "You’ve reached the question limit. Please try again later.",
+  failed: "The question could not be sent. Your text is still here, so you can try again.",
 };
 
 export async function sendQuestion(payload, fetchImpl = fetch) {
@@ -35,7 +35,7 @@ export function openAsk(host, text, context) {
   const note = document.createElement('p');
   note.className = 'ask-note';
   note.textContent =
-    'Only the words you type are sent, only when you press Send. Never camera data. No IP address is stored. Answered questions may be published anonymously in the README.';
+    'Only your written question is sent when you select Send. Camera data is never sent, and no IP address is stored. Answered questions may appear anonymously in the README.';
   const send = document.createElement('button');
   send.type = 'submit';
   send.className = 'ask-btn';

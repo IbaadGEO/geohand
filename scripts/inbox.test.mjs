@@ -59,11 +59,11 @@ test('rate key rotates daily and hides the IP', () => {
 });
 
 const reply = (status) => async () => ({ status, json: async () => ({}) });
-test('sent', async () => assert.deepEqual(await sendQuestion(good, reply(200)), { ok: true, message: 'Thanks, your question was sent.' }));
+test('sent', async () => assert.deepEqual(await sendQuestion(good, reply(200)), { ok: true, message: 'Your question has been sent.' }));
 test('rate limited', async () =>
-  assert.deepEqual(await sendQuestion(good, reply(429)), { ok: false, message: "You've sent a lot of questions. Please try again later." }));
+  assert.deepEqual(await sendQuestion(good, reply(429)), { ok: false, message: 'You’ve reached the question limit. Please try again later.' }));
 test('server error keeps the question', async () =>
-  assert.deepEqual(await sendQuestion(good, reply(500)), { ok: false, message: "Couldn't send right now. Your question is still here, try again." }));
+  assert.deepEqual(await sendQuestion(good, reply(500)), { ok: false, message: 'The question could not be sent. Your text is still here, so you can try again.' }));
 test('offline keeps the question', async () => assert.equal((await sendQuestion(good, async () => { throw new TypeError('offline'); })).ok, false));
 test('sends JSON POST to /api/ask', async () => {
   let seen;

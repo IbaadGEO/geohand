@@ -57,7 +57,7 @@ VIEWS.push({
   more: 'Why the shadows? Test yourself',
   q: {
     q: `Why do no S waves arrive more than about ${QF.s}° from the earthquake?`,
-    options: ['The outer core is liquid, so S waves cannot cross it', 'The mantle absorbs them', 'They are too slow to arrive'],
+    options: ['The liquid outer core prevents S waves from passing through', 'The mantle absorbs them', 'They are too slow to arrive'],
     answer: 0,
     explain: 'PREM gives an S-wave speed of 0 in the outer core, so S waves cannot travel through it and the core casts an S-wave shadow. The mantle does not block them: PREM’s S-wave speeds there are above 4 km/s.',
     where: 'PREM, Table I, p. 308; paths calculated here from it',

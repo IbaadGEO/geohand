@@ -15,7 +15,7 @@ test('newest first, only visitor questions', () => {
   const t = renderUpdates(two);
   assert.ok(t.indexOf('2026-12-05') < t.indexOf('2026-12-01'));
   assert.ok(!t.includes('Written by us'));
-  assert.match(t, /\| 2026-12-05 \| Postgraduate \| Core–mantle boundary \|/);
+  assert.match(t, /\| 2026-12-05 \| Advanced \| Core–mantle boundary \|/);
 });
 test('pipes in a question cannot break the table', () => assert.match(renderUpdates(two), /New \\\| one\?/));
 test('missing markers throw', () => assert.throws(() => applyUpdates('no markers', 'T'), /markers/));

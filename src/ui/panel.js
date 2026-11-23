@@ -36,7 +36,7 @@ export function mountPanel(root) {
     if (part === current) return;
     current = part;
     if (!part) {
-      root.replaceChildren(el('p', 'info-prompt', 'What do you want to learn about?'), el('p', 'info-empty', 'Hold a peace sign to highlight a layer, or click one.'));
+      root.replaceChildren(el('p', 'info-prompt', 'What do you want to learn about?'), el('p', 'info-empty', 'Hold a peace sign to highlight a layer, or select one with the mouse.'));
       return;
     }
     // number references in order of first use
@@ -141,7 +141,7 @@ export function mountSearch(slot, { find, levelLabel, currentLevel, onAsk }) {
       return d;
     });
     if (!hits.length && query.trim().length >= 5) {
-      rows.push(el('p', 'info-empty', 'No answer yet.'));
+      rows.push(el('p', 'info-empty', 'No answer is available yet.'));
       if (onAsk) {
         const b = el('button', 'ask-btn', 'Send this question');
         b.type = 'button';

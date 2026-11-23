@@ -27,7 +27,7 @@ test('a draft part is captioned with its cited values, not its draft text', () =
 
 test('a tour step with a check question waits for it before explaining', () => {
   const checks = Object.fromEntries(Object.entries(LOOPS.alevel).map(([id, l]) => [id, l.check]));
-  const crust = buildTour(EARTH.alevel.parts, 'A-level', checks).find((s) => s.id === 'crust');
+  const crust = buildTour(EARTH.alevel.parts, 'Normal', checks).find((s) => s.id === 'crust');
   assert.equal(crust.check, LOOPS.alevel.crust.check);
   assert.ok(crust.dur > CHECK_WAIT + 5);
 });

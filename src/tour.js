@@ -25,8 +25,8 @@ export function buildTour(parts, levelLabel, checks = {}) {
     return check ? { ...s, check, dur: CHECK_WAIT + readS(`${check.explain} ${check.where}`) } : s;
   };
   return [
-    step(null, "Earth's interior", `${levelLabel} tour: ${parts.length} parts, from the surface down to the centre.`),
+    step(null, "Inside the Earth", `${levelLabel} tour: ${parts.length} parts, starting at the surface and moving towards the centre.`),
     ...parts.map(withCheck),
-    step(null, "Earth's interior", 'Back to the whole Earth. Pick a layer to look closer, or play the tour again.'),
+    step(null, "Inside the Earth", 'Back at the full Earth model. Select another layer to explore or restart the tour.'),
   ];
 }

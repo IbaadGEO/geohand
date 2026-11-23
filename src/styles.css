@@ -179,14 +179,13 @@ input[type="range"]::-moz-range-thumb { width: 11px; height: 11px; border-radius
 .lesson-head button { margin-left: 5px; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); }
 .lesson-head button:disabled { opacity: 0.35; cursor: default; }
 .learning-tools { display: grid; gap: 6px; }
-.learning-tools label, #lesson-availability { color: var(--muted); font-size: 11px; }
+.learning-tools label { color: var(--muted); font-size: 11px; }
 .learning-tools select, .learning-tools button, .question-bank summary, #lesson-play, #lesson-finish, #lesson-activity button, .learn-activity button {
   font: inherit; color: var(--text); background: #191c2b;
   border: 1px solid var(--line); border-radius: 7px; padding: 5px 7px;
 }
 .question-bank summary { cursor: pointer; }
 #question-bank .where { color: var(--muted); font-size: 10px; }
-#lesson-availability { margin-top: 5px; }
 #lesson-play { margin-bottom: 6px; }
 #lesson-play[aria-pressed="true"] { border-color: var(--gold); }
 #lesson-activity, #lesson-finish { margin-top: 8px; }
@@ -310,3 +309,25 @@ body:has(#tour:not([hidden])) #toast { bottom: 190px; }
 #legend .more summary { cursor: pointer; color: var(--gold); font-size: 11.5px; font-weight: 600; }
 #legend .more[open] { display: flex; flex-direction: column; gap: 5px; }
 #legend .swatch span { flex: 1; }
+
+/* point-and-hold cursor (ui/pointer.js): a ring that fills while the fingertip rests on a button */
+#hand-cursor { --p: 0; position: fixed; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%; z-index: 60; pointer-events: none; background: conic-gradient(var(--gold) calc(var(--p) * 360deg), rgba(255, 255, 255, 0.25) 0); -webkit-mask: radial-gradient(circle, transparent 8px, #000 9px); mask: radial-gradient(circle, transparent 8px, #000 9px); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4); }
+#hand-cursor.on-target { width: 34px; height: 34px; left: -17px; top: -17px; }
+#hand-cursor[hidden] { display: none; }
+
+/* Stuck? button and menu (ui/stuck.js): large targets so a pointing finger can hit them */
+#stuck { position: fixed; right: 14px; bottom: 16px; z-index: 30; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(242, 201, 76, 0.5); background: var(--glass); backdrop-filter: blur(12px); color: var(--gold); font-weight: 650; font-size: 13px; }
+body:has(#start:not(.gone)) #stuck { display: none; }
+#stuck-menu { position: fixed; right: 14px; bottom: 62px; z-index: 30; width: min(300px, calc(100vw - 28px)); max-height: calc(100vh - 140px); overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 14px; background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--line); font-size: 13px; }
+#stuck-menu[hidden] { display: none; }
+#stuck-menu .stuck-head { color: var(--muted); font-size: 11.5px; font-weight: 600; margin-top: 4px; }
+#stuck-menu button { text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); color: var(--text); font-size: 13px; }
+#stuck-menu button:disabled { opacity: 0.4; }
+#stuck-menu button[aria-current] { border-color: rgba(242, 201, 76, 0.6); color: var(--gold); }
+#stuck-menu button.ghost { background: none; color: var(--muted); }
+#stuck-menu .stuck-steps { display: flex; flex-direction: column; gap: 4px; }
+.learn-evidence { margin: 8px 0 10px 16px; font-size: 12px; color: #c9ccd8; display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 900px) {
+  body:has(#tour:not([hidden])) #stuck { bottom: 176px; }
+  body:has(#tour:not([hidden])) #stuck-menu { bottom: 222px; }
+}

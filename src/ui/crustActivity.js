@@ -29,9 +29,9 @@ export function showCrustActivity(host, activity, demonstrate = false) {
     const choices = add(host, 'div', '', 'activity-choices');
     const answer = button(choices, 'Moho');
     answer.onclick = () => {
-      feedback.textContent = 'Correct. The Moho marks the crust–mantle contact. In PREM, compressional waves speed up across it.';
+      feedback.textContent = 'Correct. The Moho is the boundary between crust and mantle. In PREM, compressional waves speed up across it.';
     };
-    button(choices, 'Base of the plate').onclick = () => {
+    button(choices, 'Base of the tectonic plate').onclick = () => {
       feedback.textContent = 'Try again. A tectonic plate includes some mantle below the crust. Which boundary sits at the base of the crust?';
     };
     host.append(feedback);
@@ -74,13 +74,13 @@ export function showCrustActivity(host, activity, demonstrate = false) {
         picks.get(title)?.node.setAttribute('aria-pressed', 'false');
         picks.set(title, { node, correct });
         node.setAttribute('aria-pressed', 'true');
-        if (picks.size < COLUMNS.length) feedback.textContent = 'Now choose a line in the other column.';
+        if (picks.size < COLUMNS.length) feedback.textContent = 'Now select the line in the other column.';
         else if ([...picks.values()].every((pick) => pick.correct)) reveal();
-        else feedback.textContent = 'Try again. Look for the contact between the lighter crust and darker mantle in each column.';
+        else feedback.textContent = 'Try again. Find where the lighter crust meets the darker mantle in each column.';
       };
     }
   }
-  const showAnswer = button(host, 'Reveal the Moho');
+  const showAnswer = button(host, 'Show the Moho');
   showAnswer.onclick = reveal;
   host.append(feedback);
   if (demonstrate) reveal();

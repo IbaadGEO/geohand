@@ -23,6 +23,8 @@ import { renderRich } from './ui/richText.js';
 import { Lesson } from './lesson.js';
 import { LESSONS } from './content/earth/lessons.js';
 import { showCrustActivity } from './ui/crustActivity.js';
+import { mountPointer } from './ui/pointer.js';
+import { mountStuck } from './ui/stuck.js';
 
 const $ = (id) => document.getElementById(id);
 const video = $('video');
@@ -67,7 +69,7 @@ try {
   scene.group.add(quake.object);
 } catch (e) {
   console.error(e);
-  showBanner('WebGL is not available. Use a current Chrome, Edge or Firefox with hardware acceleration on.');
+  showBanner('WebGL is unavailable. Try an up-to-date version of Chrome, Edge or Firefox with hardware acceleration enabled.');
   throw e;
 }
 
@@ -98,7 +100,7 @@ scene.onModel = (i, def, g) => {
   $('m-count').textContent = `${g.meta.length} parts`;
   mouseDrag = null; // part indices from the old parts list no longer mean anything
   mouseHover = -1;
-  layerPicker.replaceChildren(new Option('Select a part', ''), ...scene.parts.map((p) => new Option(p.name, p.id)));
+  layerPicker.replaceChildren(new Option('Select a layer or boundary', ''), ...scene.parts.map((p) => new Option(p.name, p.id)));
   const keep = pendingSel ? scene.parts.findIndex((p) => p.id === pendingSel) : -1;
   pendingSel = null;
   scene.setSel(keep);
@@ -124,8 +126,6 @@ for (const host of [$('levels'), $('start-levels')]) {
 }
 const markLevel = () => {
   levelButtons.forEach((b) => b.classList.toggle('on', b.dataset.level === level));
-  $('mode-lesson').disabled = level !== 'alevel';
-  $('lesson-availability').hidden = level === 'alevel';
 };
 markLevel();
 
@@ -139,7 +139,7 @@ let walkthroughComplete = false;
 function setWalkthrough(playing) {
   walkthroughPlaying = playing;
   clearTimeout(walkthroughTimer);
-  $('lesson-play').textContent = playing ? 'Pause walkthrough' : 'Play walkthrough';
+  $('lesson-play').textContent = playing ? 'Pause the walkthrough' : 'Start the walkthrough';
   $('lesson-play').setAttribute('aria-pressed', String(playing));
 }
 
@@ -221,7 +221,7 @@ function setLevel(id) {
   const selId = scene.sel >= 0 ? scene.parts[scene.sel]?.id : null;
   pendingSel = mapPart(selId, level, id);
   level = id;
-  if (id !== 'alevel' && mode === 'lesson') setMode('explore');
+  if (mode === 'lesson') setMode('explore'); // the old level's lesson no longer applies
   saveLevel(id);
   lesson = new Lesson(LESSONS[id]);
   lesson.jumpToPart(pendingSel);
@@ -232,23 +232,63 @@ function setLevel(id) {
 
 // ------------------------------------------------------------------ learning loop for a layer
 const learnHost = $('learn');
+let drill = null; // the running drill-in's controls, used by the Stuck? menu
 function closeLearn() {
   if (learnHost.hidden) return;
+  drill = null;
   learnHost.hidden = true;
   learnHost.replaceChildren();
   $('info').hidden = false;
   showPart(scene.sel);
 }
+/** Sets up and saves the 3D model for the drill-in stages of part index i. */
+const drillModel = (i) => ({
+  whole() {
+    views.select(0);
+    scene.isolate();
+    scene.setSel(-1);
+    scene.explodeTarget = 0;
+    scene.scaleTarget = 1;
+    showPart(-1);
+  },
+  where() {
+    views.select(0);
+    scene.isolate();
+    scene.setSel(i);
+    scene.explodeTarget = 0.65; // open the Earth so the layer shows in place
+    scene.scaleTarget = 1.2;
+    showPart(i);
+  },
+  why(viewId) {
+    views.select(VIEWS.findIndex((v) => v.id === viewId));
+    scene.setSel(i);
+    showPart(i);
+  },
+  capture: () => ({
+    view: scene.uniforms.uProp.value, explode: scene.explodeTarget, iso: scene.isolatedPart,
+    pull: { x: scene.pullTarget.x, y: scene.pullTarget.y }, sel: scene.sel, scale: scene.scaleTarget,
+    rot: { ...(viewTarget || scene.rot) },
+  }),
+  restore(p) {
+    views.select(p.view); // first: it closes the Earth and restarts the view's animation
+    scene.explodeTarget = p.explode;
+    scene.isolate(p.iso);
+    scene.pullTarget.set(p.pull.x, p.pull.y);
+    scene.setSel(p.sel);
+    scene.scaleTarget = p.scale;
+    viewTarget = { ...p.rot };
+    showPart(p.sel);
+  },
+});
 $('part-learn').onclick = () => {
   const i = scene.sel;
   const content = EARTH[level].parts.find((c) => c.id === scene.parts[i]?.id);
   const loop = content && loopFor(level, content.id);
   if (!loop) return;
   stopTour();
-  highlight(i);
+  if (mode === 'lesson') setMode('explore');
   $('info').hidden = true;
-  runLoop(learnHost, { level, part: content, loop, onSeeAgain: () => { highlight(i); toast(`${content.title} highlighted`); },
-    onView: (id) => { views.select(VIEWS.findIndex((v) => v.id === id)); highlight(i); }, onClose: closeLearn });
+  drill = runLoop(learnHost, { level, part: content, loop, model: drillModel(i), onClose: closeLearn });
   $('part-learn').hidden = true;
   learnHost.scrollIntoView({ block: 'start', behavior: 'smooth' });
 };
@@ -259,12 +299,12 @@ function showPart(i) {
   panel.show(p ? EARTH[level].parts.find((c) => c.id === p.id) || null : null, REFS, p?.color);
   const button = $('part-pull');
   button.hidden = mode === 'lesson' || (!p && scene.isolatedPart < 0);
-  button.textContent = scene.isolatedPart >= 0 ? 'Restore all parts' : 'Pull part aside';
-  $('part-study').hidden = mode !== 'explore' || level !== 'alevel' || !p;
+  button.textContent = scene.isolatedPart >= 0 ? 'Put all parts back' : 'Move this part aside';
+  $('part-study').hidden = mode !== 'explore' || !p;
   const learn = $('part-learn');
   learn.hidden = mode !== 'explore' || !p || !loopFor(level, p.id) || !$('learn').hidden;
   const done = p && loadProgress()[level]?.[p.id];
-  learn.textContent = done ? `Learn again (last time ${done.score} of ${done.total})` : 'Learn this layer: 2 minutes';
+  learn.textContent = done ? `Learn again (last time ${done.score} of ${done.total})` : 'Explore this layer: 2 minutes';
 }
 
 $('part-study').onclick = () => {
@@ -478,7 +518,7 @@ async function startCamera() {
   $('start').inert = true;
   setTracking('Starting…', 'warn');
   if (!navigator.mediaDevices?.getUserMedia || !window.isSecureContext) {
-    enterMouseMode('Camera needs http://localhost or https.');
+    enterMouseMode('The camera requires HTTPS or http://localhost.');
     return;
   }
   try {
@@ -491,7 +531,7 @@ async function startCamera() {
     document.body.classList.add('feed');
   } catch (e) {
     console.warn(e);
-    enterMouseMode(e && e.name === 'NotAllowedError' ? 'Camera permission denied. Allow it in the address bar and reload.' : 'No camera found.');
+    enterMouseMode(e && e.name === 'NotAllowedError' ? 'Camera access was blocked. Allow permission in your browser and reload.' : 'No camera was detected.');
     return;
   }
   setTracking('Loading hand model…', 'warn');
@@ -502,13 +542,13 @@ async function startCamera() {
   } catch (e) {
     console.error(e);
     setTracking('Mouse only', 'warn');
-    showBanner('Hand model failed to load (needs internet once). Mouse controls still work.');
+    showBanner('The hand-tracking model did not load. It needs an internet connection initially; you can still use the mouse.');
   }
 }
 
 function enterMouseMode(msg) {
   setTracking('Mouse only', 'warn');
-  if (msg) showBanner(msg + ' Mouse controls are on.', true);
+  if (msg) showBanner(msg + ' Mouse controls are enabled.', true);
 }
 
 function setTracking(text, cls) {
@@ -566,14 +606,18 @@ const gestRings = { PEACE: $('ring-peace') };
 const resetRing = $('ring-reset');
 function updateLegend() {
   const last = scene.sel >= 0 && layerOrder().at(-1).id === scene.parts[scene.sel]?.id;
-  const peace = mode === 'lesson' ? 'Next lesson step' : last ? 'Back to the whole Earth' : 'Next layer';
+  const peace = mode === 'lesson' ? 'Continue to the next step' : last ? 'Return to the full Earth model' : 'Next layer';
   if (gestText.PEACE.textContent !== peace) gestText.PEACE.textContent = peace;
   for (const [g, el] of Object.entries(gestRings)) el.style.setProperty('--p', hold.shape === g ? hold.progress.toFixed(3) : '0');
   resetRing.style.setProperty('--p', twoFist ? Math.min(1, twoFist.s / TWO_FIST_S).toFixed(3) : '0');
 }
 
+const pointer = mountPointer();
 function control(t, dt, freshFrame) {
   const live = perc.hands.filter((h) => !h.held);
+  // one hand pointing drives the on-screen cursor (ui/pointer.js), even while a walkthrough plays
+  const pointing = live.length === 1 && live[0].gesture === 'POINT' ? live[0] : null;
+  pointer.update(pointing?.tip || null, dt);
   $('s-hands').textContent = String(live.length);
   if (walkthroughPlaying || mouseDrag) {
     hold.reset();
@@ -651,12 +695,35 @@ function control(t, dt, freshFrame) {
     }
     if (h.rollDelta) scene.rollBy(h.rollDelta * 0.7);
     setActive('MOVE');
-  } else setActive(g in HOLD_S ? g : '');
+  } else setActive(g in HOLD_S || g === 'POINT' ? g : '');
   prevPalm.set(h.id, palmPx);
 }
 
+// ------------------------------------------------------------------ Stuck? menu: back, replay, jump to a step, ask
+const titleOf = (id) => EARTH[level].parts.find((p) => p.id === id)?.title || id;
+mountStuck($('stuck'), $('stuck-menu'), {
+  current() {
+    if (drill) return { names: drill.names, at: drill.current(), back: drill.back, replay: drill.replay, jump: drill.jump };
+    if (mode === 'lesson') {
+      return {
+        names: lesson.steps.map((s, k) => `${k + 1}. ${titleOf(s.focus)}`), at: lesson.i,
+        back: () => lessonMove(false), replay: enterStep, jump: (k) => { lesson.i = k; enterStep(); },
+      };
+    }
+    if (tour) return { names: tour.steps.map((s) => s.title), at: tour.i, back: () => tourMove(-1), replay: showTourStep, jump: (k) => { tour.i = k; showTourStep(); } };
+    return null;
+  },
+  idle: [['Reset the model', resetAll], ['Play the tour', startTour]],
+  ask() {
+    const bank = document.querySelector('.question-bank');
+    bank.open = true;
+    bank.scrollIntoView({ block: 'nearest' });
+    bank.querySelector('input, textarea')?.focus();
+  },
+});
+
 // ------------------------------------------------------------------ mouse + keyboard
-const onUi = (e) => e.target.closest && e.target.closest('#panel,#toolbar,#start,#tour');
+const onUi = (e) => e.target.closest && e.target.closest('#panel,#toolbar,#viewbar,#start,#tour,#stuck,#stuck-menu');
 
 addEventListener('pointerdown', (e) => {
   if (e.button !== 0 || !e.isPrimary || onUi(e)) return;

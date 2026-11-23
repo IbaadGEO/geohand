@@ -155,7 +155,10 @@ export class HoloScene {
     this.motionOf = motionOf;
     this.faceColors = faceColors;
     this.buildArg = buildArg; // passed to every model's build(), e.g. the level
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    this.maxPR = 2; // drops to 1 if frames stay slow (see update)
+    this.frameAvg = 1 / 60;
+    this.slowSince = null;
     this.renderer.setClearColor(0x000000, 0);
     this.camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
     this.camera.position.set(0, 0, CAM_Z);
@@ -225,7 +228,7 @@ export class HoloScene {
     const W = innerWidth, H = innerHeight;
     this.W = W;
     this.H = H;
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, this.maxPR));
     this.renderer.setSize(W, H, false);
     this.camera.aspect = W / H;
     this.camera.updateProjectionMatrix();
@@ -503,6 +506,11 @@ export class HoloScene {
   // ------------------------------------------------------------------ frame
   update(dt, t) {
     this.idle += dt;
+    // Slow device: after a 5 s warm-up, 3 s under ~35 fps drops sharpness to 1x, once.
+    this.frameAvg += (dt - this.frameAvg) * 0.1;
+    const slow = t > 5 && !document.hidden && this.frameAvg > 1 / 35;
+    this.slowSince = slow ? this.slowSince ?? t : null; // wall time: dt is capped, so summing it undercounts
+    if (this.maxPR > 1 && slow && t - this.slowSince > 3) { this.maxPR = 1; this.resize(); }
     this.explode = damp(this.explode, this.explodeTarget, 5, dt);
     this.scale = damp(this.scale, this.scaleTarget, 6, dt);
 

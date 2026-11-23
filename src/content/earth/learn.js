@@ -1,5 +1,5 @@
 // Learning loops: a check before the layer is shown, then tests after it. Every correct answer and explanation
-// restates the part's cited content (alevel.js), with the same page locators. Wrong options are labelled wrong.
+// restates the part's cited content (alevel.js, undergrad.js, postgrad.js), with the same page locators. Wrong options are labelled wrong.
 const item = (q, options, answer, explain, where, ...refs) => ({ q, options, answer, explain, where, refs });
 
 export const LOOPS = {
@@ -7,7 +7,7 @@ export const LOOPS = {
     crust: {
       see: 'compare', // the oceanic/continental Moho comparison (ui/crustActivity.js)
       check: item(
-        'Before you look: where do you think the crust is thicker?',
+        'Before you start: where do you think the crust is thicker?',
         ['Under the oceans', 'Under the continents', 'About the same everywhere'],
         1,
         'Under the continents. Normal oceanic igneous crust is about 7 km thick; continental crust averages about 40 km.',
@@ -40,7 +40,7 @@ export const LOOPS = {
     lithosphere: {
       see: { view: 'behaviour', look: 'In this view the crust and the top of the mantle share one colour (blue): they move together as one plate.' },
       check: item(
-        'Before you look: where is new lithosphere made?',
+        'Before you start: where is new lithosphere made?',
         ['At mid-ocean ridges', 'At subduction zones', 'In the core'],
         0,
         'At mid-ocean ridges, where plates move apart and melted mantle rock forms new crust.',
@@ -58,7 +58,7 @@ export const LOOPS = {
           'Where does this model put the base of the lithosphere?',
           ['At the Moho, the base of the crust', 'At 80 km, the base of PREM’s seismic lid', 'At 660 km'],
           1,
-          'At 80 km, the base of PREM’s seismic lid, used as a stand-in. The lithosphere carries on below the Moho.',
+          'At 80 km, the base of PREM’s seismic lid, used as a proxy. The lithosphere carries on below the Moho.',
           'PREM, pp. 300, 308', 'prem1981',
         ),
         item(
@@ -73,7 +73,7 @@ export const LOOPS = {
     asthenosphere: {
       see: { view: 'behaviour', look: 'The orange band under the plates is the asthenosphere: the same mantle rock as the blue plate above, but it behaves differently.' },
       check: item(
-        'Before you look: is the asthenosphere liquid?',
+        'Before you start: is the asthenosphere liquid?',
         ['Yes, it is molten rock', 'No, it is solid'],
         1,
         'No. PREM gives it a shear-wave speed above zero, and shear waves cannot travel through a liquid.',
@@ -91,7 +91,7 @@ export const LOOPS = {
           'How deep is it in this model?',
           ['0–35 km', '80–220 km', '660–2,890 km'],
           1,
-          'This model draws it at 80–220 km, the depth of PREM’s low-velocity zone.',
+          'The model illustrates it at 80–220 km, the depth of PREM’s low-velocity zone.',
           'PREM, Table I, p. 308', 'prem1981',
         ),
         item(
@@ -104,9 +104,9 @@ export const LOOPS = {
       ],
     },
     mantle: {
-      see: { view: 'layers', look: 'Watch the cut face: blue slabs of old plate sink, and pale plumes of hot rock rise from near the core. Where they sit is illustrative, and speeds are not to scale.' },
+      see: { view: 'layers', look: 'In the cross-section, blue slabs of old plate sink, and pale plumes of hot rock rise from near the core. Where they sit is illustrative, and the speeds are not to scale.' },
       check: item(
-        'Before you look: is the mantle solid or liquid?',
+        'Before you start: is the mantle solid or liquid?',
         ['Mostly liquid rock (magma)', 'Solid rock that flows very slowly'],
         1,
         'Solid: shear waves pass through it. Over geological time it convects, heated by the core below and by radioactive decay.',
@@ -137,9 +137,9 @@ export const LOOPS = {
       ],
     },
     'outer-core': {
-      see: { view: 'quake', look: 'Watch the blue S waves: every one stops at the outer core. The amber P waves cross it, bending as they slow down.' },
+      see: { view: 'quake', look: 'Follow the blue S waves: every one stops at the outer core. The amber P waves cross it, bending as they slow down.' },
       check: item(
-        'Before you look: is the outer core solid or liquid?',
+        'Before you start: is the outer core solid or liquid?',
         ['Solid', 'Liquid'],
         1,
         'Liquid. PREM gives it a shear-wave speed of zero: no shear waves come through it.',
@@ -170,9 +170,9 @@ export const LOOPS = {
       ],
     },
     'inner-core': {
-      see: { view: 'vs', look: 'This view colours the cut by S-wave speed. The outer core is dark: 0, liquid. The inner core lights up again: S waves pass, so it is solid.' },
+      see: { view: 'vs', look: 'The cross-section is coloured by S-wave speed. The outer core is dark: 0, liquid. The inner core lights up again: S waves pass, so it is solid.' },
       check: item(
-        'Before you look: is the inner core solid or liquid?',
+        'Before you start: is the inner core solid or liquid?',
         ['Liquid, like the outer core', 'Solid'],
         1,
         'Solid. Shear waves travel through it, at about 3.5 km/s just inside its boundary, and they cannot cross a liquid.',
@@ -205,7 +205,7 @@ export const LOOPS = {
     moho: {
       see: { view: 'composition', look: 'The Moho is where the orange crust meets the green mantle rock: two different kinds of rock.' },
       check: item(
-        'Before you look: what is the Moho?',
+        'Before you start: what is the Moho?',
         ['The base of the crust', 'The base of the tectonic plate', 'The top of the core'],
         0,
         'The base of the crust, where seismic waves speed up as they pass into mantle rock.',
@@ -236,9 +236,9 @@ export const LOOPS = {
       ],
     },
     cmb: {
-      see: { view: 'density', look: 'This view colours the cut by density. Follow it down: the colour brightens slowly through the mantle, then jumps at the core.' },
+      see: { view: 'density', look: 'The cross-section is coloured by density. Follow it down: the colour brightens slowly through the mantle, then jumps at the core.' },
       check: item(
-        'Before you look: where inside the Earth is the biggest jump in density?',
+        'Before you start: where inside the Earth is the biggest jump in density?',
         ['At the Moho', 'At the core–mantle boundary', 'At the centre'],
         1,
         'At the core–mantle boundary, where rock meets metal: from 5.6 to 9.9 g/cm^3^.',
@@ -266,6 +266,242 @@ export const LOOPS = {
           'From the core into the mantle, which helps drive mantle convection. How much is highly uncertain: an estimated 5–13 TW.',
           'Garnero et al. (2016), p. 481; Davies & Davies (2010), §4.8, p. 22', 'garnero2016', 'davies2010',
         ),
+      ],
+    },
+  },
+  // Undergraduate and postgraduate loops restate undergrad.js and postgrad.js with the same page locators.
+  undergrad: {
+    'oceanic-crust': {
+      see: 'compare',
+      check: item(
+        'Before you start: where is new ocean crust thicker?',
+        ['At normal mid-ocean ridges', 'Where spreading centres cross plume-heated mantle', 'It is the same everywhere'],
+        1,
+        'Over plume-heated mantle: 10.3 ± 1.7 km, against 7.1 ± 0.8 km for normal crust. Hotter mantle melts more as it rises.',
+        'White et al. (1992), p. 19,683', 'white1992',
+      ),
+      tests: [
+        item('What is seismic layer 3 probably made of?', ['Mainly gabbro', 'Sediment', 'Mantle peridotite'], 0,
+          'Probably mainly gabbro, about 5.0 km thick, under about 2.1 km of basaltic lavas and dykes (layer 2).',
+          'White et al. (1992), p. 19,683; Table 8, p. 19,698', 'white1992'),
+        item('Rare earth element inversions give a thickness of 8.3 ± 1.5 km. Why does that matter?', ['It is an independent check on the seismic 7.1 ± 0.8 km', 'It replaces the seismic value', 'It measures continental crust'], 0,
+          'It comes from how much the mantle melted, not from seismic waves, so it is an independent check.',
+          'White et al. (1992), p. 19,683', 'white1992'),
+        item('About how much of Earth’s heat loss is through ocean floor younger than 66.5 million years?', ['About a tenth', 'About half', 'Almost all'], 1,
+          'About half: 23.1 TW of the 46.7 TW total.',
+          'Davies & Davies (2010), Section 3, p. 16; Table 7, p. 20', 'davies2010'),
+      ],
+    },
+    asthenosphere: {
+      see: { view: 'behaviour', look: 'The orange band under the plates is the asthenosphere: the same mantle rock as the blue plate above, but it behaves differently.' },
+      check: item(
+        'Before you start: is PREM’s low-velocity zone molten?',
+        ['Yes, it is a liquid layer', 'No, shear waves still pass through it'],
+        1,
+        'No. Its effective isotropic shear-wave speed stays above 4.4 km/s; the liquid outer core has a shear-wave speed of 0.',
+        'PREM, Table I and footnote, p. 308', 'prem1981',
+      ),
+      tests: [
+        item('What happens to Q~μ~ at the top of the low-velocity zone?', ['It rises from 80 to 600', 'It drops from 600 to 80', 'It stays the same'], 1,
+          'It drops from 600 in the lid to 80, so shear waves are damped more strongly.',
+          'PREM, Table I, p. 308', 'prem1981'),
+        item('How does the shear-wave speed change through the zone?', ['It falls slightly with depth', 'It drops to zero', 'It doubles'], 0,
+          'It falls slightly, from 4.47 km/s at 80 km to 4.42 km/s just above 220 km.',
+          'PREM, Table I and footnote, p. 308', 'prem1981'),
+        item('Beneath mid-ocean ridges, why does rising mantle partly melt?', ['The pressure on it drops', 'Water is added from the ocean', 'It is heated by friction with the plate'], 0,
+          'The pressure on it drops as it rises. The melt builds crust about 7 km thick.',
+          'White et al. (1992), pp. 19,683–19,684', 'white1992'),
+      ],
+    },
+    'transition-zone': {
+      see: { view: 'layers', look: 'The transition zone is the band between the 410 and 660 km boundaries.' },
+      check: item(
+        'Before you start: what happens to olivine below about 410 km?',
+        ['It melts', 'It gives way to its high-pressure forms, wadsleyite and ringwoodite', 'Nothing changes'],
+        1,
+        'It gives way to wadsleyite and ringwoodite, which are thought to dominate the zone down to 660 km.',
+        'Pearson et al. (2014), p. 221', 'pearson2014',
+      ),
+      tests: [
+        item('How much water can wadsleyite and ringwoodite hold?', ['None', 'Up to about 2.5% by weight', 'About half their weight'], 1,
+          'Up to about 2.5 wt%.',
+          'Pearson et al. (2014), p. 221', 'pearson2014'),
+        item('What evidence shows water in the transition zone?', ['A ringwoodite inclusion in a diamond from Brazil', 'Water wells', 'Lava from mid-ocean ridges'], 0,
+          'A ringwoodite inclusion in a diamond from Juína, Brazil. It implies about 1 wt% bulk water where it came from.',
+          'Pearson et al. (2014), pp. 221, 223', 'pearson2014'),
+        item('How does PREM’s density change at 670 km?', ['3.99 → 4.38 g/cm^3^', '5.57 → 9.90 g/cm^3^', 'It does not change'], 0,
+          'It jumps from 3.99 to 4.38 g/cm^3^.',
+          'PREM, Table I, p. 308', 'prem1981'),
+      ],
+    },
+    'lower-mantle': {
+      see: { view: 'layers', look: 'In the cross-section, blue slabs of old plate sink, and pale plumes of hot rock rise from near the core. Where they sit is illustrative, and the speeds are not to scale.' },
+      check: item(
+        'Before you start: where do most sinking slabs around the Pacific end up?',
+        ['At the core–mantle boundary', 'Stagnant above 660 km or trapped at 660–1,000 km', 'Back at the surface'],
+        1,
+        'Most imaged slabs were stagnant above 660 km or trapped at 660–1,000 km. Some penetrate deeper.',
+        'Fukao & Obayashi (2013), p. 5920', 'fukao2013',
+      ),
+      tests: [
+        item('How wide is the plume conduit under Hawaii?', ['About 10 km', 'About 800–1,000 km', 'About 5,000 km'], 1,
+          'About 800–1,000 km wide, rising from near the core–mantle boundary.',
+          'French & Romanowicz (2015), pp. 95–96', 'french2015'),
+        item('What share of the core–mantle boundary do the two low shear-velocity provinces cover?', ['About 3%', 'About 30%', 'All of it'], 1,
+          'About 30%.',
+          'Garnero et al. (2016), p. 481', 'garnero2016'),
+        item('How does P-wave speed change through PREM’s lower mantle?', ['It rises, from 10.75 to 13.72 km/s', 'It falls to zero', 'It stays constant'], 0,
+          'It rises from 10.75 to 13.72 km/s between 670 and 2,891 km.',
+          'PREM, Table I, p. 308', 'prem1981'),
+      ],
+    },
+    'outer-core': {
+      see: { view: 'quake', look: 'Follow the blue S waves: every one stops at the outer core. The amber P waves cross it, bending as they slow down.' },
+      check: item(
+        'Before you start: how much of the core is lighter elements such as oxygen, sulfur or silicon?',
+        ['None', 'About 10 ± 5%', 'About half'],
+        1,
+        'About 10 ± 5%, in an iron–nickel alloy. Which elements, and how much of each, is still uncertain.',
+        'McDonough & Sun (1995), p. 223', 'mcdonough1995',
+      ),
+      tests: [
+        item('What share of Earth’s mass is in the core, outer and inner together?', ['About 3%', 'About 32.5%', 'About 75%'], 1,
+          'About 32.5%.',
+          'McDonough & Sun (1995), Section 6, p. 244', 'mcdonough1995'),
+        item('What happens to P-wave speed at the top of the outer core?', ['It drops sharply, from 13.72 to 8.06 km/s', 'It rises sharply', 'It drops to zero'], 0,
+          'It drops sharply, from 13.72 to 8.06 km/s, then rises to 10.36 km/s at the base.',
+          'PREM, Table I, p. 308', 'prem1981'),
+        item('About how much heat crosses from the core into the mantle?', ['An estimated 5–13 TW', 'Exactly 47 TW', 'None'], 0,
+          'An estimated 5–13 TW, which is highly uncertain.',
+          'Davies & Davies (2010), §4.8, p. 22', 'davies2010'),
+      ],
+    },
+    'inner-core': {
+      see: { view: 'vs', look: 'The cross-section is coloured by S-wave speed. The outer core is dark: 0, liquid. The inner core lights up again: S waves pass, so it is solid.' },
+      check: item(
+        'Before you start: does the inner core turn exactly with the mantle?',
+        ['Yes, always', 'Not exactly: its rotation relative to the mantle has changed over time'],
+        1,
+        'Not exactly. In 1996 it was estimated to turn about 1° per year faster; Yang & Song infer the difference nearly stopped around 2009 and may have reversed slightly.',
+        'Song & Richards (1996), p. 221; Yang & Song (2023), pp. 182, 184–185', 'song1996', 'yang2023',
+      ),
+      tests: [
+        item('Which way do seismic waves travel faster through the inner core?', ['Pole to pole', 'Across the equator', 'The same in every direction'], 0,
+          'Pole to pole, faster than across the equator.',
+          'Deuss (2014), p. 103', 'deuss2014'),
+        item('Why is the inner core growing?', ['The liquid outer core freezes onto it', 'Meteorites add to it', 'The mantle sinks into it'], 0,
+          'The liquid outer core around it freezes onto it.',
+          'Song & Richards (1996), p. 221', 'song1996'),
+        item('How fast do shear waves travel in the inner core in PREM?', ['0 km/s', '3.50–3.67 km/s', 'About 13 km/s'], 1,
+          '3.50–3.67 km/s: they pass, so it is solid.',
+          'PREM, Table I, p. 308', 'prem1981'),
+      ],
+    },
+  },
+  postgrad: {
+    'transition-zone': {
+      see: { view: 'layers', look: 'The transition zone is the band between the 410 and 660 km boundaries.' },
+      check: item(
+        'Before you start: how much water does FTIR find in the ringwoodite inclusion in diamond JUc29?',
+        ['None', 'A minimum of 1.4–1.5 wt% H~2~O, with large uncertainty', 'Exactly 2.5 wt%'],
+        1,
+        'A minimum of 1.4–1.5 wt% H~2~O, with large uncertainty.',
+        'Pearson et al. (2014), p. 222', 'pearson2014',
+      ),
+      tests: [
+        item('What bulk water content do Pearson et al. infer for the zone they sampled?', ['About 1.0 wt%', 'About 10 wt%', 'Zero'], 0,
+          'About 1.0 wt%, against a capacity of about 2.5 wt% in wadsleyite and ringwoodite.',
+          'Pearson et al. (2014), pp. 221, 223', 'pearson2014'),
+        item('Why is JUc29 notable beyond its water?', ['To the authors’ knowledge, it is the first terrestrial find of a high-pressure olivine polymorph', 'It is the largest diamond known', 'It came from the inner core'], 0,
+          'To the authors’ knowledge, it is the first terrestrial find of a high-pressure olivine polymorph.',
+          'Pearson et al. (2014), p. 221; p. 222', 'pearson2014'),
+        item('Where is PREM’s internal boundary inside the transition zone?', ['At 600 km', 'At 500 km', 'There is none'], 0,
+          'At 600 km depth (radius 5,771 km).',
+          'PREM, Table I, p. 308', 'prem1981'),
+      ],
+    },
+    'lower-mantle': {
+      see: { view: 'layers', look: 'In the cross-section, blue slabs of old plate sink, and pale plumes of hot rock rise from near the core. Where they sit is illustrative, and the speeds are not to scale.' },
+      check: item(
+        'Before you start: French & Romanowicz image broad plume conduits. Could thin plumes, about 200 km wide, explain the same anomaly?',
+        ['Yes, easily', 'Only with an implausible 1,500–2,000 °C temperature excess'],
+        1,
+        'Only with an implausible 1,500–2,000 °C excess in their resolution test; 400–500 °C is plausible for broad conduits.',
+        'French & Romanowicz (2015), pp. 96–97', 'french2015',
+      ),
+      tests: [
+        item('Which slab stages did Fukao & Obayashi find most often?', ['I (stagnant above the 660) and III (trapped at 660–1,000 km)', 'II and IV', 'Only IV'], 0,
+          'Stages I and III. They identified one definite case of descent into the deep lower mantle.',
+          'Fukao & Obayashi (2013), pp. 5920, 5932', 'fukao2013'),
+        item('How large is the v~S~ reduction in the plume conduits?', ['More than 1.5–2%', 'More than 50%', 'None'], 0,
+          'More than 1.5–2% in SEMUCB-WM1.',
+          'French & Romanowicz (2015), p. 95', 'french2015'),
+        item('What data did Fukao & Obayashi use?', ['More than 10 million P-wave travel times', 'Gravity measurements', 'Borehole samples'], 0,
+          'P-wave tomography from more than 10 million travel times.',
+          'Fukao & Obayashi (2013), p. 5920', 'fukao2013'),
+      ],
+    },
+    llsvp: {
+      see: { view: 'layers', look: 'The two dark blobs on the core are the provinces, drawn as schematic cross-sections. Their shapes and positions are illustrative.' },
+      check: item(
+        'Before you start: what share of the core–mantle boundary do the two LLSVPs cover?',
+        ['About 3%', 'About 30%', 'About 90%'],
+        1,
+        'About 30%, with reduced velocities up to 1,200 km above the boundary in places.',
+        'Garnero et al. (2016), p. 481', 'garnero2016',
+      ),
+      tests: [
+        item('Is it settled that LLSVPs are dense thermochemical piles?', ['Yes', 'No: it is one interpretation, and the density excess is a geodynamic-model result'], 1,
+          'No. It is one interpretation; in geodynamic models a density excess of up to a few per cent forms piles of similar size.',
+          'Garnero et al. (2016), Abstract, p. 481; p. 485', 'garnero2016'),
+        item('How do the two provinces’ shapes differ?', ['Pacific roughly round; African elongated north–south', 'Both are perfect spheres', 'Both are long and thin'], 0,
+          'The Pacific province is roughly round; the African one is elongated north–south and stretched eastward in the south.',
+          'Garnero et al. (2016), p. 481', 'garnero2016'),
+        item('Where do ultralow-velocity zones commonly sit?', ['Within and near LLSVP margins', 'In the crust', 'At the inner-core boundary'], 0,
+          'Within and near LLSVP margins, commonly 5–20 km thick.',
+          'Garnero et al. (2016), p. 482', 'garnero2016'),
+      ],
+    },
+    'inner-core': {
+      see: { view: 'vs', look: 'The cross-section is coloured by S-wave speed. The outer core is dark: 0, liquid. The inner core lights up again: S waves pass, so it is solid.' },
+      check: item(
+        'Before you start: how have estimates of inner-core super-rotation changed since 1996?',
+        ['They have grown larger', 'They have fallen, from 1–3° per year to under 0.5° per year in some studies, and some find none', 'They have stayed at 1° per year'],
+        1,
+        'They have fallen from 1–3° per year to under 0.5° per year in some studies; some find no super-rotation.',
+        'Deuss (2014), p. 115', 'deuss2014',
+      ),
+      tests: [
+        item('What did Song & Richards measure?', ['BC−DF travel-time residuals rising about 0.3 s over 1967–95', 'Changes in gravity', 'Magnetic reversals'], 0,
+          'BC−DF residuals on South Sandwich Islands–Alaska paths rose about 0.3 s over 1967–95; best fit 1.1° per year.',
+          'Song & Richards (1996), pp. 222–223', 'song1996'),
+        item('When do Yang & Song infer relative rotation nearly stopped?', ['Late 2009', '1996', '1970'], 0,
+          'Late 2009 (95% CI 2009.0–2011.0), within a proposed seven-decade oscillation.',
+          'Yang & Song (2023), pp. 182, 184–185', 'yang2023'),
+        item('Which hemisphere is more anisotropic?', ['Western, up to 5%', 'Eastern, up to 5%', 'Neither'], 0,
+          'The western, up to 5% below the isotropic layer; the eastern has less than 0.7%.',
+          'Deuss (2014), pp. 112–113', 'deuss2014'),
+      ],
+    },
+    'innermost-inner-core': {
+      see: { view: 'layers', look: 'The small white ball at the centre is the proposed innermost inner core, drawn at about 300 km radius.' },
+      check: item(
+        'Before you start: is the innermost inner core established?',
+        ['Yes, all studies agree', 'No: it was proposed in 2002, and a 2014 review found the evidence not compelling'],
+        1,
+        'No. Ishii & Dziewoński proposed it; Deuss found the evidence not compelling.',
+        'Ishii & Dziewoński (2002), p. 14026; Deuss (2014), p. 111', 'ishii2002', 'deuss2014',
+      ),
+      tests: [
+        item('How does its proposed anisotropy differ from the inner core above?', ['Slowest direction about 45° from east–west, against east–west above', 'It has no anisotropy', 'It is the same'], 0,
+          'Its slowest direction is about 45° from east–west; above it, east–west.',
+          'Ishii & Dziewoński (2002), p. 14026', 'ishii2002'),
+        item('What alternative explanation does the review mention?', ['An artefact of averaging the two hemispheres', 'A meteorite', 'Liquid iron'], 0,
+          'That it could be an artefact of averaging the two hemispheres; two studies also found no reflection from a possible upper boundary.',
+          'Deuss (2014), p. 111', 'deuss2014'),
+        item('What could it be evidence of, if real?', ['An early stage of inner-core growth', 'Recent subduction', 'The magnetic field reversing'], 0,
+          'It may be fossil evidence of an early stage of inner-core growth.',
+          'Ishii & Dziewoński (2002), p. 14026', 'ishii2002'),
       ],
     },
   },

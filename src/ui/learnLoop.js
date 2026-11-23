@@ -1,4 +1,5 @@
-// The learning loop for one layer: check -> see and understand -> test (with feedback) -> recap.
+// The drill-in for one layer: question -> where it is -> why it happens -> your turn -> the evidence -> tests -> recap.
+// Each stage keeps a picture of the model, so the Stuck? menu can go back, replay a stage or jump to one.
 // Progress is a per-viewer convenience kept in this browser only.
 import { renderRich } from './richText.js';
 import { showCrustActivity } from './crustActivity.js';
@@ -29,23 +30,30 @@ const el = (parent, tag, cls, text) => {
   return n;
 };
 
+/** Stage names for a loop, in order (shown in the Stuck? menu). */
+export const stageNames = (loop) => ['Question', 'Where it is', 'How it works', 'Your turn', 'Supporting evidence', ...loop.tests.map((_, k) => `Test ${k + 1}`)];
+
 /**
- * Runs the loop in `host`. part = content part (title, short), loop = LOOPS entry.
- * onSeeAgain() re-highlights the layer on the model; onClose() returns to the part card.
+ * Runs the drill-in in `host`. part = content part (title, short, simplification, numbers), loop = LOOPS entry.
+ * model: { whole(), where(), why(viewId), capture(), restore(picture) } sets up and saves the 3D model.
+ * Returns the controls the Stuck? menu uses: { names, current(), back(), replay(), jump(k) }.
  */
-export function runLoop(host, { level, part, loop, onSeeAgain, onView, onClose }) {
+export function runLoop(host, { level, part, loop, model, onClose }) {
+  const names = stageNames(loop);
+  const pictures = [];
+  const results = []; // per test: answered right?
   let before = null;
-  let score = 0;
+  let at = 0;
   host.hidden = false;
 
-  const frame = (stage, total) => {
+  const frame = () => {
     host.replaceChildren();
     const head = el(host, 'div', 'learn-head');
-    el(head, 'b', '', `Learn: ${part.title}`);
-    el(head, 'span', '', `${stage} of ${total}`);
+    el(head, 'b', '', `${names[at]}: ${part.title}`);
+    el(head, 'span', '', `${at + 1} of ${names.length}`);
     const close = el(head, 'button', 'learn-close', '✕');
     close.type = 'button';
-    close.setAttribute('aria-label', 'Close the lesson');
+    close.setAttribute('aria-label', 'Close');
     close.onclick = onClose;
     return el(host, 'div', 'learn-body');
   };
@@ -54,7 +62,7 @@ export function runLoop(host, { level, part, loop, onSeeAgain, onView, onClose }
     b.type = 'button';
     return b;
   };
-  const total = 3 + loop.tests.length;
+  const next = (body, text = 'Next') => (button(body, text, 'primary').onclick = () => go(at + 1));
 
   /** One multiple-choice question; then(correct) runs after the learner has seen the feedback. */
   function ask(body, it, then, { checkOnly = false } = {}) {
@@ -72,65 +80,88 @@ export function runLoop(host, { level, part, loop, onSeeAgain, onView, onClose }
           else if (x === b) x.classList.add('wrong');
         });
         fb.replaceChildren();
-        el(fb, 'p', right ? 'ok' : 'no', checkOnly ? (right ? 'You knew this.' : 'Not quite, and that’s fine: this is what the next step shows.') : right ? 'Correct.' : 'Not quite.');
+        el(fb, 'p', right ? 'ok' : 'no', checkOnly ? (right ? 'Correct.' : 'Not quite. The next steps explain the answer.') : right ? 'Correct.' : 'Not quite.');
         el(fb, 'p', '', it.explain);
         el(fb, 'p', 'where', `Source: ${it.where}`);
         const row = el(fb, 'div', 'learn-row');
-        if (!right && !checkOnly) button(row, 'See it again', 'ghost').onclick = onSeeAgain;
+        if (!right && !checkOnly) button(row, 'Review the explanation', 'ghost').onclick = () => go(2);
         button(row, 'Next', 'primary').onclick = () => then(right);
       };
     });
   }
 
-  function check() {
-    const body = frame(1, total);
-    ask(body, loop.check, (right) => {
-      before = right;
-      see();
-    }, { checkOnly: true });
-  }
+  // what each stage shows in the panel; setup runs the first time a stage is shown, then its picture is reused
+  const STAGES = [
+    { setup: () => model.whole(), show: (body) => ask(body, loop.check, (right) => { before = right; go(1); }, { checkOnly: true }) },
+    {
+      setup: () => model.where(),
+      show: (body) => {
+        el(body, 'p', 'learn-q', `This is the ${part.title.toLowerCase()}, highlighted in the model.`);
+        if (part.simplification) el(body, 'p', 'where', `How it is drawn: ${part.simplification}`);
+        next(body, 'Show me why');
+      },
+    },
+    {
+      setup: () => model.why(loop.see === 'compare' ? 'layers' : loop.see.view),
+      show: (body) => {
+        if (loop.see === 'compare') {
+          el(body, 'p', 'learn-q', 'Compare the two cross-sections.');
+          showCrustActivity(el(body, 'div', 'learn-activity'), 'compare');
+        } else renderRich(el(body, 'p', 'learn-q'), loop.see.look);
+        next(body);
+      },
+    },
+    {
+      show: (body) => {
+        el(body, 'p', 'learn-q', 'Now try it yourself. Use an open hand to rotate the Earth, two hands to zoom, or point at a view at the top and hold to switch.');
+        if (loop.see !== 'compare') renderRich(el(body, 'p', ''), `What to look for: ${loop.see.look}`);
+        next(body, 'View the evidence');
+      },
+    },
+    {
+      show: (body) => {
+        renderRich(el(body, 'p', ''), part.short);
+        const list = el(body, 'ul', 'learn-evidence');
+        for (const n of part.numbers || []) renderRich(el(list, 'li'), `**${n.label}:** ${n.value} (${n.where})`);
+        next(body, 'Test yourself');
+      },
+    },
+    ...loop.tests.map((it, k) => ({ show: (body) => ask(body, it, (right) => { results[k] = right; go(at + 1); } ) })),
+  ];
 
-  function see() {
-    const body = frame(2, total);
-    if (loop.see === 'compare') {
-      el(body, 'p', 'learn-q', 'Look at the model, then try this.');
-      showCrustActivity(el(body, 'div', 'learn-activity'), 'compare');
-    } else {
-      // switch the model to the view that shows this layer best, with the layer highlighted
-      onView?.(loop.see.view);
-      el(body, 'p', 'learn-q', 'Look at the model.');
-      renderRich(el(body, 'p', ''), loop.see.look);
+  function go(k, replay = false) {
+    if (k >= STAGES.length) return recap();
+    at = Math.max(0, k);
+    const s = STAGES[at];
+    if (pictures[at]) model.restore(pictures[at], replay);
+    else {
+      s.setup?.();
+      pictures[at] = model.capture();
     }
-    button(body, 'Next', 'primary').onclick = understand;
-  }
-
-  function understand() {
-    const body = frame(3, total);
-    el(body, 'p', '', part.short);
-    button(body, 'Test yourself', 'primary').onclick = () => test(0);
-  }
-
-  function test(k) {
-    if (k >= loop.tests.length) return recap();
-    const body = frame(4 + k, total);
-    ask(body, loop.tests[k], (right) => {
-      if (right) score++;
-      test(k + 1);
-    });
+    s.show(frame());
   }
 
   function recap() {
+    const score = results.filter(Boolean).length;
     saveProgress(level, part.id, { before, score, total: loop.tests.length, at: new Date().toISOString().slice(0, 10) });
+    at = names.length; // past the last stage
     host.replaceChildren();
     const head = el(host, 'div', 'learn-head');
     el(head, 'b', '', `${part.title}: done`);
     const body = el(host, 'div', 'learn-body');
     el(body, 'p', 'learn-score', `Before: ${before ? 'you already knew the opening answer' : 'the opening answer was new to you'}. Now: ${score} of ${loop.tests.length} correct.`);
-    el(body, 'p', '', score === loop.tests.length ? 'You have this layer.' : 'Try again to go over the ones you missed.');
+    el(body, 'p', '', score === loop.tests.length ? 'You’ve completed this layer.' : 'Try the questions you missed again.');
     const row = el(body, 'div', 'learn-row');
-    button(row, 'Try again', 'ghost').onclick = check;
-    button(row, 'Back to the layer', 'primary').onclick = onClose;
+    button(row, 'Try again', 'ghost').onclick = () => { results.length = 0; go(0); };
+    button(row, 'Return to the layer', 'primary').onclick = onClose;
   }
 
-  check();
+  go(0);
+  return {
+    names,
+    current: () => Math.min(at, names.length - 1),
+    back: () => go(Math.min(at, names.length) - 1),
+    replay: () => go(Math.min(at, names.length - 1), true),
+    jump: (k) => go(k),
+  };
 }

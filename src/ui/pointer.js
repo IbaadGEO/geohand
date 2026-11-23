@@ -1,0 +1,54 @@
+// Point and hold: the index fingertip moves a cursor; holding it on one button clicks that button.
+export const DWELL_S = 0.8;
+
+/** Pure dwell timer. update(target, dt) returns the target when it fires, else null. */
+export class Dwell {
+  constructor() {
+    this.target = null;
+    this.t = 0;
+    this.spent = null; // fired target: must be left before it can fire again
+  }
+  get progress() {
+    return this.target && this.target !== this.spent ? Math.min(1, this.t / DWELL_S) : 0;
+  }
+  update(target, dt) {
+    if (target !== this.target) {
+      this.target = target;
+      this.t = 0;
+      if (target !== this.spent) this.spent = null;
+    }
+    if (!target || target === this.spent) return null;
+    this.t += dt;
+    if (this.t < DWELL_S) return null;
+    this.spent = target;
+    return target;
+  }
+}
+
+const CLICKABLE = 'button:not([disabled]), [role="button"], summary, a[href]';
+
+/** The cursor element and its dwell. tip = {x, y} in viewport fractions, or null when not pointing. */
+export function mountPointer() {
+  const cursor = document.createElement('div');
+  cursor.id = 'hand-cursor';
+  cursor.hidden = true;
+  document.body.append(cursor);
+  const dwell = new Dwell();
+  return {
+    update(tip, dt) {
+      if (!tip) {
+        cursor.hidden = true;
+        dwell.update(null, dt);
+        return;
+      }
+      const x = tip.x * innerWidth, y = tip.y * innerHeight;
+      cursor.hidden = false;
+      cursor.style.transform = `translate(${x}px, ${y}px)`;
+      const target = document.elementFromPoint(x, y)?.closest(CLICKABLE) || null;
+      const fired = dwell.update(target, dt);
+      cursor.style.setProperty('--p', dwell.progress.toFixed(3));
+      cursor.classList.toggle('on-target', Boolean(target) && target !== dwell.spent);
+      if (fired) fired.click();
+    },
+  };
+}

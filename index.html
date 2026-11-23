@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GeoHand – explore Earth's interior with your hands</title>
+  <title>GeoHand | Explore Earth’s interior using your hands</title>
 </head>
 <body>
   <video id="video" playsinline muted></video>
@@ -14,44 +14,44 @@
   <aside id="panel">
     <div class="brand">
       <div class="logo"></div>
-      <div><b>GeoHand</b><span>Open up the Earth.</span></div>
+      <div><b>GeoHand</b><span>Explore what lies beneath the surface.</span></div>
     </div>
 
     <section class="levels" id="levels" aria-label="Level"></section>
-    <button type="button" id="tour-play">▶ Play the tour <span>automatic, no hands or mouse needed</span></button>
+    <button type="button" id="tour-play">▶ Start the tour <span>Runs automatically, no camera or mouse required</span></button>
 
     <section class="mode">
       <div class="levels" role="group" aria-label="Mode">
         <button type="button" id="mode-explore" class="on">Explore</button>
         <button type="button" id="mode-lesson">Lesson</button>
       </div>
-      <p id="lesson-availability" hidden>Guided lesson available at A-level. Explore the cited data at this level.</p>
       <div id="lesson-box" hidden>
         <div class="lesson-head"><b id="lesson-count"></b><span><button type="button" id="lesson-back">Back</button><button type="button" id="lesson-next">Next</button></span></div>
-        <button type="button" id="lesson-play" aria-pressed="false">Play walkthrough</button>
+        <button type="button" id="lesson-play" aria-pressed="false">Start the walkthrough</button>
         <p id="lesson-text"></p>
         <div id="lesson-activity" hidden></div>
         <p id="lesson-src"></p>
-        <button type="button" id="lesson-finish" hidden>Finish and explore</button>
+        <button type="button" id="lesson-finish" hidden>Finish and start exploring</button>
       </div>
     </section>
 
     <section class="gest" aria-label="Hand controls">
-      <h4>Hand controls <span>Hold still until the ring fills</span></h4>
+      <h4>Hand controls <span>Keep your hand still until the ring fills</span></h4>
       <ul id="gest">
-        <li data-g="MOVE"><i>✋</i><p><b>Open hand, move</b><span>Turn the Earth</span></p></li>
-        <li data-g="PEACE"><i>✌️</i><p><b>Peace, hold still</b><span id="gest-peace">Next layer</span></p><em class="ring" id="ring-peace"></em></li>
-        <li data-g="TWO"><i>🙌</i><p><b>Two hands</b><span>Move apart or together to zoom</span></p></li>
-        <li data-g="RESET"><i>✊✊</i><p><b>Two fists, hold still</b><span>Reset the model</span></p><em class="ring" id="ring-reset"></em></li>
+        <li data-g="MOVE"><i>✋</i><p><b>Open your hand and move it</b><span>Rotate the Earth</span></p></li>
+        <li data-g="PEACE"><i>✌️</i><p><b>Make a peace sign and hold it still</b><span id="gest-peace">Next layer</span></p><em class="ring" id="ring-peace"></em></li>
+        <li data-g="POINT"><i>☝️</i><p><b>Point at a button and hold</b><span>Select it when the ring fills</span></p></li>
+        <li data-g="TWO"><i>🙌</i><p><b>Use both hands</b><span>Move your hands apart to zoom in, together to zoom out</span></p></li>
+        <li data-g="RESET"><i>✊✊</i><p><b>Make two fists and hold them still</b><span>Reset the model</span></p><em class="ring" id="ring-reset"></em></li>
       </ul>
     </section>
 
     <div class="learning-tools">
-      <label for="layer-picker">Find a layer or boundary</label>
+      <label for="layer-picker">Choose a layer or boundary</label>
       <select id="layer-picker"></select>
-      <button type="button" id="part-pull" hidden>Pull part aside</button>
-      <button type="button" id="part-learn" class="learn-start" hidden>Learn this layer</button>
-      <button type="button" id="part-study" hidden>Start lesson here</button>
+      <button type="button" id="part-pull" hidden>Move this part aside</button>
+      <button type="button" id="part-learn" class="learn-start" hidden>Explore this layer</button>
+      <button type="button" id="part-study" hidden>Start the lesson here</button>
       <details class="question-bank">
         <summary>Ask a question</summary>
         <div id="question-bank"></div>
@@ -92,8 +92,11 @@
     <button id="t-full" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
   </div>
 
+  <button type="button" id="stuck" aria-expanded="false" aria-controls="stuck-menu">Stuck?</button>
+  <section id="stuck-menu" aria-label="Help when you’re stuck" hidden></section>
+
   <div id="viewbar">
-    <div id="views" role="group" aria-label="Colour the cut-away by"></div>
+    <div id="views" role="group" aria-label="Show the cross-section by"></div>
     <div id="legend" aria-live="polite" hidden></div>
   </div>
   <div id="toast"></div>
@@ -115,12 +118,12 @@
     <div class="card">
       <div class="logo big"></div>
       <h1>GeoHand</h1>
-      <p>Open up the Earth with your bare hands and learn what each layer is. Your camera stays in the browser, nothing is uploaded.</p>
-      <div class="levels start-levels" id="start-levels" aria-label="Choose your level"></div>
+      <p>Explore Earth’s interior by moving the model with your hands. Camera processing stays in your browser; no camera footage is uploaded.</p>
+      <div class="levels start-levels" id="start-levels" aria-label="Select your level"></div>
       <button id="btn-cam" class="primary">Start camera</button>
-      <button id="btn-mouse" class="ghost">Use mouse instead</button>
-      <button id="btn-tour" class="ghost">Watch the tour</button>
-      <small>Mouse: click a layer to highlight it, drag it to pull it out, drag empty space to rotate, scroll to zoom. Arrow keys step through the layers. Double-click or press R to reset.</small>
+      <button id="btn-mouse" class="ghost">Use the mouse instead</button>
+      <button id="btn-tour" class="ghost">View the tour</button>
+      <small>With a mouse, click a layer to highlight it or drag it out. Drag the background to rotate and scroll to zoom. Use the arrow keys to move between layers; double-click or press R to reset.</small>
     </div>
   </div>
 

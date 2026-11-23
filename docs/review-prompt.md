@@ -3,8 +3,8 @@
 Attach these files from the GeoHand project, plus the PDFs of any cited papers you have:
 
 1. `src/content/earth/numbers.js`: every number shown, at all three levels, with its source and page
-2. `src/content/earth/alevel.js`: A-level explanations, simplification notes and question bank
-3. `src/content/earth/lessons.js`: lesson steps (only A-level is final; the others start with DRAFT)
+2. `src/content/earth/alevel.js`, `undergrad.js` and `postgrad.js`: explanations, simplification notes and question banks for each level
+3. `src/content/earth/lessons.js` and `learn.js`: lesson steps and learning-loop questions, at all three levels
 4. `src/content/references.js`: the full reference list
 5. `docs/values-to-check.md`: what was checked against which page, and the known conflicts between sources
 6. `src/models/earth.js`: the depths the 3D model draws (`GEOMETRY`) and how the top 660 km is stretched
@@ -18,8 +18,8 @@ You are reviewing the content of GeoHand, an interactive 3D model of Earth's int
 Review the attached files. Check:
 
 1. **Numbers** (`numbers.js`). Each value against its cited source, page, table or figure. Check units, ranges, rounding and the label's wording.
-2. **A-level text and questions** (`alevel.js`). Each sentence and each answer. Ask whether the cited references actually say it, or whether it is common knowledge that the citation does not cover.
-3. **Lesson steps** (`lessons.js`, A-level only).
+2. **Text and questions** (`alevel.js`, `undergrad.js`, `postgrad.js`, `learn.js`). Each sentence and each answer. Ask whether the cited references actually say it, or whether it is common knowledge that the citation does not cover.
+3. **Lesson steps** (`lessons.js`, all three levels).
 4. **Simplification notes and drawn depths** (`earth.js`). Whether each note honestly describes how the drawing differs from reality.
 5. **Consistency.** Where two parts or two levels give different values for the same thing, say whether the difference is explained.
 
