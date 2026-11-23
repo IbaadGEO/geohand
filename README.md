@@ -66,7 +66,7 @@ flowchart LR
 
 <img src="docs/media/views.jpg" alt="Four views of the same cut Earth: coloured by composition, by behaviour, by PREM density and by S-wave speed, each with a cited key">
 
-Composition, behaviour, density and S-wave speed (above) colour an equatorial cut from published models. The **Earthquake** view traces P and S waves through PREM and calculates the shadow zones from them; the waves you see are worked out in the browser, not drawn by hand. Intermediate and Advanced add **crust thickness** (CRUST1.0), **temperature** (Katsura, 2022), **lithosphere depth** from seafloor age (Seton et al., 2020; Fischer et al., 2010) and, at Advanced, a **tomography** slice.
+Composition, behaviour, density and S-wave speed (above) colour an equatorial cut from published models. The **Earthquake** view traces P and S waves through PREM and calculates the shadow zones from them; the waves you see are worked out in the browser, not drawn by hand. Intermediate and Advanced add **crust thickness** (CRUST1.0), **temperature** (Katsura, 2022), **lithosphere depth** from seafloor age (Seton et al., 2020; Fischer et al., 2010) and, at Advanced, a **tomography** slice through the SEMUCB-WM1 model (French and Romanowicz, 2014; EarthScope EMC, doi:10.17611/dp/emc.2023.semucbwm1.1), shown with the authors' permission.
 
 <img src="docs/media/earthquake.jpg" alt="The Earthquake view: P waves curving through the mantle and bending as they cross the liquid outer core, S waves stopping at its top, the P and S shadow zones marked on the far side">
 
@@ -204,6 +204,10 @@ Every source the app cites, generated from its reference list (`npm run updates`
 - White, R.S., McKenzie, D. and O'Nions, R.K. (1992) 'Oceanic crustal thickness from seismic measurements and rare earth element inversions', *Journal of Geophysical Research: Solid Earth*, 97(B13), pp. 19683–19715. Available at: https://doi.org/10.1029/92jb01749
 - Yang, Y. and Song, X. (2023) 'Multidecadal variation of the Earth's inner-core rotation', *Nature Geoscience*, 16(2), pp. 182–187. Available at: https://doi.org/10.1038/s41561-022-01112-z
 <!-- references:end -->
+
+**Data**
+
+- French, S.W. and Romanowicz, B.A. (2014) *SEMUCB-WM1* [Earth model], EarthScope Earth Model Collaboration. Available at: https://doi.org/10.17611/dp/emc.2023.semucbwm1.1 (Accessed: 23 November 2026). Used and displayed with the authors' permission.
 
 **Software**
 

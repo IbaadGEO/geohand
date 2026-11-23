@@ -213,7 +213,7 @@ Note: Anzellini et al.'s 6,230 K is the melting point of pure iron; Hirose et al
 
 ### 30. SEMUCB-WM1 (French & Romanowicz 2014)
 - [x] Equator slice: S waves over 1.5% slower than average at 2,841 km beneath 150°W (Pacific) and 15°E (Africa); fast (+6.4%) at 80 km under 15°E; slow (−6.8%) at 80 km under 100°W (East Pacific)
-- [ ] Licence: none stated, and the EMC file is labelled visualisation only. Ask Barbara Romanowicz (UC Berkeley) for permission to publish the derived slice before the repo goes public
+- [x] Permission: Prof. Barbara Romanowicz (UC Berkeley) agreed by email on 2026-11-23 to the model being used and displayed, on condition that French & Romanowicz (2014) and the EMC DOI are credited. Both are shown in the Tomography view's key and in the README
 
 ### 31. Learning loops and lessons for the new parts (2026-11-23)
 - [ ] Read the new drill-in questions in `src/content/earth/learn.js`: Intermediate `lab-measured` and `cmb`; Advanced `d520`, `post-perovskite`, `lab-measured` and `cmb`. Each restates the part's cited text

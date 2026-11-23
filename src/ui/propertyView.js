@@ -113,7 +113,7 @@ VIEWS.push({
 VIEWS.push({
   id: 'tomo', label: 'Tomography', title: 'S-wave speed against the average at that depth (%), along the equator', levels: ['postgrad'],
   min: -2, max: 2, lo: '#d6452f', mid: '#d8d2c8', hi: '#2f6fd6', ends: ['−2% slower', '+2% faster'],
-  note: 'SEMUCB-WM1 (French & Romanowicz 2014), EarthScope EMC visualisation file: a slice through the equator from 80 km down, each depth compared with its global average. Colours stop at ±2%; the top few hundred km goes beyond that. The cut is real: 0° longitude points the same way as on the crust map.',
+  note: 'SEMUCB-WM1 (French & Romanowicz 2014), EarthScope EMC, doi:10.17611/dp/emc.2023.semucbwm1.1, shown with the authors’ permission: a slice through the equator from 80 km down, each depth compared with its global average. Colours stop at ±2%; the top few hundred km goes beyond that. The cut is real: 0° longitude points the same way as on the crust map.',
   caption: 'The colour shows S-wave speed: red is slower than average, blue faster. Slower is often read as hotter and faster as colder, but that is an interpretation, and composition can matter too. This slice crosses both broad slow regions at the base of the mantle: one beneath the Pacific, the other beneath the South Atlantic and Africa. Near the top, the old continent of Africa shows fast and the young East Pacific seafloor shows slow.',
   more: 'What do the red patches at the bottom show? Test yourself',
   q: {
