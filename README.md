@@ -127,14 +127,10 @@ The model uses simplified geometry. Some near-surface layers are enlarged to mak
 
 ## How the application works
 
-```mermaid
-flowchart LR
-  A["Webcam<br/>processed locally"] --> B["MediaPipe<br/>21 landmarks per hand"]
-  B --> C["Gesture recognition<br/>poses and hold time"]
-  C --> D["Interaction controls<br/>rotate, select, zoom"]
-  D --> E["Three.js<br/>interactive Earth model"]
-  F["Scientific content<br/>by level, with citations"] --> E
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/media/flow-dark.svg">
+  <img src="docs/media/flow-light.svg" width="820" alt="How GeoHand works: the webcam, processed locally, feeds MediaPipe (21 landmarks per hand), then gesture recognition (poses and hold time), then interaction controls (rotate, select, zoom), which drive the Three.js interactive Earth model. Scientific content, by level and with citations, also feeds the model.">
+</picture>
 
 MediaPipe Hand Landmarker detects up to two hands, with 21 landmarks per hand. The gesture system identifies open hands, fists, pointing, peace signs and two-hand movements. A short hold is required before certain actions are triggered, reducing accidental selections during ordinary movement.
 

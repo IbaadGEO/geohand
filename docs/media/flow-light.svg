@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="210" viewBox="0 0 820 210" role="img" aria-label="Webcam to MediaPipe to gesture recognition to interaction controls to the Three.js Earth model, with scientific content also feeding the model">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#59636e"/></marker></defs>
+<g font-family="-apple-system, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" text-anchor="middle">
+<rect x="1" y="10" width="182" height="66" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.2"/>
+<text x="92.0" y="38" font-size="15" font-weight="600" fill="#1f2328">Webcam</text>
+<text x="92.0" y="59" font-size="13" fill="#59636e">processed locally</text>
+<rect x="213" y="10" width="182" height="66" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.2"/>
+<text x="304.0" y="38" font-size="15" font-weight="600" fill="#1f2328">MediaPipe</text>
+<text x="304.0" y="59" font-size="13" fill="#59636e">21 landmarks per hand</text>
+<rect x="425" y="10" width="182" height="66" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.2"/>
+<text x="516.0" y="38" font-size="15" font-weight="600" fill="#1f2328">Gesture recognition</text>
+<text x="516.0" y="59" font-size="13" fill="#59636e">poses and hold time</text>
+<rect x="637" y="10" width="182" height="66" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.2"/>
+<text x="728.0" y="38" font-size="15" font-weight="600" fill="#1f2328">Interaction controls</text>
+<text x="728.0" y="59" font-size="13" fill="#59636e">rotate, select, zoom</text>
+<rect x="425" y="132" width="182" height="66" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.2"/>
+<text x="516.0" y="160" font-size="15" font-weight="600" fill="#1f2328">Scientific content</text>
+<text x="516.0" y="181" font-size="13" fill="#59636e">by level, with citations</text>
+<rect x="637" y="132" width="182" height="66" rx="8" fill="#f6f8fa" stroke="#b07d12" stroke-width="2"/>
+<text x="728.0" y="160" font-size="15" font-weight="600" fill="#1f2328">Three.js</text>
+<text x="728.0" y="181" font-size="13" fill="#59636e">interactive Earth model</text>
+<line x1="185" y1="43.0" x2="210" y2="43.0" stroke="#59636e" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="397" y1="43.0" x2="422" y2="43.0" stroke="#59636e" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="609" y1="43.0" x2="634" y2="43.0" stroke="#59636e" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="728.0" y1="78" x2="728.0" y2="129" stroke="#59636e" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="609" y1="165.0" x2="634" y2="165.0" stroke="#59636e" stroke-width="1.5" marker-end="url(#a)"/>
+</g></svg>
