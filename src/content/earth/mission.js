@@ -12,7 +12,7 @@ export const MISSION = {
       options: [['crust', 'The crust'], ['mantle', 'The mantle'], ['outer-core', 'The outer core'], ['inner-core', 'The inner core']],
     },
     open: {
-      hands: 'Open the Earth to look inside: open both hands, then pull them apart.',
+      hands: 'Open the Earth to look inside: open both hands and pull them apart, or point at the Earth and hold.',
       mouse: 'Open the Earth to look inside: press Pull it apart, or the space bar.',
     },
     find: {

@@ -748,6 +748,7 @@ let twoSince = -1;
 let twoActive = false;
 let primaryId = null;
 const TWO_HOLD = 0.25;
+const OPEN_FROM = 0.14, OPEN_AT = 0.32; // palm gap as a share of the screen width: closed below, fully open above
 const prevPalm = new Map();
 const hold = new Hold();
 const fireLog = []; // fired commands, read by the ?debug test
@@ -774,6 +775,13 @@ const pointer = mountPointer();
 let partTargets = [], pointedPart = false;
 function atModel(x, y) {
   if (mode !== 'explore' || tour || (drill && !drillPick) || scene.isolatedPart >= 0) return null;
+  // a closed Earth: every layer has dots within a few pixels of the fingertip, so "the nearest layer" is noise
+  // (measured 2026-11-23). Pointing and holding on it opens it instead; layers can be picked once they have come apart.
+  if (scene.explodeTarget < 0.5 && scene.shownExplode < 0.5) {
+    pointedPart = true;
+    scene.setHover(-1);
+    return scene.pick(x, y, 80) >= 0 ? openTarget : null;
+  }
   // sticky: the candidate part stays until the fingertip is clearly nearer another, so small wobbles don't restart the hold
   const i = scene.pick(x, y, 80, pointedPart ? scene.hover : -1);
   scene.setHover(i);
@@ -781,6 +789,7 @@ function atModel(x, y) {
   if (i < 0) return null;
   return (partTargets[i] ||= { click: () => pickPart(i), name: scene.parts[i].name });
 }
+const openTarget = { click: () => (scene.explodeTarget = 1), name: 'Hold to open the Earth' };
 function control(t, dt, freshFrame) {
   const live = perc.hands.filter((h) => !h.held);
   // one hand pointing drives the on-screen cursor (ui/pointer.js), even while a walkthrough plays
@@ -825,7 +834,9 @@ function control(t, dt, freshFrame) {
       zoomRef = { kind, d0: dist, s0: scene.scaleTarget, e0: scene.explodeTarget };
     }
     if (kind === 'zoom') scene.scaleTarget = clamp((zoomRef.s0 * dist) / zoomRef.d0, 0.5, 2.6);
-    else scene.explodeTarget = clamp(zoomRef.e0 + (dist - zoomRef.d0) / (0.3 * W), 0, 1);
+    // how open follows how far apart the open hands are, not how far they moved: hands that open while already apart
+    // (say, after rising as fists) still work. shortcut: fixed spans from one webcam session, revisit with more users
+    else scene.explodeTarget = clamp((dist / W - OPEN_FROM) / (OPEN_AT - OPEN_FROM), 0, 1);
     setActive(kind === 'zoom' ? 'ZOOM' : 'TWO');
     return;
   }
@@ -1139,7 +1150,7 @@ let intro = null;
 const INTRO_KEY = 'geohand.introSeen';
 const INTRO_TEXT = {
   turn: ['This is Earth', 'Open your hand and move it to turn the Earth.', 'Drag the Earth to turn it.'],
-  pull: ['Now let’s take it apart', 'Raise both open hands and pull them apart. Each layer is named as it comes away.', 'Press Pull it apart, or the space bar. Each layer is named as it comes away.'],
+  pull: ['Now let’s take it apart', 'Raise both open hands and pull them apart, or point at the Earth and hold. Each layer is named as it comes away.', 'Press Pull it apart, or the space bar. Each layer is named as it comes away.'],
   point: ['Pick a part', 'Point at any part and hold still until the ring fills.', 'Click any part to see what it is about.'],
 };
 let introShown = '', introFlash = new Map(), lastRot = null;
@@ -1364,6 +1375,7 @@ $('mission-play').onclick = () => startMission();
 
 // ?debug in the URL adds a guided gesture test with a results table
 if (new URLSearchParams(location.search).has('debug')) {
+  window.geohand = { scene, atModel }; // for inspecting picks from the console
   import('./debugTest.js').then((m) =>
     m.mount(() => ({
       gesture: activeKey,
@@ -1381,11 +1393,16 @@ if (new URLSearchParams(location.search).has('debug')) {
       scale: scene.scaleTarget,
       frameTime: lastVideoTime,
       aspect: W / H,
-    }), () => {
+      aim: pointer.aim,
+    }), (step) => {
+      if (intro) endIntro(); // the intro and the mission would take the test's picks and hide the reset target
+      endMission();
       setMode('explore');
       restoreParts();
       scene.setSel(-1);
       showPart(-1);
+      scene.explodeTarget = step.open ? 1 : 0;
+      scene.scaleTarget = 1;
     }),
   );
 }

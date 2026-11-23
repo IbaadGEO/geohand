@@ -352,7 +352,7 @@ body:has(#tour:not([hidden])) #toast { bottom: 190px; }
 #hand-tag { position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none; padding: 3px 9px; border-radius: 8px; background: rgba(8, 9, 18, 0.88); border: 1px solid rgba(242, 201, 76, 0.6); color: #fff; font-weight: 650; font-size: 13px; white-space: nowrap; }
 
 /* Stuck? button and menu (ui/stuck.js): large targets so a pointing finger can hit them */
-#reset-earth { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 30; padding: 16px 30px; border-radius: 999px; border: 1px solid rgba(242, 201, 76, 0.7); background: var(--glass); backdrop-filter: blur(12px); color: var(--gold); font-weight: 700; font-size: 15px; }
+#reset-earth { position: fixed; right: 14px; top: 60px; /* top right: a fingertip at the bottom edge needs the palm out of camera view */ z-index: 30; padding: 16px 30px; border-radius: 999px; border: 1px solid rgba(242, 201, 76, 0.7); background: var(--glass); backdrop-filter: blur(12px); color: var(--gold); font-weight: 700; font-size: 15px; }
 #reset-earth[hidden] { display: none; }
 #stuck { position: fixed; right: 14px; bottom: 16px; z-index: 30; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(242, 201, 76, 0.5); background: var(--glass); backdrop-filter: blur(12px); color: var(--gold); font-weight: 650; font-size: 13px; }
 body:has(#start:not(.gone)) #stuck { display: none; }

@@ -3,19 +3,21 @@
 // "Save recording" downloads the per-camera-frame hand measurements (no images) so a session can be replayed offline.
 
 // calm: no command may fire. want: the commands that should fire, exactly. end(g, step): what must be true when the step ends
-// (step.start holds the opening and zoom when it began).
+// (step.start holds the opening and zoom when it began, or at startAt seconds in, once the hands have changed pose; step.peak is the largest zoom seen). open: the step starts with the Earth opened, so it does not depend
+// on an earlier step having worked.
 const STEPS = [
   { id: 'ENTER', say: '🙈 Hide your hand, then bring it in ☝️ pointing at the Earth', s: 8, reset: true, calm: true },
   { id: 'MOVE', say: '✋ Open hand: move it around to turn the Earth', s: 8, calm: true, ok: ['MOVE'] },
   { id: 'RELAX', say: '🖐 Relaxed, loose hand (no pose)', s: 6, calm: true },
   { id: 'PEACE', say: '✌️ Peace, hold still till the ring fills, drop it. 3 times', s: 14, reset: true, want: { PEACE: 3 }, end: (g) => g.sel >= 0 },
   { id: 'FIST', say: '✊ Make a fist, open, fist again (nothing should happen)', s: 6, calm: true },
-  { id: 'TWO', say: '🙌 Two open hands: start close, pull them wide apart', s: 6, ok: ['TWO'], calm: true, end: (g) => g.explode > 0.5 },
-  { id: 'PICK', say: '☝️ Point at the outer core and hold until it is picked', s: 8, calm: true, end: (g) => g.parts[g.sel]?.id === 'outer-core' },
-  { id: 'ZOOM', say: '🤜🤛 Two fists: start close, move them apart', s: 6, ok: ['ZOOM'], calm: true, end: (g) => g.scale > 1.2 },
-  { id: 'MIXED', say: '✋✊ One open hand, one fist, move them apart (nothing should move)', s: 6, calm: true,
+  { id: 'TWO', say: '🙌 Two open hands a hand-width apart, pull to shoulder width (keep both in view)', s: 6, reset: true, ok: ['TWO'], calm: true, end: (g) => g.explode > 0.5 },
+  { id: 'OPEN1', say: '☝️ Point at the closed Earth and hold until it opens', s: 6, reset: true, calm: true, end: (g) => g.explode > 0.5 },
+  { id: 'PICK', say: '☝️ Point at the outer core and hold until it is picked', s: 8, calm: true, open: true, end: (g) => g.parts[g.sel]?.id === 'outer-core' },
+  { id: 'ZOOM', say: '🤜🤛 Two fists a hand-width apart, move them to shoulder width', s: 6, ok: ['ZOOM'], calm: true, end: (g, st) => st.peak > 1.2 }, // reached: zoom follows the hands back in, which is right
+  { id: 'MIXED', say: '✋✊ Drop the fists. Then one open hand and one fist, move them apart (nothing should move)', s: 8, calm: true, startAt: 3,
     end: (g, st) => Math.abs(g.explode - st.start.explode) < 0.05 && Math.abs(g.scale - st.start.scale) < 0.05 },
-  { id: 'RESET', say: '☝️ Point at “Put Earth back together” and hold', s: 6, want: { RESET: 1 }, end: (g) => g.isolated < 0 && g.sel < 0 && g.scale === 1 },
+  { id: 'RESET', say: '☝️ Point at “Put Earth back together” and hold', s: 6, open: true, want: { RESET: 1 }, end: (g) => g.isolated < 0 && g.sel < 0 && g.scale === 1 },
 ];
 const READY = 5; // countdown before the first step (s)
 const SETTLE = 1; // ignore the first second of each step while the hand changes pose
@@ -27,8 +29,8 @@ const median = (a) => {
   return s.length ? +s[s.length >> 1].toFixed(2) : null;
 };
 
-/** get() returns { gesture, hover, sel, model, level, fired, hold, parts, hands, tracking, isolated, explode, scale, frameTime, aspect }
- * from main.js; restore() puts every part back and clears the selection. */
+/** get() returns { gesture, hover, sel, model, level, fired, hold, parts, hands, tracking, isolated, explode, scale, frameTime, aspect, aim }
+ * from main.js; restore(step) puts every part back, clears the selection and closes the Earth (opens it for steps marked open). */
 export function mount(get, restore) {
   const panel = document.createElement('div');
   css(panel, { position: 'fixed', right: '16px', bottom: '72px', zIndex: 9999, maxWidth: 'min(560px, calc(100vw - 32px))', maxHeight: '60vh', overflow: 'auto', padding: '12px 14px', borderRadius: '12px', background: 'rgba(12,12,22,0.92)', color: '#eee', font: '13px ui-sans-serif, system-ui, sans-serif' });
@@ -97,11 +99,13 @@ function run(get, restore, cue, done) {
     if (step !== stepNow) {
       if (stepNow?.end) stepNow.endOk = stepNow.end(get(), stepNow);
       stepNow = step;
-      if (step.reset) restore();
-      const g0 = get();
-      step.start = { explode: g0.explode, scale: g0.scale };
+      if (step.reset || step.open) restore(step);
+      step.start = null;
+      step.peak = 0;
     }
     const g = get();
+    step.peak = Math.max(step.peak, g.scale);
+    if (!step.start && tin >= (step.startAt || 0)) step.start = { explode: g.explode, scale: g.scale };
     for (; seen < g.fired.length; seen++) events.push({ step: step.id, g: g.fired[seen].g, t: +t.toFixed(2) });
     samples.push({ step: step.id, tin, gesture: g.gesture, m: g.hands[0]?.metrics });
     if (g.frameTime !== lastFrame) {
@@ -109,7 +113,9 @@ function run(get, restore, cue, done) {
       const h = g.hands[0];
       frames.push({ t: r4(t), step: step.id, n: g.hands.length, g: h?.gesture ?? null, act: g.gesture, hold: r4(g.hold),
         gap: r4(h?.metrics?.thumbGap), r: h?.metrics?.ratios.map(r4) ?? null, open: r4(h?.openness),
-        x: r4(h?.palm.x), y: r4(h?.palm.y), id: h?.id ?? null, iso: g.isolated, sel: g.sel, nf: g.fired.length, aspect: r4(g.aspect) });
+        x: r4(h?.palm.x), y: r4(h?.palm.y), id: h?.id ?? null, iso: g.isolated, sel: g.sel, nf: g.fired.length, aspect: r4(g.aspect),
+        g2: g.hands[1]?.gesture ?? null, open2: r4(g.hands[1]?.openness), x2: r4(g.hands[1]?.palm.x), y2: r4(g.hands[1]?.palm.y),
+        explode: r4(g.explode), scale: r4(g.scale), tx: r4(h?.tip.x), ty: r4(h?.tip.y), aim: g.aim });
     }
     requestAnimationFrame(tick);
   };

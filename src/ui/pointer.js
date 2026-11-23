@@ -45,12 +45,17 @@ export function mountPointer() {
   tag.hidden = true;
   document.body.append(cursor, tag);
   const dwell = new Dwell();
+  let aim = null; // what the fingertip is on, for the ?debug recording
   return {
+    get aim() {
+      return aim;
+    },
     update(tip, dt, atModel) {
       if (!tip) {
         cursor.hidden = true;
         tag.hidden = true;
         dwell.update(null, dt);
+        aim = null;
         return;
       }
       const x = tip.x * innerWidth, y = tip.y * innerHeight;
@@ -58,6 +63,7 @@ export function mountPointer() {
       cursor.style.transform = `translate(${x}px, ${y}px)`;
       const under = document.elementFromPoint(x, y);
       const target = under?.closest(CLICKABLE) || (atModel && !under?.closest(UI) ? atModel(x, y) : null) || null;
+      aim = target ? target.name || target.id || 'button' : null;
       const fired = dwell.update(target, dt);
       cursor.style.setProperty('--p', dwell.progress.toFixed(3));
       cursor.classList.toggle('on-target', Boolean(target) && target !== dwell.spent);

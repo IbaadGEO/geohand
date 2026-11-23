@@ -31,7 +31,7 @@ Formatting kept from the source: `~2~` = subscript, `^3^` = superscript, `**bold
 - Point at a part or button and hold
 - Its name shows at your fingertip; it is picked when the ring fills
 - Open both hands, then pull them apart
-- Open the Earth; bring them together to close it
+- Open the Earth; bring them together to close it. Pointing at a closed Earth and holding opens it too.
 - Move two fists apart or together
 - Zoom in or out
 - Point at “Put Earth back together”
@@ -223,7 +223,7 @@ Shown under a part, beside the text that uses the word.
    - The mantle
    - The outer core
    - The inner core
-2. Open: Open the Earth to look inside: open both hands, then pull them apart. / Open the Earth to look inside: press Pull it apart, or the space bar.
+2. Open: Open the Earth to look inside: open both hands and pull them apart, or point at the Earth and hold. / Open the Earth to look inside: press Pull it apart, or the space bar.
 3. Find: Find the boundary between rock and metal, the core–mantle boundary. Point at it and hold. / Find the boundary between rock and metal, the core–mantle boundary. Click it.
    - Found: Found it: the core–mantle boundary, 2,891 km down. Below it is the outer core, now pulled aside.
    - Show me: Here it is: the core–mantle boundary, 2,891 km down. Below it is the outer core, now pulled aside.
@@ -279,6 +279,7 @@ Messages, buttons and prompts written directly in the code (one line each, as in
 - Mouse controls are enabled.
 - Continue to the next step
 - Return to the full Earth model
+- Hold to open the Earth
 - Reset the model
 - Earthquake mission
 - Watch the tour
@@ -290,7 +291,7 @@ Messages, buttons and prompts written directly in the code (one line each, as in
 - Open your hand and move it to turn the Earth.
 - Drag the Earth to turn it.
 - Now let’s take it apart
-- Raise both open hands and pull them apart. Each layer is named as it comes away.
+- Raise both open hands and pull them apart, or point at the Earth and hold. Each layer is named as it comes away.
 - Press Pull it apart, or the space bar. Each layer is named as it comes away.
 - Point at any part and hold still until the ring fills.
 - Click any part to see what it is about.
