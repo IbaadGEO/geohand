@@ -15,12 +15,13 @@ const STEPS = [
   { id: 'OPEN1', say: '☝️ Point at the closed Earth and hold until it opens', s: 6, reset: true, calm: true, end: (g) => g.explode > 0.5 },
   { id: 'PICK', say: '☝️ Point at the outer core and hold until it is picked', s: 8, calm: true, open: true, end: (g) => g.parts[g.sel]?.id === 'outer-core' },
   { id: 'ZOOM', say: '🤜🤛 Two fists a hand-width apart, move them to shoulder width', s: 6, ok: ['ZOOM'], calm: true, end: (g, st) => st.peak > 1.2 }, // reached: zoom follows the hands back in, which is right
-  { id: 'MIXED', say: '✋✊ Drop the fists. Then one open hand and one fist, move them apart (nothing should move)', s: 8, calm: true, startAt: 3,
+  { id: 'MIXED', say: '✋✊ One open hand and one fist, move them apart (nothing should move)', s: 6, calm: true,
     end: (g, st) => Math.abs(g.explode - st.start.explode) < 0.05 && Math.abs(g.scale - st.start.scale) < 0.05 },
   { id: 'RESET', say: '☝️ Point at “Put Earth back together” and hold', s: 6, open: true, want: { RESET: 1 }, end: (g) => g.isolated < 0 && g.sel < 0 && g.scale === 1 },
 ];
 const READY = 5; // countdown before the first step (s)
 const SETTLE = 1; // ignore the first second of each step while the hand changes pose
+const DOWN_S = 0.5, DOWN_MAX = 8; // hands out of view this long before each step starts (s); it starts anyway after DOWN_MAX
 
 const css = (el, s) => Object.assign(el.style, s);
 const pct = (n, d) => (d ? Math.round((100 * n) / d) : 0);
@@ -74,40 +75,53 @@ export function mount(get, restore) {
 
 function run(get, restore, cue, done) {
   const samples = [], frames = [], events = [];
-  let stepNow = null, lastFrame = null, seen = get().fired.length;
+  let lastFrame = null, seen = get().fired.length;
   STEPS.forEach((s) => delete s.endOk);
   const r4 = (v) => (v == null ? null : Math.round(v * 1e4) / 1e4);
   const t0 = performance.now() + READY * 1000;
-  const total = STEPS.reduce((s, x) => s + x.s, 0);
+  // before each step the hands go down, so no pose or half-done pull carries over from the step before
+  let i = 0, phase = 'down', since = 0, clear = -1;
   cue.style.display = 'block';
   const tick = () => {
     const t = (performance.now() - t0) / 1000;
     if (t < 0) {
-      cue.textContent = `Get ready, hand in view  ${Math.ceil(-t)}`;
+      cue.textContent = `Get ready  ${Math.ceil(-t)}`;
       seen = get().fired.length;
       return requestAnimationFrame(tick);
     }
-    if (t >= total) {
-      if (stepNow?.end) stepNow.endOk = stepNow.end(get(), stepNow); // the last step's end state counts too
-      cue.style.display = 'none';
-      return done(report(samples, events), frames);
+    let step = STEPS[i], g = get();
+    if (phase === 'step' && t - since >= step.s) {
+      if (step.end) step.endOk = step.end(g, step);
+      i++;
+      phase = 'down';
+      since = t;
+      clear = -1;
+      if (i === STEPS.length) {
+        cue.style.display = 'none';
+        return done(report(samples, events), frames);
+      }
+      step = STEPS[i];
     }
-    let a = 0;
-    const step = STEPS.find((s) => (a += s.s) > t);
-    const tin = t - (a - step.s);
-    cue.textContent = `${step.say}  ${Math.ceil(step.s - tin)}`;
-    if (step !== stepNow) {
-      if (stepNow?.end) stepNow.endOk = stepNow.end(get(), stepNow);
-      stepNow = step;
+    if (phase === 'down') {
+      clear = g.hands.length ? -1 : clear < 0 ? t : clear;
+      if (!((clear >= 0 && t - clear >= DOWN_S) || t - since >= DOWN_MAX)) {
+        cue.textContent = '👇 Hands down';
+        seen = g.fired.length; // commands while the hands drop are not graded
+        return requestAnimationFrame(tick);
+      }
+      phase = 'step';
+      since = t;
       if (step.reset || step.open) restore(step);
       step.start = null;
       step.peak = 0;
+      g = get();
     }
-    const g = get();
+    const tin = t - since;
+    cue.textContent = `${step.say}  ${Math.ceil(step.s - tin)}`;
     step.peak = Math.max(step.peak, g.scale);
     if (!step.start && tin >= (step.startAt || 0)) step.start = { explode: g.explode, scale: g.scale };
     for (; seen < g.fired.length; seen++) events.push({ step: step.id, g: g.fired[seen].g, t: +t.toFixed(2) });
-    samples.push({ step: step.id, tin, gesture: g.gesture, m: g.hands[0]?.metrics });
+    samples.push({ step: step.id, tin, n: g.hands.length, gesture: g.gesture, m: g.hands[0]?.metrics });
     if (g.frameTime !== lastFrame) {
       lastFrame = g.frameTime;
       const h = g.hands[0];
@@ -126,8 +140,9 @@ function report(samples, events) {
   const out = { when: new Date().toISOString(), steps: {} };
   for (const st of STEPS) {
     const rows = samples.filter((s) => s.step === st.id);
-    const settled = rows.filter((s) => s.tin >= SETTLE);
-    const secs = st.s - SETTLE;
+    const from = (rows.find((s) => s.n)?.tin ?? 0) + SETTLE; // the hands now start each step down, so count from when they arrive
+    const settled = rows.filter((s) => s.tin >= from);
+    const secs = Math.max(1, st.s - from);
     const r = {};
     if (st.ok) {
       r.recognisedPct = pct(settled.filter((s) => st.ok.includes(s.gesture)).length, settled.length);

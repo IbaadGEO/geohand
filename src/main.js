@@ -748,7 +748,7 @@ let twoSince = -1;
 let twoActive = false;
 let primaryId = null;
 const TWO_HOLD = 0.25;
-const OPEN_FROM = 0.14, OPEN_AT = 0.32; // palm gap as a share of the screen width: closed below, fully open above
+const PULL = 0.2; // how far apart (share of the screen width) the open hands move to open the Earth fully
 const prevPalm = new Map();
 const hold = new Hold();
 const fireLog = []; // fired commands, read by the ?debug test
@@ -842,14 +842,20 @@ function control(t, dt, freshFrame) {
     if (!zoomRef || zoomRef.kind !== kind) {
       // hands starting very close give no steady baseline: wait until they are apart, so nothing jumps before they move
       if (dist < 60) return setActive(kind === 'zoom' ? 'ZOOM' : 'TWO');
-      zoomRef = { kind, d0: dist, s0: scene.scaleTarget, e0: scene.explodeTarget };
+      zoomRef = { kind, d0: dist, near: dist, s0: scene.scaleTarget, e0: scene.explodeTarget, set: scene.explodeTarget };
     }
     if (kind === 'zoom') scene.scaleTarget = clamp((zoomRef.s0 * dist) / zoomRef.d0, 0.5, 2.6);
-    // how open follows how far apart the open hands are, not how far they moved: hands that open while already apart
-    // (say, after rising as fists) still work. Only ever opens: lowering both hands brings them together, which closed
-    // it again in every test run (2026-11-23); "Put Earth back together" closes it.
-    // shortcut: fixed spans from one webcam session, revisit with more users
-    else scene.explodeTarget = Math.max(scene.explodeTarget, clamp((dist / W - OPEN_FROM) / (OPEN_AT - OPEN_FROM), 0, 1));
+    // opens by how far the hands have pulled apart from the closest they have been, so raising two open hands already
+    // apart does nothing until they pull (a fixed gap opened it the moment they came into view, 2026-11-23), and hands
+    // that rose apart can come in and pull again. Only ever opens: lowering both hands brings them together, which
+    // closed it in every test run; "Put Earth back together" closes it.
+    // shortcut: PULL from one webcam session, revisit with more users
+    else {
+      // closed some other way (reset, button) while the hands are up: the pull starts again from here, or it reopens at once
+      if (scene.explodeTarget !== zoomRef.set) zoomRef.near = dist;
+      zoomRef.near = Math.min(zoomRef.near, dist);
+      zoomRef.set = scene.explodeTarget = Math.max(scene.explodeTarget, clamp((dist - zoomRef.near) / (PULL * W), 0, 1));
+    }
     setActive(kind === 'zoom' ? 'ZOOM' : 'TWO');
     return;
   }
