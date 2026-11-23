@@ -2,179 +2,201 @@
 
 # GeoHand
 
-Created and maintained by **[Ibaad Sidik](https://github.com/IbaadGEO)** · hand tracking built on **[HoloHand](https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D)** by Tuba Khan
+**An interactive 3D model for exploring Earth's interior using hand gestures, seismic evidence and guided lessons.**
 
-**Pull the Earth apart with your hands, pick any layer, and see the evidence for what is inside: at three levels, with every number cited to the page**
+Developed by **[Ibaad Sidik](https://github.com/IbaadGEO)**. Hand tracking is based on **[HoloHand](https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D)** by Tuba Khan.
 
 [![Live demo](https://img.shields.io/badge/live_demo-geohand--theta.vercel.app-1971c2?style=flat-square)](https://geohand-theta.vercel.app) [![Privacy: camera stays on your device](https://img.shields.io/badge/privacy-camera_stays_on_device-2f9e44?style=flat-square)](#camera-privacy-and-security) ![Tests: 202 passing](https://img.shields.io/badge/tests-202_passing-2f9e44?style=flat-square) [![Sources: 26, Harvard](https://img.shields.io/badge/sources-26_peer--reviewed,_Harvard-2f9e44?style=flat-square)](#references) ![Three.js 0.170](https://img.shields.io/badge/Three.js-0.170-049ef4?style=flat-square) ![MediaPipe 0.10.14](https://img.shields.io/badge/MediaPipe-0.10.14-0097a7?style=flat-square) ![Vite 5.4](https://img.shields.io/badge/Vite-5.4-646cff?style=flat-square) [![Licence: all rights reserved](https://img.shields.io/badge/licence-all_rights_reserved-868e96?style=flat-square)](LICENSE)
 
-<a href="https://geohand-theta.vercel.app"><img src="docs/media/hero.webp" width="820" alt="The Earth pulled apart into its layers, turned by dragging, the core–mantle boundary picked from the list, then the Earthquake view tracing P and S waves through the planet"></a>
+<a href="https://geohand-theta.vercel.app"><img src="docs/media/hero.webp" width="820" alt="The Earth opened into separate layers, with the core–mantle boundary selected and the Earthquake view showing P- and S-wave paths"></a>
 
-<sub>Pulling the Earth apart, turning it, picking the core–mantle boundary and switching to the Earthquake view. Recorded with the mouse in headless Chromium; with a webcam the same actions are done by hand. Try it at <a href="https://geohand-theta.vercel.app">geohand-theta.vercel.app</a> (desktop Chrome, Edge or Firefox).</sub>
+<sub>Demonstration of the 3D model, layer selection and Earthquake view. Recorded using mouse controls in Chromium. The same interactions can be carried out using a webcam and hand gestures. <a href="https://geohand-theta.vercel.app">Try GeoHand here</a> on desktop Chrome, Edge or Firefox.</sub>
 
 </div>
 
-## About
+## About the project
 
-This is part of my wider learning in coding, data, machine learning and geoscience. It is not a professional or commissioned study.
+GeoHand is a personal project combining my interests in geoscience, programming and interactive learning. I developed it to explore how a 3D application could make the structure of the Earth easier to understand, particularly the relationship between what we model and the scientific evidence behind it.
 
-Nobody has seen the inside of the Earth. Everything we know about the core and mantle comes from indirect evidence, mostly earthquake waves, and that evidence is hard to picture from a textbook diagram. GeoHand lets you take the planet apart yourself: open it with two hands, point at a layer, and the app tells you what it is, how deep it is, how we know, and which page of which paper says so.
+We cannot directly observe most of the Earth's interior. Much of what we know comes from seismic waves and other indirect measurements, which can be difficult to interpret from a static diagram. GeoHand allows users to rotate and separate the Earth's layers, select individual regions and examine their composition, physical behaviour and supporting evidence. Scientific explanations include citations to the relevant papers, pages or tables.
 
-It began as the Earth's Interior model I added to my [HoloHand fork](https://github.com/IbaadGEO/HoloHand-Gesture-Agent-3D), which grew from Tuba Khan's gesture project. GeoHand turns that one model into a full learning tool, with three levels, guided lessons, a mission and a checked source behind every claim.
+The project began as an Earth's Interior model in my [HoloHand fork](https://github.com/IbaadGEO/HoloHand-Gesture-Agent-3D), based on Tuba Khan's original gesture-control project. I developed it further into a standalone educational application with different learning levels, guided activities, a seismic-wave mission and supporting references.
 
-**Coming next:** more models will be added, chosen from what learner testing and feedback show people want to explore.
+This is an independent learning project, not a commissioned scientific study. Future models will be informed by feedback and testing with learners.
 
-## What you can do
+**Live application:** https://geohand-theta.vercel.app
 
-```mermaid
-flowchart LR
-  A["<b>Find your level</b><br/>3 quick questions<br/>or pick one"] --> B["<b>Explore</b><br/>pull apart, turn,<br/>pick any part"]
-  B --> C["<b>Learn a part</b><br/>question, look,<br/>evidence, test"]
-  B --> D["<b>Lesson</b><br/>surface to centre,<br/>step by step"]
-  B --> E["<b>Earthquake mission</b><br/>predict, find,<br/>watch, explain"]
-  C --> F["<b>Ask or report</b><br/>questions and<br/>problems, privately"]
-  D --> F
-  E --> F
-```
+## Explore and learn
 
-### Three levels, and a quick way to choose
+### Choose a level
 
-<img src="docs/media/levels.jpg" alt="The Earth opened at Normal, Intermediate and Advanced: each level adds more layers and boundaries, and more views appear in the bar at the top">
+<img src="docs/media/levels.jpg" alt="GeoHand at Normal, Intermediate and Advanced levels, with additional layers, boundaries and views at higher levels">
 
-| Level | What it covers | Parts | Questions |
-|---|---|---|---|
-| **Normal** | Start here. The main layers, in everyday words. | 8 | 53 |
-| **Intermediate** | More layers, with the numbers and where they come from. | 16 | 98 |
-| **Advanced** | What scientists still argue about, with exact sources. | 21 | 125 |
+The content is organised into three levels. Each adds detail to the model and explanations, rather than requiring users to start with the most technical material.
 
-<img src="docs/media/welcome.png" width="300" align="right" alt="The welcome card with the level finder open: question 1 of 3, Which layer of the Earth is liquid?, with The outer core marked right and its source shown">
+| Level | Focus | Parts | Questions |
+|---|---|---:|---:|
+| **Normal** | The main layers and boundaries, explained in accessible language | 8 | 53 |
+| **Intermediate** | Additional structures, measurements and supporting evidence | 16 | 98 |
+| **Advanced** | More detailed seismic models, interpretations and unresolved questions | 21 | 125 |
 
-**Not sure which level?** The welcome screen asks three questions, each harder than the last: which layer is liquid, how deep the core starts, and whether the inner core turns with the rest of the planet. After each answer it shows the right one and its source. Your answers then pick a level for you (0–1 right: Normal, 2: Intermediate, 3: Advanced), and you can still choose any other. Nothing is saved or sent.
+<img src="docs/media/welcome.png" width="300" align="right" alt="GeoHand welcome screen with the three-question level finder">
+
+Users can choose a level directly or answer three short questions about the outer core, the depth of the core and inner-core rotation. The app suggests Normal for 0–1 correct answers, Intermediate for 2 and Advanced for 3. Each answer includes an explanation and source. The selected level can be changed at any time; the answers are not stored or sent.
 
 <br clear="right"/>
 
-### Explore the planet
+### Explore the Earth's structure
 
-<img src="docs/media/app.jpg" alt="The full app: the level and mode buttons on the left, the outer core picked with its cited description and facts, a card beside the model offering to learn about the part, start the lesson there or see it in the Earthquake view">
+<img src="docs/media/app.jpg" alt="GeoHand interface with a selected Earth layer, its scientific explanation, sources and available activities">
 
-- **Pull it apart** to see every layer at once. Each one is named as it comes away.
-- **Pick any layer or boundary** to read what it is, how deep it is and how we know, with in-text citations and page numbers.
-- **The part card** beside the model offers three next steps: learn about this part, start the lesson from here, or see it in the view that shows it best.
-- **Glossary terms** such as PREM, S waves and pyrolite are explained in plain words at Normal level.
+The model can be pulled apart to show individual layers and boundaries. Selecting a part opens a description of its depth, composition, physical properties and the evidence used to study it. From there, users can start a short lesson, continue the guided walkthrough or switch to a relevant visualisation.
 
-### See it in different ways
+Technical terms such as PREM, pyrolite and S waves are explained in simpler language at Normal level, while the higher levels retain more of the underlying scientific detail.
 
-<img src="docs/media/views.jpg" alt="Four views of the same cut Earth: coloured by composition, by behaviour, by PREM density and by S-wave speed, each with a cited key">
+### Compare different representations
 
-Composition, behaviour, density and S-wave speed (above) colour an equatorial cut from published models. The **Earthquake** view traces P and S waves through PREM and calculates the shadow zones from them; the waves you see are worked out in the browser, not drawn by hand. Intermediate and Advanced add **crust thickness** (CRUST1.0), **temperature** (Katsura, 2022), **lithosphere depth** from seafloor age (Seton et al., 2020; Fischer et al., 2010) and, at Advanced, a **tomography** slice through the SEMUCB-WM1 model (French and Romanowicz, 2014; EarthScope EMC, doi:10.17611/dp/emc.2023.semucbwm1.1), shown with the authors' permission.
+<img src="docs/media/views.jpg" alt="Cut-away views of the Earth coloured by composition, behaviour, density and S-wave speed">
 
-<img src="docs/media/earthquake.jpg" alt="The Earthquake view: P waves curving through the mantle and bending as they cross the liquid outer core, S waves stopping at its top, the P and S shadow zones marked on the far side">
+The same cross-section can be viewed by **composition**, **physical behaviour**, **density** and **S-wave speed**. These views use published Earth models to illustrate why geological and seismic boundaries do not always describe the same thing.
 
-### Learn by doing
+The **Earthquake** view calculates P- and S-wave paths from PREM wave speeds and illustrates the resulting shadow zones. The paths are computed in the browser rather than manually drawn. Intermediate and Advanced levels also include crustal thickness from **CRUST1.0**, mantle temperature from **Katsura (2022)** and lithosphere depth derived from seafloor age using **Seton et al. (2020)** and **Fischer et al. (2010)**. Advanced adds a tomography section from **SEMUCB-WM1** (French and Romanowicz, 2014; EarthScope EMC, doi:10.17611/dp/emc.2023.semucbwm1.1), displayed with the authors' permission.
 
-<img src="docs/media/mission.jpg" alt="The Earthquake mission's first step: a question asking which layer stops S waves, with four answers to choose from">
+<img src="docs/media/earthquake.jpg" alt="Seismic ray paths through the Earth showing P-wave refraction and the S-wave shadow zone at the liquid outer core">
 
-- **Learn about a part:** a two-minute drill-in for every layer and boundary. It asks a question, shows where the part is, explains how it works, gives you a task on the model, shows the evidence and ends with a short test.
-- **Lessons:** walk from the surface to the centre one stop at a time, with activities such as comparing ocean and continental crust.
-- **Earthquake mission:** predict which layer stops S waves, open the Earth, find the core–mantle boundary, watch the waves and explain what they show.
-- **The tour:** a short overview that plays itself, with no hands or mouse needed.
-- **Stuck?** goes back a step, repeats it, jumps to any step, or lets you ask a question or report a problem.
+### Guided lessons and activities
 
-## How to use it
+<img src="docs/media/mission.jpg" alt="Earthquake mission asking users to identify the layer that prevents S waves from passing through">
 
-1. Open [geohand-theta.vercel.app](https://geohand-theta.vercel.app) on a desktop or laptop.
-2. Choose a level, or answer the three questions to have one suggested.
-3. Press **Use your hands** (the browser asks for the camera) or **Use the mouse**.
-4. A short intro shows you how to turn the Earth, pull it apart and pick a part. You can skip it.
+- **Learn a layer:** A short activity begins with a question, introduces the selected structure, shows the relevant evidence and ends with a short quiz.
+- **Guided lesson:** Work from the surface towards the centre, with activities including a comparison of oceanic and continental crust.
+- **Earthquake mission:** Identify where S waves stop, locate the core–mantle boundary and use the wave paths to explain the observations.
+- **Automatic tour:** Follow the Earth's layers without needing hand tracking or mouse input.
+- **Help and feedback:** Replay a step, return to an earlier activity, ask a question or report a problem.
 
-| Action | Mouse and keyboard | Hands |
+## Using GeoHand
+
+1. Open **[geohand-theta.vercel.app](https://geohand-theta.vercel.app)** on a desktop or laptop.
+2. Select a learning level or use the three-question level finder.
+3. Choose **Use your hands** and allow camera access, or choose **Use the mouse**.
+4. Follow the introductory controls, or skip them and begin exploring.
+
+| Action | Mouse / keyboard | Hand tracking |
 |---|---|---|
-| Turn the Earth | Drag the background | Open your hand and move it |
-| Open it | **Pull it apart**, or the space bar | Both hands open, pulled apart; or point at the Earth and hold |
-| Close it | Double-click, or press R | Point at **Put Earth back together** |
-| Pick a part or press a button | Click it | Point at it and hold until the ring fills |
-| Zoom | Scroll | Two fists, moved apart or together |
-| Next layer | Arrow keys | Peace sign, held still |
+| Rotate the Earth | Drag the background | Open hand and move |
+| Separate the layers | **Pull it apart**, or space bar | Pull two open hands apart, or point at the Earth and hold |
+| Restore the Earth | Double-click, or press R | Point at **Put Earth back together** |
+| Select a layer or button | Click | Point and hold until the ring fills |
+| Zoom | Scroll | Move two fists apart or together |
+| Go to the next layer | Arrow keys | Hold a peace sign still |
 
-## How it works
+The camera is optional. All main learning activities can also be completed using the mouse and keyboard.
+
+## Scientific basis and limitations
+
+GeoHand draws on published geophysical models and research rather than treating the 3D representation as a direct observation of the Earth's interior.
+
+- **PREM** (Dziewonski and Anderson, 1981) provides reference density and seismic-wave properties used across the model, including the calculated earthquake ray paths.
+- **ak135** (Kennett, Engdahl and Buland, 1995) provides reference depths for several boundaries used in the visualisation.
+- **CRUST1.0**, published heat-flow and temperature models, seafloor-age data and **SEMUCB-WM1** provide additional views at the higher learning levels.
+- **Individual scientific studies** support descriptions of mantle convection, subducting slabs, plumes, core composition and inner-core structure.
+
+The model uses simplified geometry. Some near-surface layers are enlarged to make them visible, and selected boundary depths follow reference Earth models rather than local measurements. Slab and plume positions in schematic views are illustrative. The explanations distinguish these choices from published observations and interpretations, with sources given in the app.
+
+## How the application works
 
 ```mermaid
 flowchart LR
-  A["<b>Webcam</b><br/>in the browser,<br/>nothing uploaded"] --> B["<b>MediaPipe</b><br/>Hand Landmarker<br/>21 points per hand"]
-  B --> C["<b>Gesture engine</b><br/>open, fist, point,<br/>peace, two hands"]
-  C --> D["<b>Controls</b><br/>open, turn, zoom,<br/>point and hold"]
-  D --> E["<b>Three.js</b><br/>point-cloud Earth<br/>with pickable parts"]
-  F["<b>Content</b><br/>per level, every<br/>value cited"] --> E
+  A["Webcam<br/>processed locally"] --> B["MediaPipe<br/>21 landmarks per hand"]
+  B --> C["Gesture recognition<br/>poses and hold time"]
+  C --> D["Interaction controls<br/>rotate, select, zoom"]
+  D --> E["Three.js<br/>interactive Earth model"]
+  F["Scientific content<br/>by level, with citations"] --> E
 ```
 
-Every frame, MediaPipe finds up to two hands and returns 21 landmarks for each. The gesture engine turns them into a pose and a fingertip position, and holds each pose for a moment before acting, so a hand passing through a shape does not trigger anything. The Earth is drawn as layered point clouds, with depths taken from PREM (Dziewonski and Anderson, 1981) and ak135 (Kennett, Engdahl and Buland, 1995). Every sentence the app shows comes from content files that a checker tests against the reference list before each release.
+MediaPipe Hand Landmarker detects up to two hands, with 21 landmarks per hand. The gesture system identifies open hands, fists, pointing, peace signs and two-hand movements. A short hold is required before certain actions are triggered, reducing accidental selections during ordinary movement.
 
-## How it was built and tested
+Three.js renders the Earth as interactive point-cloud layers. Scientific text, values and references are maintained separately in content files, allowing the material to be checked against its sources. The application is built with Vite and runs in the browser.
 
-GeoHand was built over 44 commits in two days of focused work, then tested by hand with a real webcam, by external reviewers, and live after deployment. Every change kept the automated tests passing.
+## Development and testing
 
-| What was checked | How |
+I tested both the scientific content and the way the application responds to gestures. The work included automated tests, repeated webcam sessions, independent content reviews and checks on the deployed site.
+
+| Test area | What was checked |
 |---|---|
-| **202 automated checks** | 183 unit tests across 22 files (content, models, wave paths, levels, search, lessons, pointing, the question and report endpoint) plus 19 gesture self-tests replayed from recorded hand data |
-| **Content against the sources** | A content check fails on any claim without a known reference, any draft text, and, for a release, any reference not yet checked against the paper itself. Every value and its page is logged in [`docs/values-to-check.md`](docs/values-to-check.md) |
-| **13 real-camera test runs** | A guided test (developer builds only) asks for each gesture in turn, records both hands, the fingertip and what it pointed at, and scores whether the right thing happened. Each run's recording was analysed and the fixes checked in the next run |
-| **External reviews** | An independent check of the numbers and wording against 16 of the source PDFs, and reviews of the app as a first-time learner with mouse and camera |
-| **The live site** | Every refusal path of the question endpoint (wrong site, bad data, oversized, bot trap, rate limit) and a real question and bug report sent, stored and deleted |
+| **202 automated checks** | 183 unit tests across 22 files covering content, models, seismic paths, learning flow, pointing, search and the question/report endpoint, plus 19 gesture self-tests using recorded hand data |
+| **Scientific references** | Content checks reject missing or unknown references, draft text and, for release, sources not yet checked against the original paper. Values and page references are recorded in [`docs/values-to-check.md`](docs/values-to-check.md) |
+| **13 webcam test runs** | Gesture accuracy, hand identification, fingertip pointing and unintended actions were examined from recorded runs |
+| **External reviews** | Independent review of figures and wording against 16 source PDFs, alongside first-time-user reviews with mouse and camera controls |
+| **Deployed application** | The question/report endpoint's validation, bot and rate-limit responses were tested, along with submission, storage and deletion of real test entries |
 
-### Bugs found and fixed
+### Issues identified during testing
 
-| What went wrong | Why | Fix |
-|---|---|---|
-| Swipe, point and pinch commands fired when nobody meant them | Live recordings showed hands passing through those shapes during ordinary movement | Commands rebuilt around poses held still, with a filling ring; swipes removed |
-| The two hands swapped roles mid-gesture | MediaPipe's Left/Right label flips between frames | Hands followed by position instead |
-| Lowering both hands closed the Earth, in every test run | Hands come together as they drop | Hands now only open it; a button closes it |
-| Raising hands that were already apart opened the Earth on arrival | Opening read the gap between the hands, not how far they pulled | Opening measured from the closest the hands have been |
-| The Earth reopened by itself after a reset | The pull remembered an old starting gap | The pull starts again whenever the Earth is closed another way |
-| Pointing to open the Earth also picked a layer straight away | The hold carried on into the newly opened model | No pick until the fingertip moves off that spot |
-| The reset button was out of reach | At the bottom of the screen, a pointing hand leaves the camera view | Moved to the top right |
-| Clicking the view bar selected the layer behind it | Clicks passed through the bar to the model | Interface clicks no longer reach the model |
-| A review found questions would be refused once live | The site's no-referrer policy makes the browser send `Origin: null` | The form asks for its real origin |
-| A font failed to load on the live site | The security policy blocked fonts built into the page | Policy allows built-in fonts only |
-| "Outer core is the only liquid layer in PREM" | PREM also has a liquid ocean layer | Corrected, with the other findings of the external review |
+Several problems only became apparent during live use. The changes below were made in response to those findings.
 
-## Camera, privacy and security
-
-| Guarantee | How it is enforced |
+| Issue | Change made |
 |---|---|
-| **Camera images never leave your device** | Frames go from the camera to MediaPipe running in the page. No code records, saves or sends them. The Content-Security-Policy (`connect-src 'self'`) makes the browser refuse connections to any other server |
-| **No trackers or third-party code** | The app, the MediaPipe engine, the hand model and the font are served from this site. `default-src 'self'` blocks loading anything from elsewhere |
-| **Camera only** | The Permissions-Policy blocks the microphone, location, screen capture and other devices |
-| **Questions and reports send only what they say** | A question sends its text, the level and the selected part. A report adds mouse or hands, the view, what was running, the browser name and version, and the screen size. No camera images or screenshots |
-| **No IP addresses stored** | The IP is used only as a daily-changing hash to allow 5 messages an hour and 20 a day |
-| **Bots and other sites are refused** | Messages are accepted only from this site, checked field by field, capped in size, and a hidden bot trap stores nothing |
+| Swipe, point and pinch gestures were activated unintentionally | Replaced swipes with deliberate, held poses and a visible progress ring |
+| Left and right hand identities changed between frames | Tracked hands by position instead of relying on MediaPipe's changing labels |
+| Lowering both hands closed the Earth | Restricted the two-hand gesture to opening; closing uses a separate control |
+| Hands already far apart could open the Earth unintentionally | Measured movement from the hands' closest separation |
+| The Earth could reopen after being reset | Reset the stored starting separation whenever the model was closed |
+| A point used to open the model immediately selected a layer | Required the fingertip to leave the activation position before another selection |
+| The reset control was difficult to reach using the camera | Moved it to the top-right area |
+| Clicking interface controls also selected a model layer behind them | Prevented those clicks from reaching the 3D model |
+| The live question form was rejected under the site's referrer policy | Corrected the origin handling used by the form |
+| A font was blocked by the deployed Content-Security-Policy | Updated the policy to allow the locally embedded font |
+| An explanation described the outer core as PREM's only liquid layer | Corrected it after review because PREM also includes an ocean layer |
 
-To check it yourself, open the browser's developer tools (F12), go to the Network tab and reload: every request goes to the site itself.
+## Camera privacy and security
 
-## Questions and bug reports
+Hand tracking runs in the browser. **Camera frames are processed on the device and are not uploaded, recorded or saved by GeoHand.** Mouse controls are available for anyone who does not want to enable a camera.
 
-**Ask a question** (in the panel) and **Report a problem** (in the Stuck? menu) go to a private inbox. Answered questions are added to the app with a source, and appear under [Live updates](#live-updates).
+| Area | Implementation |
+|---|---|
+| **Camera processing** | Frames are passed to MediaPipe in the browser. The application's Content-Security-Policy uses `connect-src 'self'` to prevent connections to external servers |
+| **Third-party requests** | The app, MediaPipe files, model and font are served from the same site. `default-src 'self'` prevents loading resources from other origins |
+| **Device permissions** | Permissions-Policy blocks microphone, location, screen capture and other device access |
+| **Questions and reports** | Questions contain the submitted text, learning level and selected part. Reports may also include control mode, view, browser version and screen size. Neither includes camera footage or screenshots |
+| **IP handling** | IP addresses are not stored. A daily-changing hash is used for limits of 5 messages per hour and 20 per day |
+| **Submission checks** | The endpoint checks the requesting site and individual fields, limits message size and rejects bot-trap submissions |
 
-## Run it locally
+You can inspect requests using your browser's developer tools (**F12**, then **Network**) while using the application.
 
-```
+### Questions and bug reports
+
+The **Ask a question** option in the information panel and **Report a problem** in the help menu send submissions to a private inbox. Questions that receive a referenced answer can be added to the application and recorded under [Live updates](#live-updates).
+
+## Run locally
+
+You will need Node.js and npm. From the repository directory, run:
+
+```bash
 npm install
 npm run dev
+```
+
+To run the automated tests:
+
+```bash
 npm test
 ```
 
-`npm run dev` opens the app; adding `?debug` to its address starts the guided gesture test, which the public site leaves out. `npm run updates` regenerates the references and live updates in this README from the app's content.
+Adding `?debug` to the local app address opens the guided gesture testing interface in developer builds. `npm run updates` regenerates the references and live-updates sections in this README from the application's content.
 
 ## Credits
 
-Hand tracking and the first version of the gesture code come from [HoloHand](https://github.com/IbaadGEO/HoloHand-Gesture-Agent-3D), my fork of Tuba Khan's [HoloHand-Gesture-Agent-3D](https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D); that code stays under its MIT licence, in [`LICENSE-HoloHand`](LICENSE-HoloHand). GeoHand uses [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) for hand tracking, [three.js](https://threejs.org) for the 3D view and the [Manrope](https://github.com/sharanda/manrope) font (SIL Open Font License 1.1). Reference animations that inspired some views are credited in [`docs/inspiration.md`](docs/inspiration.md).
+GeoHand's original hand-tracking and gesture-control work came from [HoloHand](https://github.com/IbaadGEO/HoloHand-Gesture-Agent-3D), my fork of Tuba Khan's [HoloHand-Gesture-Agent-3D](https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D). The relevant code remains under its MIT licence, included in [`LICENSE-HoloHand`](LICENSE-HoloHand).
+
+The application uses [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) for hand tracking, [three.js](https://threejs.org) for rendering and the [Manrope](https://github.com/sharanda/manrope) font under the SIL Open Font License 1.1. Visual references that informed parts of the application are acknowledged in [`docs/inspiration.md`](docs/inspiration.md).
 
 ## Licence
 
-Copyright © 2026 Ibaad Sidik. **All rights reserved.** GeoHand's code, content, questions, design and media may not be copied, reused or built on without written permission; see [`LICENSE`](LICENSE). You are welcome to use the live site for your own learning.
+Copyright © 2026 Ibaad Sidik. **All rights reserved.** GeoHand's original code, content, questions, design and media may not be copied, reused or adapted without written permission. See [`LICENSE`](LICENSE). The live site is available for personal learning.
 
 ## References
 
-Every source the app cites, generated from its reference list (`npm run updates`). In the app, each claim also gives the page or table it comes from.
+The list below is generated from the application's source list using `npm run updates`. Scientific claims within the application include the relevant page or table references.
 
 <!-- references:start -->
 - Anzellini, S., Dewaele, A., Mezouar, M., Loubeyre, P. and Morard, G. (2013) 'Melting of iron at Earth's inner core boundary based on fast X-ray diffraction', *Science*, 340(6131), pp. 464–466. Available at: https://doi.org/10.1126/science.1233514
