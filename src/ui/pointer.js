@@ -31,7 +31,8 @@ export class Dwell {
 
 const CLICKABLE = 'button:not([disabled]), [role="button"], summary, a[href]';
 
-const UI = '#panel, #toolbar, #viewbar, #start, #tour, #stuck, #stuck-menu, #part-card, #intro, #reset-earth, #mission';
+/** The interface: pointing or clicking here never reaches the model behind it. */
+export const UI = '#panel, #toolbar, #viewbar, #start, #tour, #stuck, #stuck-menu, #part-card, #intro, #reset-earth, #mission';
 
 /** The cursor element and its dwell. tip = {x, y} in viewport fractions, or null when not pointing.
  * atModel(x, y), when given, returns a stable { click } target for the model part under the cursor (or null), so pointing at a part picks it too. */

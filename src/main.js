@@ -32,7 +32,7 @@ import { createIntro, labelsOpen } from './ui/intro.js';
 import { Lesson } from './lesson.js';
 import { LESSONS } from './content/earth/lessons.js';
 import { showCrustActivity } from './ui/crustActivity.js';
-import { mountPointer } from './ui/pointer.js';
+import { mountPointer, UI } from './ui/pointer.js';
 import { mountStuck } from './ui/stuck.js';
 
 const $ = (id) => document.getElementById(id);
@@ -177,6 +177,7 @@ function setWalkthrough(playing) {
 }
 
 function setMode(m, keepIsolation = false) {
+  if (m === 'lesson') endMission();
   mode = m;
   $('mode-explore').classList.toggle('on', m === 'explore');
   $('mode-lesson').classList.toggle('on', m === 'lesson');
@@ -244,8 +245,9 @@ $('lesson-finish').onclick = () => {
 };
 layerPicker.onchange = () => {
   const picked = layerPicker.value;
-  setMode('explore');
   const i = scene.parts.findIndex((p) => p.id === picked);
+  if (drillPick) return void (i >= 0 && drillPick(i)); // a find-the-part task: choosing it from the list counts too
+  setMode('explore');
   scene.setSel(i);
   showPart(i);
 };
@@ -580,6 +582,7 @@ $('b-spin').onclick = () => {
 };
 /** Back to the original model from any state: whole Earth, assembled, starting view and zoom, nothing highlighted. */
 function resetAll() {
+  endMission();
   stopTour();
   closeLearn();
   setWalkthrough(false);
@@ -595,7 +598,10 @@ function resetAll() {
 }
 // colour the cut-away by layer or by a property at each depth; property views open the Earth and tilt it to show the faces
 let viewNow = 0;
+let mission = null; // the running earthquake mission: { i: step index, predicted: layer id }
+let missionView = false; // true while the mission itself changes the view
 const views = mountViewSwitch($('views'), $('legend'), (i) => {
+  if (mission && !missionView) endMission(); // the learner chose another view: the mission's step no longer matches the model
   viewNow = i;
   scene.uniforms.uProp.value = i;
   const id = VIEWS[i].id, isQuake = id === 'quake', isGlobe = id === 'crust1' || id === 'labmap';
@@ -813,7 +819,11 @@ function control(t, dt, freshFrame) {
       zoomRef = null;
       return setActive('');
     }
-    if (!zoomRef || zoomRef.kind !== kind) zoomRef = { kind, d0: Math.max(60, dist), s0: scene.scaleTarget, e0: scene.explodeTarget };
+    if (!zoomRef || zoomRef.kind !== kind) {
+      // hands starting very close give no steady baseline: wait until they are apart, so nothing jumps before they move
+      if (dist < 60) return setActive(kind === 'zoom' ? 'ZOOM' : 'TWO');
+      zoomRef = { kind, d0: dist, s0: scene.scaleTarget, e0: scene.explodeTarget };
+    }
     if (kind === 'zoom') scene.scaleTarget = clamp((zoomRef.s0 * dist) / zoomRef.d0, 0.5, 2.6);
     else scene.explodeTarget = clamp(zoomRef.e0 + (dist - zoomRef.d0) / (0.3 * W), 0, 1);
     setActive(kind === 'zoom' ? 'ZOOM' : 'TWO');
@@ -881,7 +891,7 @@ mountStuck($('stuck'), $('stuck-menu'), {
 });
 
 // ------------------------------------------------------------------ mouse + keyboard
-const onUi = (e) => e.target.closest && e.target.closest('#panel,#toolbar,#viewbar,#start,#tour,#stuck,#stuck-menu,#part-card,#intro,#reset-earth,#mission');
+const onUi = (e) => e.target.closest && e.target.closest(UI);
 
 addEventListener('pointerdown', (e) => {
   if (e.button !== 0 || !e.isPrimary || onUi(e)) return;
@@ -1224,7 +1234,7 @@ function frame(now) {
   // the mission's open step moves on once the Earth is pulled apart
   if (mission && MISSION_STEPS[mission.i] === 'open' && scene.shownExplode >= 0.85) missionNext();
   // with hands, a large reset target appears whenever the model is not in its starting state
-  $('reset-earth').hidden = !camOn || Boolean(tour) || (scene.explodeTarget < 0.05 && Math.abs(scene.scaleTarget - 1) < 0.05 && scene.isolatedPart < 0);
+  $('reset-earth').hidden = !camOn || Boolean(tour) || Boolean(mission) || (scene.explodeTarget < 0.05 && Math.abs(scene.scaleTarget - 1) < 0.05 && scene.isolatedPart < 0);
   quake.tick(dt, scene.uniforms.uMotion.value === 0);
   scene.update(dt, t);
   drawOverlay();
@@ -1234,18 +1244,21 @@ requestAnimationFrame(frame);
 
 // ------------------------------------------------------------------ first mission: how an earthquake shows that part of Earth is liquid
 // Predict, open the Earth, find the core–mantle boundary, see the waves, then explain. The same steps work by hand or mouse.
-let mission = null; // { i: step index, predicted: layer id }
 const MS = MISSION.steps;
 const partIndex = (id) => scene.parts.findIndex((p) => p.id === id);
+const missionSelect = (i) => {
+  missionView = true;
+  views.select(i);
+  missionView = false;
+};
 function startMission() {
   stopTour();
   closeLearn();
   if (intro) endIntro();
   if (mode === 'lesson') setMode('explore');
   restoreParts();
-  views.select(0);
-  scene.explodeTarget = 0;
-  scene.setSel(-1);
+  missionSelect(0);
+  scene.setSel(-1); // an Earth already opened (say, at the end of the intro) stays open, and the open step is skipped
   showPart(-1);
   mission = { i: 0, predicted: null };
   $('mission').hidden = false;
@@ -1284,6 +1297,7 @@ function showMission() {
     say(MS.predict.text);
     for (const [id, label] of MS.predict.options) choice(label, () => { mission.predicted = id; missionNext(); });
   } else if (step === 'open') {
+    if (scene.explodeTarget >= 0.85) return missionNext();
     say(handsOn ? MS.open.hands : MS.open.mouse);
     help.hidden = false;
     help.textContent = 'Pull it apart';
@@ -1310,7 +1324,7 @@ function showMission() {
     help.onclick = () => found(true);
   } else if (step === 'evidence') {
     restoreParts();
-    views.select(VIEWS.findIndex((v) => v.id === 'quake'));
+    missionSelect(VIEWS.findIndex((v) => v.id === 'quake'));
     say(MS.evidence.text);
     next.hidden = false;
     next.textContent = 'I have seen it';
@@ -1331,7 +1345,7 @@ function showMission() {
     say('Mission complete: the waves showed you that the outer core is liquid. Carry on with the outer core, or explore on your own.');
     choice('Learn more about the outer core', () => {
       endMission();
-      views.select(0);
+      missionSelect(0);
       pickPart(partIndex(MISSION.below));
       $('part-learn').click();
     });

@@ -2,17 +2,19 @@
 // Prompts each gesture on screen, samples the app state every frame, then shows a results table you can copy.
 // "Save recording" downloads the per-camera-frame hand measurements (no images) so a session can be replayed offline.
 
-// calm: no command may fire. want: the commands that should fire, exactly. end: what must be true when the step ends.
+// calm: no command may fire. want: the commands that should fire, exactly. end(g, step): what must be true when the step ends
+// (step.start holds the opening and zoom when it began).
 const STEPS = [
   { id: 'ENTER', say: '🙈 Hide your hand, then bring it in ☝️ pointing at the Earth', s: 8, reset: true, calm: true },
-  { id: 'POINT_PINCH', say: '☝️🤏 Point and pinch around, as if picking a layer', s: 8, calm: true },
   { id: 'MOVE', say: '✋ Open hand: move it around to turn the Earth', s: 8, calm: true, ok: ['MOVE'] },
   { id: 'RELAX', say: '🖐 Relaxed, loose hand (no pose)', s: 6, calm: true },
   { id: 'PEACE', say: '✌️ Peace, hold still till the ring fills, drop it. 3 times', s: 14, reset: true, want: { PEACE: 3 }, end: (g) => g.sel >= 0 },
   { id: 'FIST', say: '✊ Make a fist, open, fist again (nothing should happen)', s: 6, calm: true },
   { id: 'TWO', say: '🙌 Two open hands: start close, pull them wide apart', s: 6, ok: ['TWO'], calm: true, end: (g) => g.explode > 0.5 },
+  { id: 'PICK', say: '☝️ Point at the outer core and hold until it is picked', s: 8, calm: true, end: (g) => g.parts[g.sel]?.id === 'outer-core' },
   { id: 'ZOOM', say: '🤜🤛 Two fists: start close, move them apart', s: 6, ok: ['ZOOM'], calm: true, end: (g) => g.scale > 1.2 },
-  { id: 'MIXED', say: '✋✊ One open hand, one fist, move them apart (nothing should move)', s: 6, calm: true },
+  { id: 'MIXED', say: '✋✊ One open hand, one fist, move them apart (nothing should move)', s: 6, calm: true,
+    end: (g, st) => Math.abs(g.explode - st.start.explode) < 0.05 && Math.abs(g.scale - st.start.scale) < 0.05 },
   { id: 'RESET', say: '☝️ Point at “Put Earth back together” and hold', s: 6, want: { RESET: 1 }, end: (g) => g.isolated < 0 && g.sel < 0 && g.scale === 1 },
 ];
 const READY = 5; // countdown before the first step (s)
@@ -84,6 +86,7 @@ function run(get, restore, cue, done) {
       return requestAnimationFrame(tick);
     }
     if (t >= total) {
+      if (stepNow?.end) stepNow.endOk = stepNow.end(get(), stepNow); // the last step's end state counts too
       cue.style.display = 'none';
       return done(report(samples, events), frames);
     }
@@ -92,13 +95,15 @@ function run(get, restore, cue, done) {
     const tin = t - (a - step.s);
     cue.textContent = `${step.say}  ${Math.ceil(step.s - tin)}`;
     if (step !== stepNow) {
-      if (stepNow?.end) stepNow.endOk = stepNow.end(get());
+      if (stepNow?.end) stepNow.endOk = stepNow.end(get(), stepNow);
       stepNow = step;
       if (step.reset) restore();
+      const g0 = get();
+      step.start = { explode: g0.explode, scale: g0.scale };
     }
     const g = get();
     for (; seen < g.fired.length; seen++) events.push({ step: step.id, g: g.fired[seen].g, t: +t.toFixed(2) });
-    samples.push({ step: step.id, tin, gesture: g.gesture, sel: g.sel, hands: g.hands.length, m: g.hands[0]?.metrics, isolated: g.isolated, part: (i) => g.parts[i]?.name });
+    samples.push({ step: step.id, tin, gesture: g.gesture, m: g.hands[0]?.metrics });
     if (g.frameTime !== lastFrame) {
       lastFrame = g.frameTime;
       const h = g.hands[0];

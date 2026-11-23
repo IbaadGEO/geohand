@@ -218,7 +218,7 @@ Shown under a part, beside the text that uses the word.
 
 **Mission: how can an earthquake show that part of Earth is liquid?**
 
-1. Predict: Earthquakes send out two kinds of wave. Shear (S) waves cannot travel through liquid. Which layer do you think stops them?
+1. Predict: An earthquake sends out several kinds of wave. This mission follows the two that travel through Earth’s interior, called body waves: P waves and shear (S) waves. S waves cannot travel through liquid. Which layer do you think stops them?
    - The crust
    - The mantle
    - The outer core
@@ -227,7 +227,7 @@ Shown under a part, beside the text that uses the word.
 3. Find: Find the boundary between rock and metal, the core–mantle boundary. Point at it and hold. / Find the boundary between rock and metal, the core–mantle boundary. Click it.
    - Found: Found it: the core–mantle boundary, 2,891 km down. Below it is the outer core, now pulled aside.
    - Show me: Here it is: the core–mantle boundary, 2,891 km down. Below it is the outer core, now pulled aside.
-4. Evidence (Earthquake view): Now the evidence. Waves from an earthquake at the top: the amber P waves cross the outer core, bending as they slow down. The blue direct S waves all stop at its top.
+4. Evidence (Earthquake view): Now the evidence: waves from an earthquake at the top, calculated here from PREM, a reference model fitted to earthquake recordings (Dziewonski & Anderson 1981, Abstract, p. 297). Many paths curve back up through the mantle. Follow the ones that reach the core: the amber P waves cross the outer core, bending as they slow down, while the blue direct S waves stop at its top.
 5. Explain: What does that tell us about the outer core?
    - ✔ It is liquid: S waves cannot pass through it
    - It is hotter than the mantle

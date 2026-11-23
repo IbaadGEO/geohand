@@ -8,7 +8,7 @@ export const MISSION = {
   below: 'outer-core', // the layer it reveals
   steps: {
     predict: {
-      text: 'Earthquakes send out two kinds of wave. Shear (S) waves cannot travel through liquid. Which layer do you think stops them?',
+      text: 'An earthquake sends out several kinds of wave. This mission follows the two that travel through Earth’s interior, called body waves: P waves and shear (S) waves. S waves cannot travel through liquid. Which layer do you think stops them?',
       options: [['crust', 'The crust'], ['mantle', 'The mantle'], ['outer-core', 'The outer core'], ['inner-core', 'The inner core']],
     },
     open: {
@@ -22,7 +22,7 @@ export const MISSION = {
       shown: 'Here it is: the core–mantle boundary, 2,891 km down. Below it is the outer core, now pulled aside.',
     },
     evidence: {
-      text: 'Now the evidence. Waves from an earthquake at the top: the amber P waves cross the outer core, bending as they slow down. The blue direct S waves all stop at its top.',
+      text: 'Now the evidence: waves from an earthquake at the top, calculated here from PREM, a reference model fitted to earthquake recordings (Dziewonski & Anderson 1981, Abstract, p. 297). Many paths curve back up through the mantle. Follow the ones that reach the core: the amber P waves cross the outer core, bending as they slow down, while the blue direct S waves stop at its top.',
     },
     explain: {
       q: 'What does that tell us about the outer core?',
