@@ -40,12 +40,11 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   float hi = abs(aPart - uHi) < 0.5 ? 1.0 : 0.0;
   float sel = abs(aPart - uSel) < 0.5 ? 1.0 : 0.0;
-  float tw = 0.82 + 0.18 * sin(uTime * 2.0 + aSeed * 60.0);
   float boost = max(hi, sel);
   gl_PointSize = uSize * uPR * (0.8 + 0.5 * fract(aSeed * 7.13)) * (1.0 + 0.7 * boost) * (${CAM_Z.toFixed(1)} / -mv.z);
-  // boundaries: a slow pulse travels round the ring
-  float pulse = m > 4.5 ? 0.55 + 0.9 * pow(0.5 + 0.5 * cos(atan(q.z, q.x) * 2.0 - uTime * 1.4), 6.0) : 1.0;
-  vColor = mix(aColor * tw * pulse, vec3(1.0), 0.45 * boost);
+  // boundaries glow steadily a little brighter than the layers
+  float glow = m > 4.5 ? 1.0 : 0.85;
+  vColor = mix(aColor * glow, vec3(1.0), 0.45 * boost);
   float visiblePart = uIsolate < 0.0 || abs(aPart - uIsolate) < 0.5 ? 1.0 : 0.0;
   // with a layer highlighted, the others fade back so it reads clearly
   float dim = uSel >= 0.0 && sel < 0.5 ? 0.3 : 1.0;
@@ -300,7 +299,9 @@ export class HoloScene {
           if (inst.pickable !== false && Math.random() < 160 / Math.max(160, n)) samples.push(x, y, z, inst.dir[0], inst.dir[1], inst.dir[2]);
         }
       });
-      meta.push({ id: p.id, kind: p.kind, name: p.name, desc: p.desc, color: p.color, anchors, samples: new Float32Array(samples) });
+      // a boundary is a flat ring round the axis: its label goes to whichever edge of the ring is outermost on screen
+      const a0 = p.instances[0].anchor, ring = p.kind === 'boundary' ? { o: [-c[0], a0[1] - c[1], -c[2]], r: Math.hypot(a0[0], a0[2]) } : null;
+      meta.push({ id: p.id, kind: p.kind, name: p.name, desc: p.desc, color: p.color, anchors, ring, samples: new Float32Array(samples) });
     });
 
     const geo = new THREE.BufferGeometry();
@@ -491,9 +492,18 @@ export class HoloScene {
     const v = new THREE.Vector3();
     this.group.updateMatrixWorld(true);
     const isolated = this.isolatedPart;
+    const centre = this._toScreen([0, 0, 0], v).x;
     return this.parts.map((p, i) => {
       const { a, d } = p.anchors[0];
-      const s = this._toScreen([a[0] + d[0] * e, a[1] + d[1] * e, a[2] + d[2] * e], v);
+      let s = this._toScreen([a[0] + d[0] * e, a[1] + d[1] * e, a[2] + d[2] * e], v);
+      if (p.ring) {
+        // seen edge-on, a fixed point on the ring can land near the middle of the Earth; use the ring's outermost edge instead
+        const { o, r } = p.ring;
+        for (let k = 0; k < 24; k++) {
+          const t = (k / 24) * Math.PI * 2, q = this._toScreen([o[0] + r * Math.cos(t), o[1], o[2] + r * Math.sin(t)], v);
+          if (Math.abs(q.x - centre) > Math.abs(s.x - centre)) s = q;
+        }
+      }
       return { i, x: s.x, y: s.y, name: p.name, color: p.color };
     }).filter((p) => isolated < 0 || p.i === isolated);
   }

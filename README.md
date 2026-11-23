@@ -2,7 +2,7 @@
 
 Learn Earth's interior with hand gestures or a mouse, at three levels of detail. Work in progress; the full README comes with the first release.
 
-Built on [HoloHand](https://github.com/IbaadGEO/HoloHand-Gesture-Agent-3D), which grew from Tuba Khan's [HoloHand-Gesture-Agent-3D](https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D) (MIT).
+Built on [HoloHand](https://github.com/IbaadGEO/HoloHand-Gesture-Agent-3D), which grew from Tuba Khan's [HoloHand-Gesture-Agent-3D](https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D) (MIT). Text is set in [Manrope](https://github.com/sharanda/manrope) by The Manrope Project Authors (SIL Open Font License 1.1), bundled with the app.
 
 ## Live updates
 

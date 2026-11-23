@@ -27,3 +27,9 @@ test('composition and behaviour disagree where the lesson says they do', () => {
 test('views are in the order the scene reads them', () => {
   assert.deepEqual(VIEWS.map((v) => v.id), ['layers', 'composition', 'behaviour', 'density', 'vs', 'quake', 'crust1', 'temperature', 'labmap', 'tomo']); // 5 and up: the layers are dimmed under an overlay (scene.js)
 });
+
+test('Advanced temperature legend sets the competing estimates side by side; Intermediate does not', () => {
+  const t = VIEWS.find((v) => v.id === 'temperature');
+  for (const s of ['5,200–5,700 K', '6,230 ± 500 K', '1,000 ± 500 K', 'about 1,400 K']) assert.ok(t.byLevel.postgrad.includes(s), s);
+  assert.equal(t.byLevel.undergrad, undefined);
+});

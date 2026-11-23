@@ -1,6 +1,7 @@
 // Info panel for the selected part or boundary. Top level is DOM-free so formatRef can be tested in node.
 import { renderRich } from './richText.js';
 import { stateOf } from '../content/earth/states.js';
+import { termsIn } from '../content/earth/glossary.js';
 
 /** APA-style reference line, as in docs/sources.md. Titles may carry rich markup (e.g. MgSiO~3~). */
 export function formatRef(r) {
@@ -32,11 +33,14 @@ const el = (tag, cls, text) => {
 export function mountPanel(root) {
   let current;
 
-  function show(part, refs, color = '#555a70') {
+  /** plain (the Normal level): no page locators under the text, and a list of the terms it uses with their meanings. */
+  function show(part, refs, color = '#555a70', plain = false) {
     if (part === current) return;
     current = part;
     if (!part) {
-      root.replaceChildren(el('p', 'info-prompt', 'What do you want to learn about?'), el('p', 'info-empty', 'Hold a peace sign to highlight a layer, or select one with the mouse.'));
+      root.replaceChildren(el('p', 'info-prompt', 'What do you want to learn about?'),
+        el('p', 'info-empty only-hands', 'Hold a peace sign to highlight a layer, or point at one and hold still.'),
+        el('p', 'info-empty only-mouse', 'Click a layer, or choose one from the list above.'));
       return;
     }
     // number references in order of first use
@@ -52,25 +56,27 @@ export function mountPanel(root) {
     if (part.kind === 'boundary') head.append(el('span', 'tag ghost', 'boundary'));
 
     const parts = [head];
-    // what the moving dots on the model mean for this part
+    // what the part is comes first; then what the moving dots on the model mean for it
+    const more = !part.draft && el('details', 'more');
+    if (more) {
+      more.append(el('summary', '', 'More detail'), el('p', '', part.long));
+      parts.push(el('p', 'short', part.short));
+    }
     const state = stateOf(part.id, part.kind);
     if (state) {
       const st = el('p', 'state', `${state.label}${cite(state.refs)}`);
-      st.append(el('span', 'where', `${state.where}. ${state.shown || 'The dots’ motion shows this'}; speeds are not to scale.`));
+      const note = `${state.shown || 'The dots’ motion shows this'}; speeds are not to scale.`;
+      st.append(el('span', 'where', plain ? note : `${state.where}. ${note}`));
       parts.push(st);
     }
-    if (!part.draft) {
-      const more = el('details', 'more');
-      more.append(el('summary', '', 'More detail'), el('p', '', part.long));
-      parts.push(el('p', 'short', part.short), more);
-    }
+    if (more) parts.push(more);
 
     if (part.numbers?.length) {
       const table = el('table', 'nums');
       for (const n of part.numbers) {
         const tr = el('tr');
         const val = el('td', '', `${n.value}${cite(n.refs)}`);
-        if (n.where) val.append(el('div', 'where', n.where));
+        if (n.where && !plain) val.append(el('div', 'where', n.where));
         tr.append(el('td', '', n.label), val);
         table.append(tr);
       }
@@ -88,6 +94,23 @@ export function mountPanel(root) {
         qs.append(d);
       }
       parts.push(qs);
+    }
+
+    if (plain) {
+      // each term is defined beside the text that uses it: words only in "More detail" are explained inside it
+      const words = (terms) => {
+        const ul = el('ul', 'terms');
+        for (const g of terms) {
+          const li = el('li');
+          li.append(el('b', '', `${g.term}: `), el('span', '', `${g.text}${cite(g.refs)}`));
+          ul.append(li);
+        }
+        return [el('h4', '', 'Words used here'), ul];
+      };
+      const shown = termsIn([part.short, state?.label, part.simplification, ...(part.numbers || []).flatMap((n) => [n.label, n.value])].join(' '));
+      const inMore = termsIn(part.long || '').filter((g) => !shown.includes(g));
+      if (shown.length) parts.push(...words(shown));
+      if (more && inMore.length) more.append(...words(inMore));
     }
 
     if (order.length) {

@@ -18,7 +18,7 @@
     </div>
 
     <section class="levels" id="levels" aria-label="Level"></section>
-    <button type="button" id="tour-play">▶ Start the tour <span>Runs automatically, no camera or mouse required</span></button>
+    <button type="button" id="tour-play">▶ Watch the tour <span>A short overview of the whole Earth, played for you</span></button>
 
     <section class="mode">
       <div class="levels" role="group" aria-label="Mode">
@@ -27,9 +27,10 @@
       </div>
       <div id="lesson-box" hidden>
         <div class="lesson-head"><b id="lesson-count"></b><span><button type="button" id="lesson-back">Back</button><button type="button" id="lesson-next">Next</button></span></div>
-        <button type="button" id="lesson-play" aria-pressed="false">Start the walkthrough</button>
+        <button type="button" id="lesson-play" aria-pressed="false">Play this lesson for me</button>
         <p id="lesson-text"></p>
         <div id="lesson-activity" hidden></div>
+        <button type="button" id="lesson-see" hidden>See it<small></small></button>
         <p id="lesson-src"></p>
         <button type="button" id="lesson-finish" hidden>Finish and start exploring</button>
       </div>
@@ -41,7 +42,8 @@
         <li data-g="MOVE"><i>✋</i><p><b>Open your hand and move it</b><span>Rotate the Earth</span></p></li>
         <li data-g="PEACE"><i>✌️</i><p><b>Make a peace sign and hold it still</b><span id="gest-peace">Next layer</span></p><em class="ring" id="ring-peace"></em></li>
         <li data-g="POINT"><i>☝️</i><p><b>Point at a button and hold</b><span>Select it when the ring fills</span></p></li>
-        <li data-g="TWO"><i>🙌</i><p><b>Use both hands</b><span>Move your hands apart to zoom in, together to zoom out</span></p></li>
+        <li data-g="TWO"><i>🙌</i><p><b>Pull both open hands apart</b><span>Open the Earth; bring them together to close it</span></p></li>
+        <li data-g="ZOOM"><i>🤜🤛</i><p><b>Move two fists apart or together</b><span>Zoom in or out</span></p></li>
         <li data-g="RESET"><i>✊✊</i><p><b>Make two fists and hold them still</b><span>Reset the model</span></p><em class="ring" id="ring-reset"></em></li>
       </ul>
     </section>
@@ -50,7 +52,7 @@
       <label for="layer-picker">Choose a layer or boundary</label>
       <select id="layer-picker"></select>
       <button type="button" id="part-pull" hidden>Move this part aside</button>
-      <button type="button" id="part-learn" class="learn-start" hidden>Explore this layer</button>
+      <button type="button" id="part-learn" class="learn-start" hidden>Learn about this part</button>
       <button type="button" id="part-study" hidden>Start the lesson here</button>
       <details class="question-bank">
         <summary>Ask a question</summary>
@@ -64,20 +66,17 @@
     <details class="controls">
       <summary>Controls</summary>
       <section class="model">
-        <div class="tags"><span class="tag" id="m-cat">Earth science</span><span class="tag ghost" id="m-count">0 parts</span></div>
         <h2 id="m-name">Loading…</h2>
         <p id="m-sub"></p>
       </section>
-      <section class="stat">
-        <div><label>Tracking</label><b id="s-track">Off</b></div>
-        <div><label>Hands</label><b id="s-hands">0</b></div>
+      <section class="stat only-hands">
+        <div><label>Hand tracking</label><b id="s-track">Off</b></div>
       </section>
       <section class="sliders">
-        <div class="slider"><label>Explode <b id="v-explode">0%</b></label><input id="r-explode" type="range" min="0" max="100" value="0" /></div>
-        <div class="slider"><label>Explode intensity <b id="v-int">100%</b></label><input id="r-int" type="range" min="30" max="150" value="100" /></div>
+        <div class="slider"><label>Pull apart <b id="v-explode">0%</b></label><input id="r-explode" type="range" min="0" max="100" value="0" /></div>
       </section>
       <section class="btns">
-        <button id="b-explode">Explode</button>
+        <button id="b-explode">Pull apart</button>
         <button id="b-spin" class="on">Auto-spin</button>
         <button id="b-reset">Reset view</button>
       </section>
@@ -112,18 +111,36 @@
       <button type="button" id="tour-stop">Stop tour</button>
     </div>
   </section>
+  <section id="intro" aria-label="Getting started" aria-live="polite" hidden>
+    <div class="tour-head"><b id="intro-title"></b><span id="intro-count"></span></div>
+    <p id="intro-text"></p>
+    <div class="tour-bar" id="intro-progress"><i id="intro-bar"></i></div>
+    <div class="tour-btns">
+      <button type="button" id="intro-pull" hidden>Pull it apart</button>
+      <button type="button" id="intro-skip">Skip the intro</button>
+    </div>
+  </section>
+  <section id="part-card" aria-label="This part" aria-live="polite" hidden>
+    <button type="button" id="pc-close" aria-label="Close">✕</button>
+    <b id="pc-title"></b>
+    <p id="pc-hook"></p>
+    <button type="button" id="pc-learn" class="pc-main">Learn about this part<small></small></button>
+    <button type="button" id="pc-walk">Start the lesson here<small></small></button>
+    <button type="button" id="pc-view" hidden>See it<small></small></button>
+  </section>
   <div id="banner"></div>
 
   <div id="start">
     <div class="card">
       <div class="logo big"></div>
       <h1>GeoHand</h1>
-      <p>Explore Earth’s interior by moving the model with your hands. Camera processing stays in your browser; no camera footage is uploaded.</p>
+      <p>Explore Earth’s interior with your hands or the mouse. With hands, camera processing stays in your browser; no camera footage is uploaded.</p>
       <div class="levels start-levels" id="start-levels" aria-label="Select your level"></div>
-      <button id="btn-cam" class="primary">Start camera</button>
-      <button id="btn-mouse" class="ghost">Use the mouse instead</button>
-      <button id="btn-tour" class="ghost">View the tour</button>
+      <p id="level-who"></p>
+      <div class="start-ways"><button id="btn-cam" class="primary">Use your hands<small>needs a camera</small></button><button id="btn-mouse" class="primary">Use the mouse</button></div>
+      <button id="btn-tour" class="ghost">Watch the tour<small>a short overview, played for you</small></button>
       <small>With a mouse, click a layer to highlight it or drag it out. Drag the background to rotate and scroll to zoom. Use the arrow keys to move between layers; double-click or press R to reset.</small>
+      <p class="credit">Made by Ibaad Sidik. Hand tracking built on <a href="https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D" target="_blank" rel="noopener">HoloHand</a> by Tuba Khan.</p>
     </div>
   </div>
 

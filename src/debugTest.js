@@ -10,7 +10,8 @@ const STEPS = [
   { id: 'RELAX', say: '🖐 Relaxed, loose hand (no pose)', s: 6, calm: true },
   { id: 'PEACE', say: '✌️ Peace, hold still till the ring fills, drop it. 3 times', s: 14, reset: true, want: { PEACE: 3 }, end: (g) => g.sel >= 0 },
   { id: 'FIST', say: '✊ Make a fist, open, fist again (nothing should happen)', s: 6, calm: true },
-  { id: 'TWO', say: '🙌 Two hands, apart and together', s: 6, ok: ['TWO'], calm: true },
+  { id: 'TWO', say: '🙌 Two open hands: start close, pull them wide apart', s: 6, ok: ['TWO'], calm: true, end: (g) => g.explode > 0.5 },
+  { id: 'ZOOM', say: '🤜🤛 Two fists: start close, move them apart', s: 6, ok: ['ZOOM'], calm: true, end: (g) => g.scale > 1.2 },
   { id: 'RESET', say: '✊✊ Two fists, hold still till the ring fills', s: 6, want: { RESET: 1 }, end: (g) => g.isolated < 0 && g.sel < 0 && g.scale === 1 },
 ];
 const READY = 5; // countdown before the first step (s)
@@ -23,7 +24,7 @@ const median = (a) => {
   return s.length ? +s[s.length >> 1].toFixed(2) : null;
 };
 
-/** get() returns { gesture, hover, sel, model, level, fired, hold, parts, hands, tracking, isolated, frameTime, aspect }
+/** get() returns { gesture, hover, sel, model, level, fired, hold, parts, hands, tracking, isolated, explode, scale, frameTime, aspect }
  * from main.js; restore() puts every part back and clears the selection. */
 export function mount(get, restore) {
   const panel = document.createElement('div');

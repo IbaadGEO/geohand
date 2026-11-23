@@ -27,7 +27,10 @@ export class Dwell {
 
 const CLICKABLE = 'button:not([disabled]), [role="button"], summary, a[href]';
 
-/** The cursor element and its dwell. tip = {x, y} in viewport fractions, or null when not pointing. */
+const UI = '#panel, #toolbar, #viewbar, #start, #tour, #stuck, #stuck-menu, #part-card, #intro';
+
+/** The cursor element and its dwell. tip = {x, y} in viewport fractions, or null when not pointing.
+ * atModel(x, y), when given, returns a stable { click } target for the model part under the cursor (or null), so pointing at a part picks it too. */
 export function mountPointer() {
   const cursor = document.createElement('div');
   cursor.id = 'hand-cursor';
@@ -35,7 +38,7 @@ export function mountPointer() {
   document.body.append(cursor);
   const dwell = new Dwell();
   return {
-    update(tip, dt) {
+    update(tip, dt, atModel) {
       if (!tip) {
         cursor.hidden = true;
         dwell.update(null, dt);
@@ -44,7 +47,8 @@ export function mountPointer() {
       const x = tip.x * innerWidth, y = tip.y * innerHeight;
       cursor.hidden = false;
       cursor.style.transform = `translate(${x}px, ${y}px)`;
-      const target = document.elementFromPoint(x, y)?.closest(CLICKABLE) || null;
+      const under = document.elementFromPoint(x, y);
+      const target = under?.closest(CLICKABLE) || (atModel && !under?.closest(UI) ? atModel(x, y) : null) || null;
       const fired = dwell.update(target, dt);
       cursor.style.setProperty('--p', dwell.progress.toFixed(3));
       cursor.classList.toggle('on-target', Boolean(target) && target !== dwell.spent);

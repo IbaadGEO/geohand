@@ -1,5 +1,8 @@
 // Learning loops: a check before the layer is shown, then tests after it. Every correct answer and explanation
 // restates the part's cited content (alevel.js, undergrad.js, postgrad.js), with the same page locators. Wrong options are labelled wrong.
+import { EARTH } from './index.js';
+import { stateOf } from './states.js';
+
 const item = (q, options, answer, explain, where, ...refs) => ({ q, options, answer, explain, where, refs });
 
 export const LOOPS = {
@@ -314,7 +317,7 @@ export const LOOPS = {
       ],
     },
     'transition-zone': {
-      see: { view: 'layers', look: 'The transition zone is the band between the 410 and 660 km boundaries.' },
+      see: { view: 'layers', look: 'The transition zone is the band between the 410 and 660 km boundaries. At the 410 km line olivine turns into wadsleyite. Deeper, at about 520 km, wadsleyite turns into ringwoodite, which lasts down to the 660 km line. These high-pressure forms are thought to make up most of the band.' },
       check: item(
         'Before you start: what happens to olivine below about 410 km?',
         ['It melts', 'It gives way to its high-pressure forms, wadsleyite and ringwoodite', 'Nothing changes'],
@@ -397,10 +400,52 @@ export const LOOPS = {
           'PREM, Table I, p. 308', 'prem1981'),
       ],
     },
+    'lab-measured': {
+      see: { view: 'labmap', look: 'Each ocean cell is coloured by the depth of the base of the plate, worked out from the age of its sea floor: pale near the mid-ocean ridges, where the plate is young and thin, and darker on older floor. The oldest floor, in the western Pacific, is beyond the measured ages and shows grey.' },
+      check: item(
+        'Before you start: is the base of the ocean plates at the same depth everywhere?',
+        ['Yes, about 80 km everywhere', 'No: it gets deeper as the plate gets older', 'No: it gets shallower as the plate gets older'],
+        1,
+        'No. Measured with receiver functions, it deepens as the plate ages and cools: about 55 km at 25 million years and 82 km at 129 million years.',
+        'Fischer et al. (2010), p. 565', 'fischer2010',
+      ),
+      tests: [
+        item('How deep is it under the 49-million-year-old Philippine Sea Plate?', ['About 76 km', 'About 20 km', 'About 200 km'], 0,
+          'About 76 km.',
+          'Fischer et al. (2010), p. 565', 'fischer2010'),
+        item('Where does it lie deepest?', ['Under old continents, at roughly 200 km', 'Under the mid-ocean ridges', 'Under the oldest Pacific floor'], 0,
+          'Under old continents (cratons), where depleted mantle reaches roughly 200 km.',
+          'Fischer et al. (2010), p. 553', 'fischer2010'),
+        item('Why are some ocean cells on the map grey?', ['Their sea floor is younger than 25 or older than 129 million years, outside the measured ages', 'They are land', 'They have no plate under them'], 0,
+          'Their floor is younger than 25 or older than 129 million years. Fischer et al. measured depths only between those ages, so no depth is given.',
+          'Fischer et al. (2010), p. 565; Seton et al. (2020) age grid', 'fischer2010', 'seton2020'),
+      ],
+    },
+    cmb: {
+      see: { view: 'temperature', look: 'The cross-section is coloured by temperature: the brighter, the hotter. Through most of the mantle the colour changes only slowly; the big step is just above the core.' },
+      check: item(
+        'Before you start: how hot is the core–mantle boundary?',
+        ['About 1,000 K', 'About 4,050 K', 'About 10,000 K'],
+        1,
+        'About 4,050 ± 500 K, estimated from the melting of iron.',
+        'Anzellini et al. (2013), p. 466', 'anzellini2013',
+      ),
+      tests: [
+        item('What is the temperature contrast across the boundary layer at the base of the mantle?', ['About 1,000 ± 500 K', 'About 10 K', 'About 10,000 K'], 0,
+          'About 1,000 ± 500 K, across the thermal boundary layer heated by the core below.',
+          'Lay et al. (1998), p. 461', 'lay1998'),
+        item('How much heat crosses from the core into the mantle?', ['An estimated 5–13 TW', 'None', 'More than 1,000 TW'], 0,
+          'An estimated 5–13 TW, which is highly uncertain. It helps drive mantle convection.',
+          'Davies & Davies (2010), §4.8, p. 22; Garnero et al. (2016), p. 481', 'davies2010', 'garnero2016'),
+        item('What happens to density across the boundary?', ['It jumps from 5.57 to 9.90 g/cm^3^', 'It falls', 'It stays the same'], 0,
+          'It jumps from 5.57 to 9.90 g/cm^3^ in PREM.',
+          'PREM, Table I, p. 308', 'prem1981'),
+      ],
+    },
   },
   postgrad: {
     'transition-zone': {
-      see: { view: 'layers', look: 'The transition zone is the band between the 410 and 660 km boundaries.' },
+      see: { view: 'layers', look: 'The transition zone is the band between the 410 and 660 km boundaries. At the 410 km line olivine turns into wadsleyite. Deeper, at about 520 km, wadsleyite turns into ringwoodite, which lasts down to the 660 km line. These high-pressure forms are thought to make up most of the band.' },
       check: item(
         'Before you start: how much water does FTIR find in the ringwoodite inclusion in diamond JUc29?',
         ['None', 'A minimum of 1.4–1.5 wt% H~2~O, with large uncertainty', 'Exactly 2.5 wt%'],
@@ -421,7 +466,7 @@ export const LOOPS = {
       ],
     },
     'lower-mantle': {
-      see: { view: 'layers', look: 'In the cross-section, blue slabs of old plate sink, and pale plumes of hot rock rise from near the core. Where they sit is illustrative, and the speeds are not to scale.' },
+      see: { view: 'tomo', look: 'The cut is coloured by real S-wave speed from SEMUCB-WM1, against the average at each depth: red is slower, blue faster. Look for the broad slow regions at the base of the mantle: one beneath the Pacific, the other beneath the South Atlantic and Africa.' },
       check: item(
         'Before you start: French & Romanowicz image broad plume conduits. Could thin plumes, about 200 km wide, explain the same anomaly?',
         ['Yes, easily', 'Only with an implausible 1,500–2,000 °C temperature excess'],
@@ -504,7 +549,107 @@ export const LOOPS = {
           'Ishii & Dziewoński (2002), p. 14026', 'ishii2002'),
       ],
     },
+    d520: {
+      see: { view: 'layers', look: 'The faint line inside the transition zone, between the 410 and 660 km boundaries, is the 520. It is drawn sharp and all the way round; the real boundary is a gradient and is not seen everywhere.' },
+      check: item(
+        'Before you start: does PREM have a discontinuity at 520 km?',
+        ['Yes, a strong one', 'No: PREM has none at 520 km, like most reference models'],
+        1,
+        'No. Unlike the 410 and 660, the 520 is missing from most reference models, and PREM has none at 520 km.',
+        'Frost (2008), p. 174; PREM, Table I, p. 308', 'frost2008', 'prem1981',
+      ),
+      tests: [
+        item('What mineral change happens at about 520 km?', ['Wadsleyite turns into ringwoodite, at about 17.5 GPa', 'Olivine turns into wadsleyite', 'Perovskite turns into post-perovskite'], 0,
+          'Wadsleyite turns into ringwoodite, at about 17.5 GPa in a pyrolite mantle.',
+          'Frost (2008), p. 172', 'frost2008'),
+        item('Why do high-frequency (1 Hz) waves miss it?', ['It is a speed gradient more than 10 km thick, not a sharp jump', 'It is too deep for them', 'It exists only under continents'], 0,
+          'It shows up at lower frequencies but not at 1 Hz, which fits a gradient more than 10 km thick.',
+          'Frost (2008), p. 175', 'frost2008'),
+        item('Over what depth does the transformation itself spread?', ['About 25 km', 'About 1 km', 'About 500 km'], 0,
+          'About 25 km.',
+          'Frost (2008), p. 175', 'frost2008'),
+      ],
+    },
+    'post-perovskite': {
+      see: { view: 'layers', look: 'The band of short streaks just above the core, from about 2,700 km, is post-perovskite. The streaks stand for lined-up platy crystals; their size, spacing and even spread round the cut are schematic.' },
+      check: item(
+        'Before you start: when does MgSiO~3~ perovskite become post-perovskite?',
+        ['Above 125 GPa and 2,500 K, about 2,700 km deep', 'At 660 km, where ringwoodite breaks down', 'Never: perovskite is stable down to the core'],
+        0,
+        'Above 125 GPa and 2,500 K, conditions reached about 2,700 km deep.',
+        'Murakami et al. (2004), Abstract, p. 855', 'murakami2004',
+      ),
+      tests: [
+        item('How much denser is post-perovskite than perovskite?', ['1.0–1.2%', 'About 10%', 'It is less dense'], 0,
+          '1.0–1.2% denser.',
+          'Murakami et al. (2004), Abstract, p. 855', 'murakami2004'),
+        item('Which seismic feature may the transition explain?', ['The D″ discontinuity, about 200–300 km above the core, with a speed increase of about 3%', 'The Moho', 'The 410 km discontinuity'], 0,
+          'The D″ discontinuity: seen about 200–300 km above the core–mantle boundary, at 119–125 GPa, with a speed increase of about 3%. The transition occurs at matching depths.',
+          'Murakami et al. (2004), p. 857', 'murakami2004'),
+        item('What could lined-up post-perovskite crystals do to S waves?', ['Make horizontally polarised S waves (V~SH~) faster than vertically polarised ones (V~SV~)', 'Stop them', 'Make all S waves slower'], 0,
+          'Make V~SH~ faster than V~SV~. That anisotropy is seen only below the D″ discontinuity.',
+          'Murakami et al. (2004), p. 858', 'murakami2004'),
+      ],
+    },
+    'lab-measured': {
+      see: { view: 'labmap', look: 'Each ocean cell is coloured by the depth of the base of the plate, from its sea-floor age and Fischer et al.’s measured depths, joined straight. Grey cells are younger than 25 or older than 129 Ma, outside the measured ages.' },
+      check: item(
+        'Before you start: how thick is 129-million-year-old Pacific lithosphere, measured with receiver functions?',
+        ['82 ± 4.4 km', '104 km', 'About 200 km'],
+        0,
+        '82 ± 4.4 km. The 104 km is the asymptote of the fitted cooling-plate model, not a measured depth.',
+        'Fischer et al. (2010), p. 565', 'fischer2010',
+      ),
+      tests: [
+        item('Do LAB depths under ocean islands follow plate age?', ['Mostly not: reported depths range from 40 to 140 km', 'Yes, exactly', 'There are no measurements there'], 0,
+          'Mostly not: reported depths under ocean islands range from 40 to 140 km.',
+          'Fischer et al. (2010), p. 565', 'fischer2010'),
+        item('What does the oceanic lithosphere seem to be, compared with the asthenosphere below?', ['A dry, depleted layer over a hydrated, fertile asthenosphere', 'A wet layer over a dry one', 'The same material with the same water content'], 0,
+          'A dry, depleted layer over a hydrated, fertile asthenosphere.',
+          'Fischer et al. (2010), Abstract, p. 551', 'fischer2010'),
+        item('What is the measured depth at 49 Ma in the Philippine Sea Plate?', ['76 ± 1.8 km', '55 km', '104 km'], 0,
+          '76 ± 1.8 km.',
+          'Fischer et al. (2010), p. 565', 'fischer2010'),
+      ],
+    },
+    cmb: {
+      see: { view: 'temperature', look: 'The cross-section is coloured by temperature. The mantle follows Katsura’s adiabat to 2,587 K at 2,800 km; the step from there to about 4,050 K at the core is the thermal boundary layer. How big that step is, is debated: the legend gives both estimates.' },
+      check: item(
+        'Before you start: do the estimates of the boundary layer above the core agree?',
+        ['Yes, to within 10 K', 'Not quite: about 1,000 ± 500 K (Lay et al.) against about 1,400 K (Anzellini et al.)'],
+        1,
+        'Not quite. Lay et al. (1998) estimate 1,000 ± 500 K across it; Anzellini et al. (2013), from iron melting, imply about 1,400 K and ~10 TW of heat flow.',
+        'Lay et al. (1998), p. 461; Anzellini et al. (2013), p. 466', 'lay1998', 'anzellini2013',
+      ),
+      tests: [
+        item('What ambient mantle temperature do Lay et al. give above the boundary layer?', ['About 3,000 K', 'About 1,000 K', 'About 6,000 K'], 0,
+          'About 3,000 K.',
+          'Lay et al. (1998), p. 461', 'lay1998'),
+        item('What share of surface heat flux may plumes from the boundary layer carry?', ['10–15%', 'About 90%', 'None'], 0,
+          '10–15%.',
+          'Lay et al. (1998), p. 461', 'lay1998'),
+        item('What temperature does Katsura’s adiabat reach at 2,800 km?', ['2,587 K', '4,050 K', '1,646 K'], 0,
+          '2,587 (60) K. The profile leaves out the boundary layer at the base of the mantle.',
+          'Katsura (2022), Abstract and Table 3, pp. 6–7', 'katsura2022'),
+      ],
+    },
   },
 };
+
+// Parts with no hand-written loop get a recall loop built from their own cited common questions: the learner thinks of the
+// answer, reveals it and says whether they knew it. No invented wrong options, so nothing new to check.
+const recall = (x) => ({ q: x.q, explain: x.a, where: x.where, refs: x.refs });
+for (const [level, { parts }] of Object.entries(EARTH)) {
+  for (const p of parts) {
+    if (LOOPS[level]?.[p.id] || (p.questions || []).length < 2) continue;
+    const st = stateOf(p.id, p.kind);
+    LOOPS[level][p.id] = {
+      recall: true,
+      see: { view: 'layers', look: st ? `${st.label}. ${st.shown || 'The dots’ motion shows this'}; speeds are not to scale.` : p.short },
+      check: { ...recall(p.questions[0]), q: `Before you start: ${p.questions[0].q}` },
+      tests: p.questions.slice(1, 4).map(recall),
+    };
+  }
+}
 
 export const loopFor = (level, id) => LOOPS[level]?.[id] || null;

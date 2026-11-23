@@ -54,7 +54,7 @@ export const NUMBERS = {
     mantle: [
       n('Depth', 'from the Moho (24.4 km in PREM, 35 km in ak135) to about 2,890 km', BOTH),
       n('Density', '3.4 at the top to 5.6 g/cm^3^ at the bottom', PREM()),
-      n('Pyrolite model bulk chemistry (wt% as oxides)', 'about 45% silica (SiO~2~) and 38% magnesium oxide (MgO) by weight', MS()),
+      n('What it is made of (pyrolite model)', 'about 45% silica (SiO~2~) and 38% magnesium oxide (MgO) by weight', MS()),
       n('Plumes', 'broad columns of slow seismic waves rooted near the base of the mantle beneath Hawaii, Iceland and Samoa, interpreted as plumes of hot rock', FR('Abstract, p. 95')),
     ],
     'outer-core': [n('Made of', 'iron and nickel, with about 10% of lighter elements such as oxygen, sulfur or silicon', MS('Abstract, p. 223')), n('Depth', 'about 2,890–5,150 km', PREM()), n('Shear (S) wave speed', '0: S waves cannot pass, so it is liquid', PREM()), n('Density', '9.9–12.2 g/cm^3^', PREM()), n('Temperature at the top', 'about 4,000 K', HI('p. 658'))],

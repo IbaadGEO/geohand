@@ -13,7 +13,7 @@ const [BLUE, ORANGE, AQUA, AMBER, MAGENTA] = ['#3987e5', '#d95926', '#199e70', '
 const isCrust = (id) => /crust/.test(id);
 const isCore = (id) => /core/.test(id);
 const COMPOSITION = [
-  ['Crust: rock richer in silica, about 61% SiO~2~', ORANGE, (id) => isCrust(id)],
+  ['Crust: rock richer in silica (continental crust about 61% SiO~2~)', ORANGE, (id) => isCrust(id)],
   ['Mantle: rock richer in magnesium, about 45% SiO~2~ and 38% MgO', AQUA, (id) => !isCrust(id) && !isCore(id)],
   ['Core: iron–nickel metal', AMBER, (id) => isCore(id)],
 ];
@@ -50,16 +50,16 @@ VIEWS.push({
     ['P waves: travel through solid and liquid', QUAKE_COLORS.P],
     ['S waves: stop at the liquid outer core', QUAKE_COLORS.S],
     [`P shadow zone: no direct P waves ${QF.p[0]}°–${QF.p[1]}° away`, QUAKE_COLORS.pShadow],
-    [`S shadow zone: no S waves beyond ${QF.s}°`, QUAKE_COLORS.sShadow],
+    [`S shadow zone: no direct S waves beyond ${QF.s}°`, QUAKE_COLORS.sShadow],
   ],
   note: 'Ray paths calculated here from PREM wave speeds, Table I, p. 308. The clock is sped up.',
-  caption: `Entering the liquid outer core, P waves slow down and bend, so a band of the surface gets no direct P waves. P waves that cross the inner core land in that band from about ${QF.innerFrom}° on. S waves cannot enter the liquid at all.`,
+  caption: `Entering the liquid outer core, P waves slow down and bend, so a band of the surface gets no direct P waves. P waves that cross the inner core land in that band from about ${QF.innerFrom}° on. S waves cannot enter the liquid at all. Waves that cross the core as P and turn back into S on the far side are not drawn.`,
   more: 'Why the shadows? Test yourself',
   q: {
-    q: `Why do no S waves arrive more than about ${QF.s}° from the earthquake?`,
+    q: `In this drawing, why do no direct S waves arrive more than about ${QF.s}° from the earthquake?`,
     options: ['The liquid outer core prevents S waves from passing through', 'The mantle absorbs them', 'They are too slow to arrive'],
     answer: 0,
-    explain: 'PREM gives an S-wave speed of 0 in the outer core, so S waves cannot travel through it and the core casts an S-wave shadow. The mantle does not block them: PREM’s S-wave speeds there are above 4 km/s.',
+    explain: 'PREM gives an S-wave speed of 0 in the outer core, so S waves cannot travel through it and the core casts an S-wave shadow. The mantle does not block them: PREM’s S-wave speeds there are above 4 km/s. Waves that cross the core as P and turn back into S on the far side can still arrive; they are not drawn here.',
     where: 'PREM, Table I, p. 308; paths calculated here from it',
   },
 });
@@ -86,38 +86,41 @@ VIEWS.push({
   caption: 'Most of the mantle warms only slowly with depth, about 0.2–0.5 K per km. The big rise is at the bottom: across the hot boundary layer above the core, from about 2,600 K to about 4,050 K.',
   more: 'Where does it heat up fastest? Test yourself',
   q: {
-    q: 'Where does the temperature rise most sharply?',
+    q: 'In the profile shown, where does the temperature rise most sharply?',
     options: ['In the boundary layer just above the core', 'In the transition zone', 'In the inner core'],
     answer: 0,
-    explain: 'Just above the core: the adiabat reaches 2,587 K at 2,800 km (Katsura 2022), while the core–mantle boundary is about 4,050 K (Anzellini et al. 2013). In the mantle above, the adiabat rises only 0.2–0.5 K per km.',
+    explain: 'Just above the core: the adiabat reaches 2,587 K at 2,800 km (Katsura 2022), while the core–mantle boundary is about 4,050 K (Anzellini et al. 2013). In the mantle above, the adiabat rises only 0.2–0.5 K per km. The drawing joins those two estimates with a straight line; the real shape of the step is not known from them.',
     where: 'Katsura (2022), Table 3, pp. 6–7; Anzellini et al. (2013), p. 466',
+  },
+  byLevel: {
+    postgrad: 'Estimates differ. Temperature step across the boundary layer above the core: 1,000 ± 500 K (Lay et al. 1998, p. 461) against about 1,400 K (Anzellini et al. 2013, p. 466). Inner-core boundary temperature: 5,200–5,700 K (Hirose et al. 2013, p. 682). A different quantity, for comparison: pure iron melts at 6,230 ± 500 K at that pressure (Anzellini et al. 2013, p. 464); the core alloy melts lower.',
   },
 });
 VIEWS.push({
   id: 'labmap', label: 'LAB depth', title: 'Depth of the base of the plate under the oceans (km)', levels: ['undergrad', 'postgrad'],
   min: 55, max: 82, lo: '#9fe7ff', hi: '#16305c',
   note: 'Seafloor age from Seton et al. (2020), averaged to 1° cells, turned into depth with the measured ages of Fischer et al. (2010), p. 565: 55 km at 25 Ma, 76 km at 49 Ma, 82 km at 129 Ma, joined straight. Grey: floor younger than 25 Ma or older than 129 Ma, outside the measured ages. Land is left blank.',
-  caption: 'Ocean plates thicken as they age and cool, so the base of the plate is shallow near the mid-ocean ridges and deepest on the oldest floor, in the western Pacific.',
+  caption: 'Ocean plates thicken as they age and cool, so the base of the plate is shallow near the mid-ocean ridges and deepens away from them. Each cell’s depth comes from its sea-floor age, not from a measurement there. The oldest floor, much of it in the western Pacific, is older than the measured ages and shows grey.',
   more: 'Where is the plate thickest? Test yourself',
   q: {
-    q: 'Where is the ocean plate thickest?',
-    options: ['On the oldest floor, in the western Pacific', 'Along the mid-ocean ridges', 'Around Iceland'],
+    q: 'On this map, where is the ocean plate drawn thickest?',
+    options: ['On the oldest coloured floor, about 129 million years old', 'Along the mid-ocean ridges', 'Around Iceland'],
     answer: 0,
-    explain: 'On the oldest floor: in the grid, the Pacific east of Japan is over 120 million years old, where Fischer et al. (2010) measure about 82 km. Near the ridges the floor is young and the plate thin.',
-    where: 'Seton et al. (2020) age grid, 1° cell at 30.5°N 150.5°E; Fischer et al. (2010), p. 565',
+    explain: 'On the oldest floor still inside the measured ages. The map joins the measured depths straight and reaches 82 km at 129 million years, the depth given for Pacific lithosphere of that age. Older floor is grey. Near the ridges the floor is young and the plate thin.',
+    where: 'Fischer et al. (2010), p. 565; Seton et al. (2020) age grid',
   },
 });
 VIEWS.push({
   id: 'tomo', label: 'Tomography', title: 'S-wave speed against the average at that depth (%), along the equator', levels: ['postgrad'],
   min: -2, max: 2, lo: '#d6452f', mid: '#d8d2c8', hi: '#2f6fd6', ends: ['−2% slower', '+2% faster'],
   note: 'SEMUCB-WM1 (French & Romanowicz 2014), EarthScope EMC visualisation file: a slice through the equator from 80 km down, each depth compared with its global average. Colours stop at ±2%; the top few hundred km goes beyond that. The cut is real: 0° longitude points the same way as on the crust map.',
-  caption: 'Red is slower than average, usually hotter; blue is faster, usually colder. This slice crosses both broad slow regions at the base of the mantle, under the Pacific and under Africa. Near the top, the old continent of Africa shows fast and the young East Pacific seafloor shows slow.',
+  caption: 'The colour shows S-wave speed: red is slower than average, blue faster. Slower is often read as hotter and faster as colder, but that is an interpretation, and composition can matter too. This slice crosses both broad slow regions at the base of the mantle: one beneath the Pacific, the other beneath the South Atlantic and Africa. Near the top, the old continent of Africa shows fast and the young East Pacific seafloor shows slow.',
   more: 'What do the red patches at the bottom show? Test yourself',
   q: {
     q: 'What are the two broad slow (red) regions at the base of the mantle?',
-    options: ['The large low-shear-velocity provinces under the Pacific and Africa', 'Sinking ocean plates', 'The liquid outer core'],
+    options: ['The large low-shear-velocity provinces, beneath the Pacific and beneath the South Atlantic and Africa', 'Sinking ocean plates', 'The liquid outer core'],
     answer: 0,
-    explain: 'They match the two nearly antipodal low-velocity provinces beneath the Pacific and Africa (Garnero et al. 2016). In this slice, S waves are over 1.5% slower than average at 2,841 km beneath 150°W and 15°E.',
+    explain: 'They match the two nearly antipodal low-velocity provinces, one beneath the Pacific and the other beneath the South Atlantic and Africa (Garnero et al. 2016, p. 481). In this slice, S waves are over 1.5% slower than average at 2,841 km beneath 150°W and 15°E.',
     where: 'SEMUCB-WM1 equator slice; Garnero et al. (2016), p. 481',
   },
 });
@@ -140,12 +143,12 @@ const COMPARE_Q = {
   q: 'Which boundary separates two different kinds of rock?',
   options: ['The Moho', 'The base of the lithosphere'],
   answer: 0,
-  explain: 'The Moho. Crust above it has about 61% SiO~2~; the mantle rock below, about 45%. The base of the lithosphere lies inside the mantle.',
+  explain: 'The Moho. Continental crust above it has about 61% SiO~2~; the mantle rock below, about 45%. The base of the lithosphere lies inside the mantle.',
   where: 'Rudnick & Gao (2003), Table 11, p. 53; McDonough & Sun (1995), Table 4, p. 237; PREM, pp. 300, 308',
 };
 
-/** Buttons in `host`, legend in `legend`; onChange(index) when a view is picked. */
-export function mountViewSwitch(host, legend, onChange) {
+/** Buttons in `host`, legend in `legend`; onChange(index) when a view is picked. levelOf() picks a view's byLevel note. */
+export function mountViewSwitch(host, legend, onChange, levelOf = () => null) {
   let compareTimer = 0;
   const buttons = VIEWS.map((v, i) => {
     const b = document.createElement('button');
@@ -168,6 +171,11 @@ export function mountViewSwitch(host, legend, onChange) {
   function select(i, comparing = false) {
     if (!comparing) clearInterval(compareTimer);
     buttons.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    draw(i, comparing);
+    onChange(i);
+  }
+
+  function draw(i, comparing) {
     const v = VIEWS[i];
     legend.hidden = i === 0;
     legend.replaceChildren();
@@ -184,9 +192,10 @@ export function mountViewSwitch(host, legend, onChange) {
         for (const e of v.ends || [v.min, v.max]) add(ends, 'span', '', String(e));
       }
       add(legend, 'small', '', v.note);
+      const extra = v.byLevel?.[levelOf()];
+      if (extra) add(legend, 'small', 'by-level', extra);
       if (v.caption) compare(v, comparing);
     }
-    onChange(i);
   }
 
   /** Under a view with a caption: the caption, a Compare button for the two "divide the Earth" views, and one question. */
@@ -226,5 +235,7 @@ export function mountViewSwitch(host, legend, onChange) {
       qa.insertBefore(b, fb);
     });
   }
-  return { select };
+  /** Redraw the legend of the view in use, e.g. after the level changes. */
+  const refresh = () => draw(Math.max(0, buttons.findIndex((b) => b.getAttribute('aria-pressed') === 'true')), false);
+  return { select, refresh };
 }

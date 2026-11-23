@@ -137,10 +137,10 @@ export default {
         q("Is the Moho the base of the plate?", "No. The plate also includes the uppermost mantle below the Moho. PREM’s lid continues to 80 km.", "PREM, pp. 300, 308", 'prem1981'),
       ],
     }),
-    P('lab', 'boundary', 'PREM seismic lid base (LAB proxy)', {
-      short: "PREM’s seismic lid ends at 80 km, where Q~μ~ decreases from 600 to 80. This boundary is used as a proxy for the lithosphere–asthenosphere boundary in the model (PREM, pp. 300, 308).",
+    P('lab', 'boundary', 'Base of the plate: PREM average', {
+      short: "PREM’s seismic lid ends at 80 km, where the shear quality factor Q~μ~ decreases from 600 to 80: the lower Q~μ~, the more shear waves are damped. This boundary is used as a proxy for the lithosphere–asthenosphere boundary in the model (PREM, pp. 300, 308).",
       long: "Because PREM is a global average, it assigns a single depth to the base of the seismic lid: 80 km. There the shear quality factor Q~μ~ drops from 600 to 80, and below it the effective isotropic shear-wave speed keeps falling through the low-velocity zone (Dziewonski & Anderson 1981, Table I and footnote, p. 308). Dziewonski & Anderson treat the lid as the main part of the seismic lithosphere (pp. 300, 308), so this model draws the boundary between plate and asthenosphere here. The real boundary varies. Under the oceans it deepens as plates age: about 55 km at 25 million years and 82 km at 129 million years in one receiver-function study, and under old continents depleted mantle reaches roughly 200 km (Fischer et al. 2010, pp. 553, 565).",
-      simplification: "A single depth, 80 km, used everywhere. The real boundary varies in depth: the Measured LAB line shows how.",
+      simplification: "A single depth, 80 km, used everywhere. The real boundary varies in depth: the measured line shows how.",
       questions: [
         q("What changes at PREM’s lid base?", "The shear quality factor Q~μ~ drops from 600 to 80, so shear waves are damped more strongly below it.", "PREM, Table I, p. 308", 'prem1981'),
         q("Why call it a proxy?", "PREM gives one global depth, 80 km. For the visualisation, the model uses it as a proxy for the lithosphere–asthenosphere boundary.", "PREM, pp. 300, 308", 'prem1981'),
@@ -151,7 +151,7 @@ export default {
         q("Is the real lithosphere–asthenosphere boundary at 80 km everywhere?", "No. Under the oceans it deepens with plate age, from about 55 km at 25 million years to 82 km at 129 million years in one study; under old continents depleted mantle reaches roughly 200 km (Fischer et al. 2010).", "Fischer et al., pp. 553, 565", 'fischer2010'),
       ],
     }),
-    P('lab-measured', 'boundary', 'Measured LAB (by plate age)', {
+    P('lab-measured', 'boundary', 'Base of the plate: measured', {
       short: "Where the lithosphere–asthenosphere boundary has been measured, it is not at one depth. Under the oceans it deepens as plates age; under old continents it lies deeper still (Fischer et al. 2010, pp. 553, 565).",
       long: "Receiver functions, converted seismic waves, pick out the boundary directly. Under the oceans it gets deeper as plates age and cool: about 55 km at 25 million years, 76 km at 49 million years in the Philippine Sea Plate and 82 km at 129 million years in the Pacific (Fischer et al. 2010, p. 565). Under old continents (cratons), depleted mantle reaches roughly 200 km (p. 553).",
       simplification: "The line follows Fischer et al. (2010): 55 to 82 km under the oceans, joined straight between the measured ages, and about 200 km under the continent. Which side of the ocean is young is illustrative, and ages outside 25–129 million years are not drawn.",

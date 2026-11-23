@@ -38,8 +38,10 @@ export const stageNames = (loop) => ['Question', 'Where it is', 'How it works', 
  * model: { whole(), where(), why(viewId), capture(), restore(picture) } sets up and saves the 3D model.
  * Returns the controls the Stuck? menu uses: { names, current(), back(), replay(), jump(k) }.
  */
-export function runLoop(host, { level, part, loop, model, onClose }) {
+export function runLoop(host, { level, part, loop, model, onClose, hands = false }) {
   const names = stageNames(loop);
+  const lower = (t) => (/^.[a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t); // keeps LAB, PREM
+  const title = lower(part.title);
   const pictures = [];
   const results = []; // per test: answered right?
   let before = null;
@@ -70,6 +72,19 @@ export function runLoop(host, { level, part, loop, model, onClose }) {
     const opts = el(body, 'div', 'learn-options');
     const fb = el(body, 'div', 'learn-feedback');
     fb.setAttribute('aria-live', 'polite');
+    if (!it.options) {
+      // a recall question: think of the answer, reveal it, then say honestly whether you knew it
+      button(opts, 'Show the answer', 'learn-option').onclick = () => {
+        opts.replaceChildren();
+        el(fb, 'p', '', it.explain);
+        el(fb, 'p', 'where', `Source: ${it.where}`);
+        el(fb, 'p', 'learn-q', 'Did you know it?');
+        const row = el(fb, 'div', 'learn-row');
+        button(row, 'Yes, I knew it', 'primary').onclick = () => then(true);
+        button(row, 'Not yet', 'ghost').onclick = () => then(false);
+      };
+      return;
+    }
     it.options.forEach((o, i) => {
       const b = button(opts, o, 'learn-option');
       b.onclick = () => {
@@ -96,7 +111,7 @@ export function runLoop(host, { level, part, loop, model, onClose }) {
     {
       setup: () => model.where(),
       show: (body) => {
-        el(body, 'p', 'learn-q', `This is the ${part.title.toLowerCase()}, highlighted in the model.`);
+        el(body, 'p', 'learn-q', `This is the ${title}, highlighted in the model.`);
         if (part.simplification) el(body, 'p', 'where', `How it is drawn: ${part.simplification}`);
         next(body, 'Show me why');
       },
@@ -112,17 +127,42 @@ export function runLoop(host, { level, part, loop, model, onClose }) {
       },
     },
     {
+      // a real task: find the part on the opened model yourself
+      setup: () => model.seek(),
       show: (body) => {
-        el(body, 'p', 'learn-q', 'Now try it yourself. Use an open hand to rotate the Earth, two hands to zoom, or point at a view at the top and hold to switch.');
-        if (loop.see !== 'compare') renderRich(el(body, 'p', ''), `What to look for: ${loop.see.look}`);
-        next(body, 'View the evidence');
+        el(body, 'p', 'learn-q', hands ? `Find it yourself: point at the ${title} on the model and hold still.` : `Find it yourself: click the ${title} on the model.`);
+        el(body, 'p', 'where', hands ? 'Move an open hand to turn the Earth for a better look.' : 'Drag to turn the Earth for a better look.');
+        const fb = el(body, 'div', 'learn-feedback');
+        fb.setAttribute('aria-live', 'polite');
+        const row = el(body, 'div', 'learn-row');
+        const help = button(row, 'Show me', 'ghost');
+        const on = button(row, 'View the evidence', 'primary');
+        on.disabled = true;
+        on.onclick = () => go(at + 1);
+        const found = (ok, name, shown = false) => {
+          fb.replaceChildren();
+          el(fb, 'p', ok ? 'ok' : 'no', shown ? `Here it is: the ${title}. Note where it sits, then go on.` : ok ? `Found it: the ${title}.` : `That is the ${lower(name)}. Try again.`);
+          if (ok) {
+            on.disabled = false;
+            help.remove();
+          }
+        };
+        help.onclick = () => {
+          model.where();
+          found(true, null, true);
+        };
+        model.onPick(found);
       },
     },
     {
       show: (body) => {
         renderRich(el(body, 'p', ''), part.short);
         const list = el(body, 'ul', 'learn-evidence');
-        for (const n of part.numbers || []) renderRich(el(list, 'li'), `**${n.label}:** ${n.value} (${n.where})`);
+        for (const n of part.numbers || []) {
+          const li = el(list, 'li');
+          renderRich(el(li, 'b'), `${n.label}: `);
+          renderRich(el(li, 'span'), `${n.value} (${n.where})`);
+        }
         next(body, 'Test yourself');
       },
     },
@@ -149,7 +189,9 @@ export function runLoop(host, { level, part, loop, model, onClose }) {
     const head = el(host, 'div', 'learn-head');
     el(head, 'b', '', `${part.title}: done`);
     const body = el(host, 'div', 'learn-body');
-    el(body, 'p', 'learn-score', `Before: ${before ? 'you already knew the opening answer' : 'the opening answer was new to you'}. Now: ${score} of ${loop.tests.length} correct.`);
+    el(body, 'p', 'learn-score', loop.recall
+      ? `You said you knew ${before ? 'the opening answer and ' : ''}${score} of ${loop.tests.length} answers. Answers marked “Not yet” are worth another look.`
+      : `Before: ${before ? 'you already knew the opening answer' : 'the opening answer was new to you'}. Now: ${score} of ${loop.tests.length} correct.`);
     el(body, 'p', '', score === loop.tests.length ? 'You’ve completed this layer.' : 'Try the questions you missed again.');
     const row = el(body, 'div', 'learn-row');
     button(row, 'Try again', 'ghost').onclick = () => { results.length = 0; go(0); };

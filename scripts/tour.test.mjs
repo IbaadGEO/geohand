@@ -38,7 +38,7 @@ test('every learning-loop item has a valid answer, an explanation and a source',
     for (const [id, loop] of Object.entries(loops)) {
       assert.ok(EARTH[level].parts.some((p) => p.id === id), `${level}/${id} is not a part`);
       for (const it of [loop.check, ...loop.tests]) {
-        assert.ok(it.answer >= 0 && it.answer < it.options.length, it.q);
+        if (it.options) assert.ok(it.answer >= 0 && it.answer < it.options.length, it.q); // recall items have no options
         assert.ok(it.explain && it.where, it.q);
         for (const r of it.refs) assert.ok(REFS[r], `${it.q}: unknown reference ${r}`);
       }

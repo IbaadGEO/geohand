@@ -42,10 +42,11 @@ export function depthAtRadius(r) {
 const COLORS = {
   crust: '#d9b38c', 'continental-crust': '#d9b38c', 'oceanic-crust': '#8fa8c8',
   lithosphere: '#c98b5a', 'lithospheric-mantle': '#c98b5a', asthenosphere: '#ffb347',
-  mantle: '#f07a3a', 'upper-mantle': '#ffa04a', 'transition-zone': '#ff8c42', 'lower-mantle': '#e8553a', 'd-double-prime': '#b8333a', 'post-perovskite': '#ff6f61', llsvp: '#7a1f4f',
+  mantle: '#f07a3a', 'upper-mantle': '#ffa04a', 'transition-zone': '#ff8c42', 'lower-mantle': '#e8553a', 'd-double-prime': '#b8333a', 'post-perovskite': '#e6b3ff', llsvp: '#7a1f4f',
   'outer-core': '#ffd23f', 'inner-core': '#fff3b0', 'innermost-inner-core': '#ffffff',
 };
 const BOUNDARY = '#cfe6ff';
+const MEASURED = '#6dffa8'; // the measured LAB, kept apart from the pale PREM 80 km ring beside it
 
 /** Shell between rIn and rOut split into top and bottom halves, each with its equatorial cross-section filled in. */
 function halves(rIn, rOut, nShell, nFace) {
@@ -174,9 +175,9 @@ export function buildEarth(level = 'alevel') {
     // Murakami et al. (2004) p. 855: post-perovskite above 125 GPa and 2,500 K, about 2,700 km deep. Short streaks on the cut stand for
     // platy crystals lined up by flow (p. 858); spreading them evenly round the cut is schematic.
     const rTop = KM(2700), rCmb = KM(GEOMETRY.cmb[0]), c = new Cloud();
-    for (let s = 0; s < 240; s++) {
+    for (let s = 0; s < 360; s++) {
       const r = rCmb + (rTop - rCmb) * rand(), a = rand() * TAU, y = 0.006 + rand() * 0.02;
-      for (let k = 0; k < 6; k++) c.add(r * Math.cos(a + k * 0.012), y, r * Math.sin(a + k * 0.012));
+      for (let k = 0; k < 8; k++) c.add(r * Math.cos(a + k * 0.012), y, r * Math.sin(a + k * 0.012));
     }
     parts.push(make('post-perovskite', [I(c, [0, lifts['d-double-prime'] ?? 0.6, 0], anchorAt((rTop + rCmb) / 2, 120))]));
   }
@@ -217,12 +218,12 @@ export function buildEarth(level = 'alevel') {
       const rAt = (x, z) => continental(x, z) ? rC
         : KM(labDepth(LAB_AGES[0] + ((((Math.atan2(z, x) % TAU) + TAU) % TAU) / span) * (LAB_AGES[1] - LAB_AGES[0])));
       const onto = (c) => { const q = c.p; for (let i = 0; i < c.n * 3; i += 3) { const k = rAt(q[i], q[i + 2]) / Math.hypot(q[i], q[i + 1], q[i + 2]); q[i] *= k; q[i + 1] *= k; q[i + 2] *= k; } return c; };
-      const rim = onto(ring(r, 0, Math.round(90 + r * 70))), surf = onto(ellipsoid(r, r, r, Math.round(120 + r * r * 90)));
+      const rim = onto(ring(r, 0, Math.round(2 * (90 + r * 70)))), surf = onto(ellipsoid(r, r, r, Math.round(120 + r * r * 90)));
       // radial joins at the two continental margins (young end at a = 0, old end at a = -90°)
       for (const [a, rO] of [[0, KM(labDepth(LAB_AGES[0]))], [-Math.PI / 2, KM(labDepth(LAB_AGES[1]))]])
         for (let k = 0; k <= 12; k++) { const rr = rC + ((rO - rC) * k) / 12; rim.add(rr * Math.cos(a), 0, rr * Math.sin(a)); }
       const ad = (deg * Math.PI) / 180;
-      parts.push(make(id, [I(rim, [0, 0, 0], anchorAt(rAt(Math.cos(ad), Math.sin(ad)), deg)), { ...I(surf), pickable: false }], 'boundary', BOUNDARY));
+      parts.push(make(id, [I(rim, [0, 0, 0], anchorAt(rAt(Math.cos(ad), Math.sin(ad)), deg)), { ...I(surf), pickable: false }], 'boundary', MEASURED));
       continue;
     }
     const surface = { ...I(ellipsoid(r, r, r, Math.round(120 + r * r * 90))), pickable: false };
