@@ -261,6 +261,7 @@ The list below is generated from the application's source list using `npm run up
 **Data**
 
 - French, S.W. and Romanowicz, B.A. (2014) *SEMUCB-WM1* [Earth model], EarthScope Earth Model Collaboration. Available at: https://doi.org/10.17611/dp/emc.2023.semucbwm1.1 (Accessed: 23 November 2026). Used and displayed with the authors' permission.
+- Laske, G., Masters, G., Ma, Z. and Pasyanos, M. (2013) *CRUST1.0* [Earth model], file `crsthk.xyz`. Available at: https://igppweb.ucsd.edu/~gabi/crust1.html (Accessed: 23 November 2026). Used for the Crust thickness view. The download page does not state a licence, and asks users to cite the EGU abstract listed above, which GeoHand does. If you know of a preferred credit, authors to add or terms for CRUST1.0, please open an issue or use **Report a problem** in the app, and the credit here will be updated.
 
 **Software**
 
