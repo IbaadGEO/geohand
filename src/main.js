@@ -1,4 +1,7 @@
 import '@fontsource-variable/manrope'; // bundled with the app: no font request leaves the page
+import '@fontsource/barlow-semi-condensed/latin-500.css';
+import '@fontsource/barlow-semi-condensed/latin-600.css';
+import '@fontsource/jetbrains-mono/latin-400.css';
 import './styles.css';
 import { HoloScene } from './scene.js';
 import { MODELS } from './models/index.js';
@@ -1113,15 +1116,18 @@ function drawLabels() {
   ctx.save();
   ctx.globalAlpha = e;
   // each column is placed so its longest name (in the bold, picked style) stays on screen and clear of the side panel
-  ctx.font = '700 13px "Manrope Variable", system-ui, sans-serif';
-  const widest = (list) => Math.max(0, ...list.map((p) => ctx.measureText(p.name).width)) + 20;
+  const LABEL = '"Barlow Semi Condensed", system-ui, sans-serif';
+  const tag = (p) => p.name.toUpperCase();
+  ctx.font = `600 14px ${LABEL}`;
+  ctx.letterSpacing = '1px';
+  const widest = (list) => Math.max(0, ...list.map((p) => ctx.measureText(tag(p)).width)) + 20;
   const colR = clamp(maxX + 80, panelR + 360, W - widest(right) - 8);
   const colL = clamp(minX - 80, panelR + widest(left) + 8, W - 400);
   ctx.textBaseline = 'middle';
   const place = (list, colX, dir) => {
     list.sort((a, b) => a.y - b.y);
     const ys = list.map((p) => p.y);
-    for (let i = 1; i < ys.length; i++) if (ys[i] < ys[i - 1] + 20) ys[i] = ys[i - 1] + 20;
+    for (let i = 1; i < ys.length; i++) if (ys[i] < ys[i - 1] + 24) ys[i] = ys[i - 1] + 24; // tags are 22 px tall
     const over = ys.length ? ys[ys.length - 1] - (H - 90) : 0;
     if (over > 0) for (let i = 0; i < ys.length; i++) ys[i] -= over;
     list.forEach((p, k) => {
@@ -1139,27 +1145,28 @@ function drawLabels() {
       ctx.strokeStyle = 'rgba(6, 7, 14, 0.75)';
       ctx.lineWidth = hot ? 4 : 3;
       lead();
-      ctx.strokeStyle = hot ? p.color : 'rgba(255,255,255,0.6)';
+      ctx.strokeStyle = hot ? p.color : 'rgba(232,228,218,0.6)';
       ctx.lineWidth = hot ? 1.6 : 1;
+      ctx.setLineDash(hot ? [] : [3, 3]);
       lead();
+      ctx.setLineDash([]);
       ctx.fillStyle = p.color;
       ctx.beginPath();
       ctx.arc(p.x, p.y, hot ? 4 : 2.4, 0, Math.PI * 2);
       ctx.fill();
-      ctx.font = `${hot ? 700 : 600} ${hot ? 13 : 12}px "Manrope Variable", system-ui, sans-serif`;
+      ctx.font = `600 ${hot ? 14 : 13}px ${LABEL}`;
       ctx.textAlign = dir > 0 ? 'left' : 'right';
-      const tw = ctx.measureText(p.name).width, tx = colX + dir * 6;
-      ctx.fillStyle = 'rgba(8, 9, 18, 0.85)';
-      ctx.beginPath();
-      ctx.roundRect(dir > 0 ? tx - 5 : tx - tw - 5, ly - 10, tw + 10, 20, 6);
-      ctx.fill();
-      if (hot) {
-        ctx.strokeStyle = p.color;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-      ctx.fillStyle = hot ? '#fff' : 'rgba(255,255,255,0.9)';
-      ctx.fillText(p.name, tx, ly);
+      const tw = ctx.measureText(tag(p)).width, tx = colX + dir * 8;
+      const bx = dir > 0 ? tx - 6 : tx - tw - 6;
+      ctx.fillStyle = 'rgba(11, 15, 19, 0.9)';
+      ctx.fillRect(bx, ly - 11, tw + 12, 22);
+      ctx.strokeStyle = hot ? p.color : 'rgba(214, 222, 230, 0.22)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bx + 0.5, ly - 10.5, tw + 11, 21);
+      ctx.fillStyle = p.color; // index bar in the part's colour, on the side the leader arrives from
+      ctx.fillRect(dir > 0 ? bx : bx + tw + 10, ly - 11, 2, 22);
+      ctx.fillStyle = hot ? '#fff' : 'rgba(232,228,218,0.92)';
+      ctx.fillText(tag(p), tx, ly + 0.5);
     });
   };
   place(right, colR, 1);

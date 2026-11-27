@@ -215,7 +215,7 @@ Adding `?debug` to the local app address opens the guided gesture testing interf
 
 GeoHand's original hand-tracking and gesture-control work came from [HoloHand](https://github.com/IbaadGEO/HoloHand-Gesture-Agent-3D), my fork of Tuba Khan's [HoloHand-Gesture-Agent-3D](https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D). The relevant code remains under its MIT licence, included in [`LICENSE-HoloHand`](LICENSE-HoloHand).
 
-The application uses [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) for hand tracking, [three.js](https://threejs.org) for rendering and the [Manrope](https://github.com/sharanda/manrope) font under the SIL Open Font License 1.1. Visual references that informed parts of the application are acknowledged in [`docs/inspiration.md`](docs/inspiration.md).
+The application uses [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) for hand tracking, [three.js](https://threejs.org) for rendering and the [Manrope](https://github.com/sharanda/manrope), [Barlow Semi Condensed](https://github.com/jpt/barlow) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) fonts under the SIL Open Font License 1.1. Visual references that informed parts of the application are acknowledged in [`docs/inspiration.md`](docs/inspiration.md).
 
 ## Licence
 
@@ -264,6 +264,8 @@ The list below is generated from the application's source list using `npm run up
 - Google (2026) *MediaPipe Hand Landmarker*. Available at: https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker (Accessed: 23 November 2026).
 - Khan, T. (2026) *HoloHand-Gesture-Agent-3D*. Available at: https://github.com/tubakhxn/HoloHand-Gesture-Agent-3D (Accessed: 23 November 2026).
 - three.js authors (2024) *three.js*, release 170. Available at: https://threejs.org (Accessed: 23 November 2026).
+- Jeremy Tribby (2017) *Barlow*. Available at: https://github.com/jpt/barlow (Accessed: 27 November 2026).
+- JetBrains (2020) *JetBrains Mono*. Available at: https://github.com/JetBrains/JetBrainsMono (Accessed: 27 November 2026).
 - The Manrope Project Authors (no date) *Manrope*. Available at: https://github.com/sharanda/manrope (Accessed: 23 November 2026).
 
 ## Live updates
