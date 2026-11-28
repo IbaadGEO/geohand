@@ -436,3 +436,20 @@ body:has(#start:not(.gone)) #stuck { display: none; }
 #part-card { border-left: 2px solid var(--gold); }
 #gest li.active { box-shadow: inset 2px 0 0 var(--gold); }
 #hand-tag { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+
+/* phones: the panel is a bar with a Menu button; tour, intro, mission and the part card get the screen instead */
+#panel-toggle { display: none; }
+@media (max-width: 600px) {
+  #panel-toggle { display: block; margin-left: auto; padding: 7px 14px; border-radius: 4px; border: 1px solid rgba(242, 201, 76, 0.55); background: transparent; color: var(--gold); font: 600 12px var(--display); letter-spacing: 1px; text-transform: uppercase; }
+  #panel { gap: 10px; padding: 10px 12px; }
+  #panel:not(.open) > :not(.brand) { display: none !important; }
+  #panel.open, #panel.open:has(#lesson-activity:not([hidden])) { max-height: 64dvh; }
+  body:has(#tour:not([hidden])) #panel, body:has(#intro:not([hidden])) #panel, body:has(#mission:not([hidden])) #panel { display: none; }
+  #tour, #intro, #mission { left: 8px; right: 8px; bottom: 8px; width: auto; transform: none; }
+  #part-card { transform: none !important; left: 8px; right: 8px; top: auto; bottom: 78px; width: auto; }
+  body:has(#panel.open) #part-card, body:has(#panel.open) #stuck { display: none; }
+  #stuck { bottom: 78px; }
+  body:has(#part-card:not([hidden])) #stuck, body:has(#intro:not([hidden])) #stuck, body:has(#tour:not([hidden])) #stuck, body:has(#mission:not([hidden])) #stuck { bottom: auto; top: 14px; right: auto; left: 8px; }
+  #reset-earth { top: 112px; padding: 12px 22px; }
+  #stuck-menu { bottom: 124px; }
+}

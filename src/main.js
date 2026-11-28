@@ -357,7 +357,16 @@ const drillModel = (i) => ({
     showPart(p.sel);
   },
 });
+// phones: the panel is a bar that opens on demand, and opens itself when learning content lands in it
+function openPanel(open = true) {
+  $('panel').classList.toggle('open', open);
+  $('panel-toggle').setAttribute('aria-expanded', open);
+  $('panel-toggle').textContent = open ? 'Close' : 'Menu';
+}
+$('panel-toggle').onclick = () => openPanel(!$('panel').classList.contains('open'));
+
 $('part-learn').onclick = () => {
+  openPanel();
   const i = scene.sel;
   const content = EARTH[level].parts.find((c) => c.id === scene.parts[i]?.id);
   const loop = content && loopFor(level, content.id);
@@ -440,6 +449,7 @@ function showPart(i) {
 $('part-study').onclick = () => {
   lesson.jumpToPart(stepFocus(layerPicker.value));
   setMode('lesson');
+  openPanel();
   $('panel').scrollTop = 0;
 };
 
